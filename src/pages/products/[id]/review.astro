@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Toast from '../../../components/Toast.astro';
+import { createSupabaseServer } from '../../../lib/supabaseServer';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+const url = new URL(Astro.request.url);
+const token = url.searchParams.get('token') ?? '';
+
+let product: any = null;
+let tokenValid = false;
+let tokenUsed = false;
+
+try {
+  const supabase = createSupabaseServer();
+
+  if (token) {
+    const { data: tokenData } = await supabase.from('review_tokens').select('*').eq('token', token).single();
+    if (tokenData) {
+      if (tokenData.used) { tokenUsed = true; }
+      else if (new Date(tokenData.expires_at) < new Date()) { /* expired */ }
+      else { tokenValid = true; }
+
+      const isShort = id && id.length === 8;
+      if (isShort) {
+        const { data } = await supabase.from('products').select('id,title').eq('status', 'published');
+        product = data?.find((p: any) => p.id.startsWith(id!)) ?? null;
+      } else {
+        const { data } = await supabase.from('products').select('id,title').eq('id', id).eq('status', 'published').single();
+        product = data;
+      }
+    }
+  }
+} catch {}
+---
+<BaseLayout title="レビュー投稿 | Free Market">
+  <Toast />
+  <div class="mx-auto max-w-md px-4 py-12">
+    {!token ? (
+      <p class="text-center text-sm text-[var(--text-secondary)]">レビュートークンが必要です。</p>
+    ) : tokenUsed ? (
+      <p class="text-center text-sm text-[var(--danger)]">このトークンは使用済みです。</p>
+    ) : !tokenValid ? (
+      <p class="text-center text-sm text-[var(--danger)]">トークンが無効または期限切れです。</p>
+    ) : !product ? (
+      <p class="text-center text-sm text-[var(--text-secondary)]">商品が見つかりません。</p>
+    ) : (
+      <section class="rounded-lg border border-[var(--border-light)] bg-white p-8">
+        <h1 class="text-lg font-bold">レビューを投稿</h1>
+        <p class="mt-1 text-xs text-[var(--text-secondary)]">{product.title}</p>
+        <form class="mt-6 space-y-4" id="review-form" data-product-id={product.id} data-token={token}>
+          <div>
+            <label class="text-xs text-[var(--text-secondary)]">評価 *</label>
+            <select name="rating" required class="input-field mt-1">
+              <option value="">選択</option>
+              <option value="5">★★★★★ (5)</option>
+              <option value="4">★★★★☆ (4)</option>
+              <option value="3">★★★☆☆ (3)</option>
+              <option value="2">★★☆☆☆ (2)</option>
+              <option value="1">★☆☆☆☆ (1)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-[var(--text-secondary)]">お名前</label>
+            <input type="text" name="reviewer_name" class="input-field mt-1" />
+          </div>
+          <div>
+            <label class="text-xs text-[var(--text-secondary)]">タイトル</label>
+            <input type="text" name="title" class="input-field mt-1" />
+          </div>
+          <div>
+            <label class="text-xs text-[var(--text-secondary)]">レビュー内容</label>
+            <textarea name="body" rows="4" class="input-field mt-1"></textarea>
+          </div>
+          <button type="submit" class="btn-primary w-full py-3 text-sm">投稿する</button>
+        </form>
+      </section>
+    )}
+  </div>
+
+  <script>
+  import { supabase } from '../../../lib/supabaseClient';
+
+  declare global { interface Window { showToast: (type: 'success' | 'error' | 'info', title: string, message: string) => void; } }
+
+  const form = document.getElementById('review-form') as HTMLFormElement | null;
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const productId = form.dataset.productId!;
+      const token = form.dataset.token!;
+      const rating = Number(fd.get('rating'));
+      if (!rating) { window.showToast?.('error', 'エラー', '評価を選択してください。'); return; }
+
+      const { error } = await supabase.from('reviews').insert({
+        product_id: productId,
+        rating,
+        reviewer_name: fd.get('reviewer_name') || null,
+        title: fd.get('title') || null,
+        body: fd.get('body') || null,
+      });
+
+      if (error) { window.showToast?.('error', 'エラー', error.message); return; }
+
+      await supabase.from('review_tokens').update({ used: true }).eq('token', token);
+      window.showToast?.('success', '投稿完了', 'レビューを投稿しました。ありがとうございます！');
+      setTimeout(() => { window.location.href = `/products/${productId.slice(0, 8)}`; }, 2000);
+    });
+  }
+  </script>
+</BaseLayout>

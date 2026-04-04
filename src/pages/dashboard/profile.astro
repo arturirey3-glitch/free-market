@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Toast from '../../components/Toast.astro';
+---
+<BaseLayout title="プロフィール編集 | Free Market">
+  <Toast />
+  <div class="mx-auto max-w-lg px-4 py-6">
+    <h1 class="text-lg font-bold mb-6">プロフィール編集</h1>
+    <form class="space-y-4" id="profile-form">
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">表示名</label>
+        <input type="text" name="display_name" class="input-field mt-1" />
+      </div>
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">自己紹介</label>
+        <textarea name="bio" rows="4" class="input-field mt-1"></textarea>
+      </div>
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">アバターURL</label>
+        <input type="url" name="avatar_url" class="input-field mt-1" placeholder="https://..." />
+      </div>
+      <button type="submit" class="btn-primary w-full py-3 text-sm">保存</button>
+    </form>
+  </div>
+
+  <script>
+  import { supabase } from '../../lib/supabaseClient';
+
+  declare global { interface Window { showToast: (type: 'success' | 'error' | 'info', title: string, message: string) => void; } }
+
+  const form = document.getElementById('profile-form') as HTMLFormElement;
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session) { window.location.href = '/auth/login'; }
+  else {
+    const userId = sessionData.session.user.id;
+    const { data: profile } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if (profile) {
+      (form.elements.namedItem('display_name') as HTMLInputElement).value = profile.display_name ?? '';
+      (form.elements.namedItem('bio') as HTMLTextAreaElement).value = profile.bio ?? '';
+      (form.elements.namedItem('avatar_url') as HTMLInputElement).value = profile.avatar_url ?? '';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const { error } = await supabase.from('profiles').update({
+        display_name: fd.get('display_name') || null,
+        bio: fd.get('bio') || null,
+        avatar_url: fd.get('avatar_url') || null,
+      }).eq('id', userId);
+      if (error) window.showToast?.('error', 'エラー', error.message);
+      else window.showToast?.('success', '保存しました', 'プロフィールを更新しました。');
+    });
+  }
+  </script>
+</BaseLayout>

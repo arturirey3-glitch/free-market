@@ -1,0 +1,19 @@
+{
+  "name": "free-market",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev --host",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.6.12",
+    "@supabase/supabase-js": "^2.89.0",
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.16.6",
+    "stripe": "^20.1.2",
+    "tailwindcss": "^4.1.18"
+  }
+}

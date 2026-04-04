@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { createSupabaseServer } from '../../lib/supabaseServer';
+import { CATEGORIES } from '../../lib/constants';
+
+export const prerender = false;
+
+const url = new URL(Astro.request.url);
+const q = url.searchParams.get('q')?.trim() ?? '';
+const category = url.searchParams.get('category') ?? '';
+
+let products: any[] = [];
+
+try {
+  const supabase = createSupabaseServer();
+  let query = supabase
+    .from('products')
+    .select('id,title,price,category,thumbnail_url,profiles:owner_id(display_name,avatar_url)')
+    .eq('status', 'published')
+    .order('created_at', { ascending: false });
+
+  if (category) query = query.eq('category', category);
+  if (q) query = query.ilike('title', `%${q}%`);
+
+  const { data } = await query.limit(60);
+  products = data ?? [];
+
+  const ids = products.map((p) => p.id).filter(Boolean);
+  if (ids.length > 0) {
+    const { data: revRows } = await supabase.from('reviews').select('product_id,rating').in('product_id', ids);
+    if (revRows) {
+      const map = new Map<string, { count: number; sum: number }>();
+      revRows.forEach((r) => {
+        if (!r.product_id || r.rating == null) return;
+        const c = map.get(r.product_id) ?? { count: 0, sum: 0 };
+        c.count++; c.sum += r.rating;
+        map.set(r.product_id, c);
+      });
+      products = products.map((p) => {
+        const s = map.get(p.id);
+        return { ...p, review_count: s?.count ?? 0, review_average: s && s.count > 0 ? s.sum / s.count : 0 };
+      });
+    }
+  }
+} catch {}
+---
+<BaseLayout title={`${category || q || '商品一覧'} | Free Market`}>
+  <div class="border-b border-[var(--border-light)] bg-white">
+    <div class="mx-auto max-w-[1440px] px-4 py-3 flex gap-2 overflow-x-auto">
+      <a href="/products" class:list={["shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition", !category ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--primary-light)]' : 'border-[var(--border)] hover:border-[var(--primary)]']}>
+        すべて
+      </a>
+      {CATEGORIES.map((cat) => (
+        <a
+          href={`/products?category=${encodeURIComponent(cat)}`}
+          class:list={["shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition", category === cat ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--primary-light)]' : 'border-[var(--border)] hover:border-[var(--primary)]']}
+        >
+          {cat}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-[1440px] px-4 py-6">
+    {q && <p class="mb-4 text-sm text-[var(--text-secondary)]">「{q}」の検索結果: {products.length}件</p>}
+    {products.length > 0 ? (
+      <div class="grid-products">
+        {products.map((product) => <ProductCard product={product} />)}
+      </div>
+    ) : (
+      <p class="text-sm text-[var(--text-secondary)] py-12 text-center">該当する商品がありません</p>
+    )}
+  </div>
+</BaseLayout>

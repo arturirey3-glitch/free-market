@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Toast from '../../../components/Toast.astro';
+import { CATEGORIES } from '../../../lib/constants';
+---
+<BaseLayout title="新規出品 | Free Market">
+  <Toast />
+  <div class="mx-auto max-w-lg px-4 py-6">
+    <h1 class="text-lg font-bold mb-6">新規出品</h1>
+    <form class="space-y-4" id="product-form">
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">商品名 *</label>
+        <input type="text" name="title" required class="input-field mt-1" />
+      </div>
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">商品の説明 *</label>
+        <textarea name="description" rows="6" required class="input-field mt-1"></textarea>
+      </div>
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">カテゴリ</label>
+        <select name="category" class="input-field mt-1">
+          <option value="">選択してください</option>
+          {CATEGORIES.map((cat) => <option value={cat}>{cat}</option>)}
+        </select>
+      </div>
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">価格（円） *</label>
+        <input type="number" name="price" min="300" required class="input-field mt-1" />
+      </div>
+      <div>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="is_subscription" value="true" />
+          月額サブスクリプション
+        </label>
+      </div>
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">お届け日数</label>
+        <input type="number" name="delivery_time" min="1" class="input-field mt-1" />
+      </div>
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">サムネイル画像URL</label>
+        <input type="url" name="thumbnail_url" class="input-field mt-1" placeholder="https://..." />
+      </div>
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">購入にあたっての注意</label>
+        <textarea name="purchase_notes" rows="3" class="input-field mt-1"></textarea>
+      </div>
+      <div class="flex gap-2">
+        <button type="submit" name="status" value="draft" class="btn-outline flex-1 py-3 text-sm">下書き保存</button>
+        <button type="submit" name="status" value="published" class="btn-primary flex-1 py-3 text-sm">出品する</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+  import { supabase } from '../../../lib/supabaseClient';
+
+  declare global { interface Window { showToast: (type: 'success' | 'error' | 'info', title: string, message: string) => void; } }
+
+  const form = document.getElementById('product-form') as HTMLFormElement;
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session) { window.location.href = '/auth/login'; }
+
+  let submitStatus = 'draft';
+  form.querySelectorAll<HTMLButtonElement>('button[name="status"]').forEach((btn) => {
+    btn.addEventListener('click', () => { submitStatus = btn.value; });
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const userId = sessionData.session!.user.id;
+
+    const { data, error } = await supabase.from('products').insert({
+      owner_id: userId,
+      title: fd.get('title'),
+      description: fd.get('description'),
+      category: fd.get('category') || null,
+      price: Number(fd.get('price')),
+      is_subscription: fd.get('is_subscription') === 'true',
+      delivery_time: fd.get('delivery_time') ? Number(fd.get('delivery_time')) : null,
+      thumbnail_url: fd.get('thumbnail_url') || null,
+      purchase_notes: fd.get('purchase_notes') || null,
+      status: submitStatus,
+    }).select().single();
+
+    if (error) { window.showToast?.('error', 'エラー', error.message); return; }
+    window.showToast?.('success', '保存しました', submitStatus === 'published' ? '商品を出品しました！' : '下書きに保存しました。');
+    setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+  });
+  </script>
+</BaseLayout>

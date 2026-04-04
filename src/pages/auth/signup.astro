@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Toast from '../../components/Toast.astro';
+---
+<BaseLayout title="新規登録 | Free Market">
+  <Toast />
+  <div class="mx-auto max-w-md px-4 py-12">
+    <section class="rounded-lg border border-[var(--border-light)] bg-white p-8">
+      <h1 class="text-xl font-bold">新規登録</h1>
+      <p class="mt-2 text-xs text-[var(--text-secondary)]">メールアドレスとパスワードで会員登録できます。</p>
+      <form class="mt-6 space-y-4" data-auth-form data-mode="signup" method="post" action="javascript:void(0)">
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">メールアドレス</label>
+          <input type="email" name="email" required class="input-field mt-1" />
+        </div>
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">パスワード</label>
+          <input type="password" name="password" minlength="6" required class="input-field mt-1" />
+        </div>
+        <button type="submit" class="btn-primary w-full py-3 text-sm">登録する</button>
+        <p class="text-center text-xs text-[var(--text-secondary)]">
+          アカウントがある場合は <a href="/auth/login" class="text-[var(--primary)] font-bold">ログイン</a>
+        </p>
+        <p class="text-center text-xs" data-auth-message></p>
+      </form>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+import { supabase } from '../../lib/supabaseClient';
+
+declare global { interface Window { showToast: (type: 'success' | 'error' | 'info', title: string, message: string) => void; } }
+
+const form = document.querySelector<HTMLFormElement>('[data-auth-form]');
+
+const tr: Record<string, string> = {
+  'User already registered': 'このメールアドレスは既に登録されています。',
+  'Password should be at least 6 characters': 'パスワードは6文字以上で入力してください。',
+};
+const translateError = (msg: string) => { for (const [k, v] of Object.entries(tr)) { if (msg.includes(k)) return v; } return msg; };
+
+form?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(form);
+  const email = `${fd.get('email') ?? ''}`.trim();
+  const password = `${fd.get('password') ?? ''}`.trim();
+  if (!email || !password) { window.showToast?.('error', 'エラー', '入力してください。'); return; }
+
+  const { error } = await supabase.auth.signUp({ email, password });
+  if (error) { window.showToast?.('error', '登録エラー', translateError(error.message)); return; }
+  window.showToast?.('success', '確認メールを送信しました', 'メール内のリンクをクリックして登録を完了してください。');
+});
+</script>

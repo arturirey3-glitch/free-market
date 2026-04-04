@@ -1,0 +1,113 @@
+---
+import globalStyles from '../styles/global.css?url';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'Free Market', description } = Astro.props;
+const siteUrl = import.meta.env.SITE_URL || 'https://free-market.pages.dev';
+---
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href={globalStyles} />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:site_name" content="Free Market" />
+    <slot name="head" />
+  </head>
+  <body>
+    <div class="min-h-screen flex flex-col">
+      <!-- Header -->
+      <header class="sticky top-0 z-40 bg-white border-b border-[var(--border-light)]">
+        <div class="mx-auto flex max-w-[1440px] items-center justify-between px-4 h-14">
+          <a href="/" class="text-lg font-bold text-[var(--primary)]">Free Market</a>
+
+          <!-- Search -->
+          <div class="hidden sm:flex flex-1 max-w-md mx-6">
+            <form action="/products" method="get" class="flex w-full">
+              <input
+                type="text"
+                name="q"
+                placeholder="なにをお探しですか？"
+                class="flex-1 rounded-l-full border border-r-0 border-[var(--border)] px-4 py-2 text-sm outline-none focus:border-[var(--primary)]"
+              />
+              <button type="submit" class="rounded-r-full bg-[var(--primary)] px-4 text-white text-sm font-bold">
+                検索
+              </button>
+            </form>
+          </div>
+
+          <nav class="flex items-center gap-4 text-sm font-medium">
+            <a href="/products" class="hidden md:block hover:text-[var(--primary)]">商品一覧</a>
+            <a href="/dashboard" class="hidden md:block hover:text-[var(--primary)]">マイページ</a>
+            <a href="/auth/login" class="hover:text-[var(--primary)]" data-auth-login>ログイン</a>
+            <button type="button" class="hidden hover:text-[var(--primary)]" data-auth-logout>ログアウト</button>
+            <a href="/dashboard/products/new" class="btn-primary">出品</a>
+          </nav>
+        </div>
+        <!-- Mobile search -->
+        <div class="sm:hidden px-4 pb-3">
+          <form action="/products" method="get" class="flex">
+            <input
+              type="text"
+              name="q"
+              placeholder="なにをお探しですか？"
+              class="flex-1 rounded-l-full border border-r-0 border-[var(--border)] px-4 py-2 text-sm outline-none"
+            />
+            <button type="submit" class="rounded-r-full bg-[var(--primary)] px-4 text-white text-sm font-bold">
+              検索
+            </button>
+          </form>
+        </div>
+      </header>
+
+      <!-- Main -->
+      <main class="flex-1">
+        <slot />
+      </main>
+
+      <!-- Footer -->
+      <footer class="border-t border-[var(--border-light)] bg-[var(--bg-secondary)] py-8">
+        <div class="mx-auto max-w-[1440px] px-4 text-xs text-[var(--text-secondary)]">
+          <ul class="flex flex-wrap gap-4 mb-4">
+            <li><a href="/privacy" class="hover:text-[var(--text-primary)]">プライバシーポリシー</a></li>
+            <li><a href="/law" class="hover:text-[var(--text-primary)]">特定商取引法に基づく表記</a></li>
+          </ul>
+          <p>&copy; 2025 Free Market</p>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+    import { supabase } from '../lib/supabaseClient';
+
+    const loginLinks = document.querySelectorAll('[data-auth-login]');
+    const logoutButtons = document.querySelectorAll('[data-auth-logout]');
+
+    const setAuthUI = (isLoggedIn: boolean) => {
+      loginLinks.forEach((el) => el.classList.toggle('hidden', isLoggedIn));
+      logoutButtons.forEach((el) => el.classList.toggle('hidden', !isLoggedIn));
+    };
+
+    const { data } = await supabase.auth.getSession();
+    setAuthUI(!!data.session);
+
+    logoutButtons.forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        setAuthUI(false);
+        window.location.href = '/';
+      });
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => setAuthUI(!!session));
+    </script>
+  </body>
+</html>

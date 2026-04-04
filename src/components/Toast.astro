@@ -1,0 +1,27 @@
+<div id="toast" class="fixed top-4 right-4 z-50 hidden max-w-sm rounded-lg border p-4 shadow-lg" role="alert">
+  <div class="flex items-start gap-3">
+    <div>
+      <p id="toast-title" class="text-sm font-bold"></p>
+      <p id="toast-message" class="mt-1 text-xs text-[var(--text-secondary)]"></p>
+    </div>
+    <button onclick="window.hideToast()" class="ml-auto text-lg leading-none text-[var(--text-placeholder)]">&times;</button>
+  </div>
+</div>
+
+<script is:inline>
+  window.showToast = function(type, title, message) {
+    var el = document.getElementById('toast');
+    var titleEl = document.getElementById('toast-title');
+    var msgEl = document.getElementById('toast-message');
+    if (!el || !titleEl || !msgEl) return;
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    el.className = 'fixed top-4 right-4 z-50 max-w-sm rounded-lg border p-4 shadow-lg ' +
+      (type === 'error' ? 'bg-red-50 border-red-200' : type === 'success' ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200');
+    setTimeout(function() { el.classList.add('hidden'); }, 5000);
+  };
+  window.hideToast = function() {
+    var el = document.getElementById('toast');
+    if (el) el.classList.add('hidden');
+  };
+</script>

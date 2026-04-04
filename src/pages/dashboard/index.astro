@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { createSupabaseServer } from '../../lib/supabaseServer';
+import { formatJPY } from '../../lib/format';
+
+export const prerender = false;
+
+let products: any[] = [];
+---
+<BaseLayout title="マイページ | Free Market">
+  <div class="mx-auto max-w-[960px] px-4 py-6">
+    <h1 class="text-lg font-bold mb-6">マイページ</h1>
+
+    <div class="grid gap-4 md:grid-cols-3 mb-8">
+      <a href="/dashboard/profile" class="card p-4 flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--primary-light)] text-[var(--primary)] text-lg">👤</div>
+        <div>
+          <p class="text-sm font-bold">プロフィール編集</p>
+          <p class="text-[10px] text-[var(--text-secondary)]">名前・自己紹介の編集</p>
+        </div>
+      </a>
+      <a href="/dashboard/products" class="card p-4 flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--primary-light)] text-[var(--primary)] text-lg">📦</div>
+        <div>
+          <p class="text-sm font-bold">出品した商品</p>
+          <p class="text-[10px] text-[var(--text-secondary)]">出品の管理・編集</p>
+        </div>
+      </a>
+      <a href="/dashboard/products/new" class="card p-4 flex items-center gap-3">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--primary-light)] text-[var(--primary)] text-lg">➕</div>
+        <div>
+          <p class="text-sm font-bold">新規出品</p>
+          <p class="text-[10px] text-[var(--text-secondary)]">商品を出品する</p>
+        </div>
+      </a>
+    </div>
+
+    <div id="my-products"></div>
+  </div>
+
+  <script>
+  import { supabase } from '../../lib/supabaseClient';
+
+  const container = document.getElementById('my-products');
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session) {
+    window.location.href = '/auth/login';
+  } else {
+    const { data } = await supabase
+      .from('products')
+      .select('id,title,price,status,thumbnail_url')
+      .eq('owner_id', sessionData.session.user.id)
+      .order('created_at', { ascending: false });
+
+    if (container && data && data.length > 0) {
+      container.innerHTML = `
+        <h2 class="text-base font-bold mb-3">出品中の商品</h2>
+        <div class="space-y-2">
+          ${data.map((p: any) => `
+            <a href="/dashboard/products/${p.id}" class="card flex items-center gap-3 p-3">
+              <div class="h-12 w-12 shrink-0 rounded bg-[var(--bg-secondary)] overflow-hidden">
+                ${p.thumbnail_url ? `<img src="${p.thumbnail_url}" class="h-full w-full object-cover" />` : ''}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate">${p.title}</p>
+                <p class="text-xs text-[var(--text-secondary)]">${p.status === 'published' ? '公開中' : '下書き'}</p>
+              </div>
+              <p class="text-sm font-bold shrink-0">¥${Number(p.price).toLocaleString()}</p>
+            </a>
+          `).join('')}
+        </div>
+      `;
+    }
+  }
+  </script>
+</BaseLayout>

@@ -1,0 +1,51 @@
+import type { APIRoute } from 'astro';
+
+export const prerender = false;
+
+export const POST: APIRoute = async ({ request, locals }) => {
+  const headers = { 'Content-Type': 'application/json' };
+
+  try {
+    const runtime = (locals as any).runtime;
+    const env = runtime?.env || {};
+    const stripeSecretKey = env.STRIPE_SECRET_KEY || import.meta.env.STRIPE_SECRET_KEY;
+
+    if (!stripeSecretKey) {
+      return new Response(JSON.stringify({ error: 'STRIPE_SECRET_KEY is not configured' }), { status: 500, headers });
+    }
+
+    const Stripe = (await import('stripe')).default;
+    const stripe = new Stripe(stripeSecretKey);
+
+    const body = await request.json();
+    const { productId, productTitle, price, mode } = body;
+
+    if (!productId || !productTitle || !price) {
+      return new Response(JSON.stringify({ error: '必須パラメータが不足しています' }), { status: 400, headers });
+    }
+
+    const siteUrl = env.SITE_URL || import.meta.env.SITE_URL || 'https://free-market.pages.dev';
+    const isSubscription = mode === 'subscription';
+    const shortId = productId.slice(0, 8);
+
+    const session = await stripe.checkout.sessions.create({
+      line_items: [{
+        price_data: {
+          currency: 'jpy',
+          product_data: { name: productTitle },
+          unit_amount: price,
+          ...(isSubscription ? { recurring: { interval: 'month' } } : {})
+        },
+        quantity: 1
+      }],
+      mode: isSubscription ? 'subscription' : 'payment',
+      success_url: `${siteUrl}/products/${shortId}?checkout=success`,
+      cancel_url: `${siteUrl}/products/${shortId}?checkout=cancel`,
+    });
+
+    return new Response(JSON.stringify({ url: session.url }), { status: 200, headers });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    return new Response(JSON.stringify({ error: message }), { status: 500, headers });
+  }
+};
