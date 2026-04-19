@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Toast from '../../../components/Toast.astro';
+---
+<BaseLayout title="出品した商品 | felikko">
+  <Toast />
+  <div class="mx-auto max-w-[960px] px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-lg font-bold">出品した商品</h1>
+      <a href="/dashboard/products/new" class="btn-primary text-sm py-2 px-4">＋ 新規出品</a>
+    </div>
+
+    <div id="products-list">
+      <p class="text-sm text-[var(--text-secondary)]">読み込み中...</p>
+    </div>
+  </div>
+
+  <script>
+  import { supabase } from '../../../lib/supabaseClient';
+
+  declare global { interface Window { showToast: (type: 'success' | 'error' | 'info', title: string, message: string) => void; } }
+
+  const container = document.getElementById('products-list')!;
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session) { window.location.href = '/auth/login'; }
+
+  const { data, error } = await supabase
+    .from('products')
+    .select('id,title,price,status,thumbnail_url,created_at')
+    .eq('owner_id', sessionData.session!.user.id)
+    .order('created_at', { ascending: false });
+
+  if (error || !data || data.length === 0) {
+    container.innerHTML = `
+      <div class="flex flex-col items-center justify-center py-16 text-center">
+        <p class="text-sm text-[var(--text-secondary)]">出品した商品はまだありません</p>
+        <a href="/dashboard/products/new" class="btn-primary mt-4 text-sm py-2 px-5">最初の商品を出品する</a>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <div class="space-y-2">
+        ${data.map((p: any) => `
+          <div class="card flex items-center gap-3 p-3">
+            <div class="h-14 w-14 shrink-0 rounded-lg bg-[var(--bg-secondary)] overflow-hidden">
+              ${p.thumbnail_url ? `<img src="${p.thumbnail_url}" class="h-full w-full object-cover" />` : '<div class="h-full w-full flex items-center justify-center text-[var(--text-placeholder)] text-xl">📷</div>'}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium truncate">${p.title}</p>
+              <span class="inline-block mt-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${p.status === 'published' ? 'bg-[var(--primary-light)] text-[var(--primary)]' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'}">
+                ${p.status === 'published' ? '公開中' : '下書き'}
+              </span>
+            </div>
+            <p class="text-sm font-bold shrink-0">¥${Number(p.price).toLocaleString()}</p>
+            <div class="flex gap-2 shrink-0">
+              <a href="/products/${p.id.slice(0,8)}" class="btn-outline text-xs py-1 px-2">詳細</a>
+              <button class="btn-danger text-xs py-1 px-2" data-id="${p.id}">削除</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    container.querySelectorAll<HTMLButtonElement>('[data-id]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('この商品を削除してよいですか？')) return;
+        const id = btn.dataset.id!;
+        btn.disabled = true;
+        const { error } = await supabase.from('products').delete().eq('id', id);
+        if (error) {
+          window.showToast?.('error', 'エラー', error.message);
+          btn.disabled = false;
+        } else {
+          btn.closest('.card')?.remove();
+          window.showToast?.('success', '削除しました', '');
+          if (!container.querySelector('.card')) {
+            container.innerHTML = `<div class="flex flex-col items-center justify-center py-16 text-center"><p class="text-sm text-[var(--text-secondary)]">出品した商品はまだありません</p><a href="/dashboard/products/new" class="btn-primary mt-4 text-sm py-2 px-5">最初の商品を出品する</a></div>`;
+          }
+        }
+      });
+    });
+  }
+  </script>
+</BaseLayout>
