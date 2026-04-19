@@ -1,0 +1,139 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+
+const runtime = (Astro.locals as any).runtime;
+const env = runtime?.env || {};
+const stripeSecretKey = env.STRIPE_SECRET_KEY || import.meta.env.STRIPE_SECRET_KEY;
+
+let receipt: any = null;
+let errorMsg = '';
+
+if (!id || !stripeSecretKey) {
+  errorMsg = '領収書が見つかりませんでした。';
+} else {
+  try {
+    const Stripe = (await import('stripe')).default;
+    const stripe = new Stripe(stripeSecretKey);
+
+    const pi = await stripe.paymentIntents.retrieve(id, { expand: ['charges'] });
+    const sessions = await stripe.checkout.sessions.list({ payment_intent: id, limit: 1 });
+    const session = sessions.data[0];
+    const meta = session?.metadata ?? {};
+    const charge = (pi.charges as any)?.data?.[0];
+
+    receipt = {
+      id: pi.id,
+      amount: pi.amount,
+      currency: pi.currency,
+      date: new Date((pi.created) * 1000).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' }),
+      productTitle: meta.product_title ?? '商品',
+      sellerName: meta.seller_name ?? '出品者',
+      productUrl: meta.product_url ?? '',
+      buyerName: session?.customer_details?.name ?? '',
+      buyerEmail: session?.customer_details?.email ?? '',
+      paymentMethod: charge?.payment_method_details?.card
+        ? `${charge.payment_method_details.card.brand?.toUpperCase()} **** ${charge.payment_method_details.card.last4}`
+        : 'カード決済',
+      status: pi.status,
+    };
+  } catch (e: any) {
+    errorMsg = '領収書の取得に失敗しました。';
+  }
+}
+
+const amountFormatted = receipt ? `¥${receipt.amount.toLocaleString('ja-JP')}` : '';
+---
+
+<BaseLayout title={receipt ? `領収書 - ${receipt.productTitle}` : '領収書'}>
+  <div class="min-h-screen bg-stone-50 py-12 px-4">
+    <div class="mx-auto max-w-lg">
+
+      {errorMsg ? (
+        <p class="text-center text-stone-500">{errorMsg}</p>
+      ) : receipt ? (
+        <div class="rounded-2xl bg-white shadow-sm border border-stone-200 overflow-hidden">
+
+          <!-- Header -->
+          <div class="bg-[#2e7d32] px-8 py-6 text-center">
+            <p class="text-lg font-bold text-white tracking-widest">felikko</p>
+            <p class="mt-1 text-sm text-green-100">ご購入領収書</p>
+          </div>
+
+          <!-- Body -->
+          <div class="px-8 py-8">
+
+            {receipt.buyerName && (
+              <p class="mb-6 text-sm text-stone-600">{receipt.buyerName} 様</p>
+            )}
+
+            <!-- Order details -->
+            <div class="rounded-xl bg-stone-50 p-5 mb-6">
+              <p class="mb-3 text-[11px] font-semibold tracking-widest text-stone-400 uppercase">注文明細</p>
+              <p class="text-base font-bold text-stone-900 mb-4">{receipt.productTitle}</p>
+              <table class="w-full text-sm">
+                <tbody>
+                  <tr class="border-t border-stone-100">
+                    <td class="py-2.5 text-stone-500">出品者</td>
+                    <td class="py-2.5 text-right font-medium text-stone-900">{receipt.sellerName}</td>
+                  </tr>
+                  <tr class="border-t border-stone-100">
+                    <td class="py-2.5 text-stone-500">注文日</td>
+                    <td class="py-2.5 text-right text-stone-900">{receipt.date}</td>
+                  </tr>
+                  <tr class="border-t border-stone-100">
+                    <td class="py-2.5 text-stone-500">注文番号</td>
+                    <td class="py-2.5 text-right text-xs text-stone-400 break-all">{receipt.id}</td>
+                  </tr>
+                  <tr class="border-t border-stone-100">
+                    <td class="py-2.5 text-stone-500">お支払い方法</td>
+                    <td class="py-2.5 text-right text-stone-900">{receipt.paymentMethod}</td>
+                  </tr>
+                  <tr class="border-t border-stone-200">
+                    <td class="pt-3 font-semibold text-stone-700">合計</td>
+                    <td class="pt-3 text-right text-xl font-bold text-[#2e7d32]">{amountFormatted}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {receipt.productUrl && (
+              <div class="text-center mb-6">
+                <a href={receipt.productUrl}
+                  class="inline-block rounded-full bg-[#2e7d32] px-8 py-3 text-sm font-bold text-white hover:opacity-90">
+                  商品ページを確認する
+                </a>
+              </div>
+            )}
+
+            <div class="text-center">
+              <button onclick="window.print()"
+                class="rounded-full border border-stone-200 px-6 py-2.5 text-sm text-stone-600 hover:bg-stone-50">
+                印刷 / PDF保存
+              </button>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="border-t border-stone-100 bg-stone-50 px-8 py-4 text-center">
+            <p class="text-[11px] text-stone-400">
+              © 2026 felikko　|　<a href="https://www.felikko.com" class="hover:underline">felikko.com</a>
+            </p>
+          </div>
+
+        </div>
+      ) : null}
+
+    </div>
+  </div>
+
+  <style>
+    @media print {
+      header, footer, button { display: none !important; }
+      body { background: white; }
+    }
+  </style>
+</BaseLayout>

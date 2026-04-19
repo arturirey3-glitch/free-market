@@ -17,20 +17,22 @@ const { product } = Astro.props;
 const shortId = product.id.slice(0, 8);
 ---
 <a href={`/products/${shortId}`} class="card block group">
-  <div class="relative aspect-square w-full overflow-hidden bg-[var(--bg-secondary)]">
-    {product.thumbnail_url ? (
-      <img
-        src={product.thumbnail_url}
-        alt={product.title}
-        class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-        loading="lazy"
-      />
-    ) : (
-      <div class="flex h-full w-full items-center justify-center text-sm text-[var(--text-placeholder)]">
-        No Image
-      </div>
-    )}
-    <div class="absolute bottom-0 left-0 bg-black/60 text-white text-xs font-bold px-2 py-1">
+  <div class="relative aspect-square w-full bg-[var(--bg-secondary)]">
+    <div class="absolute inset-0 overflow-hidden">
+      {product.thumbnail_url ? (
+        <img
+          src={product.thumbnail_url}
+          alt={product.title}
+          class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+          loading="lazy"
+        />
+      ) : (
+        <div class="flex h-full w-full items-center justify-center text-sm text-[var(--text-placeholder)]">
+          No Image
+        </div>
+      )}
+    </div>
+    <div class="absolute bottom-2 left-2 rounded-full bg-black/70 text-white text-sm font-bold px-3 py-1 leading-tight">
       {formatJPY(product.price)}
     </div>
   </div>

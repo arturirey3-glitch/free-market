@@ -1,0 +1,395 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatJPY, formatRelativeTime } from '../../lib/format';
+import { createSupabaseServer } from '../../lib/supabaseServer';
+
+export const prerender = false;
+
+const { id } = Astro.params;
+
+let profile: any = null;
+let products: any[] = [];
+let reviews: any[] = [];
+
+try {
+  const supabase = createSupabaseServer();
+
+  const { data: profileRows, error: profileError } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', id)
+    .limit(1);
+  if (profileError) console.error('profile fetch error:', profileError);
+  profile = profileRows?.[0] ?? null;
+
+  if (profile) {
+    const { data: productData } = await supabase
+      .from('products')
+      .select('id,title,price,thumbnail_url,status,created_at')
+      .eq('owner_id', id)
+      .eq('status', 'published')
+      .order('created_at', { ascending: false });
+    products = productData ?? [];
+
+    const productIds = products.map((p: any) => p.id);
+    if (productIds.length > 0) {
+      const { data: revData } = await supabase
+        .from('reviews')
+        .select('*')
+        .in('product_id', productIds)
+        .order('created_at', { ascending: false });
+      reviews = revData ?? [];
+    }
+  }
+} catch (e) { console.error('users page error:', e); }
+
+if (!profile) return Astro.redirect('/products');
+
+const ratingCount = profile.rating_count ?? 0;
+const ratingValue = profile.rating != null ? Number(profile.rating) : null;
+const ratingRounded = ratingValue != null ? ratingValue.toFixed(1) : null;
+---
+<BaseLayout title={`${profile.display_name ?? 'ユーザー'} | felikko`}>
+  <div class="mx-auto max-w-[960px] px-4 py-8">
+
+    <!-- Profile header -->
+    <div class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+      <div class="flex items-start gap-5">
+        <div class="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-stone-100">
+          {profile.avatar_url ? (
+            <img src={profile.avatar_url} alt={profile.display_name ?? ''} class="h-full w-full object-cover" />
+          ) : (
+            <div class="flex h-full w-full items-center justify-center text-2xl text-stone-300">U</div>
+          )}
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-xl font-bold">{profile.display_name ?? 'ユーザー'}</h1>
+            {(profile.is_verified || profile.is_admin) && (
+              <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M20.77 5.9C20.62 5.77 20.42 5.71 20.23 5.72C20.21 5.72 17.97 5.92 16.07 4.7C13.93 3.32 12.44 2.16 12.43 2.15C12.18 1.95 11.82 1.95 11.57 2.15C11.55 2.16 10.07 3.31 7.93 4.7C7.18 5.18 5.89 5.77 4.14 5.74C3.98 5.74 3.84 5.73 3.75 5.72C3.55 5.71 3.37 5.78 3.22 5.91C3.08 6.04 3 6.23 3 6.42V12.93C3 17.95 11.36 21.78 11.71 21.94C11.8 21.98 11.9 22 12 22C12.1 22 12.2 21.98 12.29 21.94C12.64 21.78 21 17.95 21 12.93V6.42C21 6.22 20.92 6.03 20.77 5.9ZM16.74 9.74L11.24 15.24C11.11 15.37 10.93 15.45 10.74 15.45C10.55 15.45 10.38 15.38 10.24 15.24L7.24 12.24C6.97 11.97 6.97 11.52 7.24 11.25C7.51 10.98 7.96 10.98 8.23 11.25L10.73 13.75L15.73 8.74C16 8.47 16.45 8.47 16.72 8.74C17.02 9.03 17.02 9.47 16.74 9.74Z"/></svg>
+                本人確認済
+              </span>
+            )}
+          </div>
+
+          {ratingValue != null && ratingCount > 0 && (
+            <div class="mt-2 flex items-center gap-1.5">
+              <div class="flex">
+                {Array.from({length: 5}).map((_, i) => (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill={i < Math.round(ratingValue) ? '#f59e0b' : '#e5e7eb'}>
+                    <path d="M22,9.69a.72.72,0,0,0-.57-.48l-6.06-.88L12.63,2.86a.73.73,0,0,0-1.26,0L8.66,8.33,2.6,9.21A.72.72,0,0,0,2,9.69a.69.69,0,0,0,.18.71L6.6,14.66l-1,6a.71.71,0,0,0,.28.69.73.73,0,0,0,.74.05L12,18.58l5.42,2.84a.72.72,0,0,0,.74-.05.71.71,0,0,0,.28-.69l-1-6,4.39-4.26A.69.69,0,0,0,22,9.69Z"/>
+                  </svg>
+                ))}
+              </div>
+              <span class="text-sm font-semibold text-stone-700">{ratingRounded}</span>
+              <span class="text-xs text-stone-400">({ratingCount}件)</span>
+            </div>
+          )}
+
+          <div class="mt-3 flex flex-wrap gap-4 text-sm text-stone-500">
+            <span><span class="font-bold text-stone-800 text-base">{reviews.length}</span> 販売実績</span>
+            <span><span class="font-bold text-stone-800 text-base">{products.length}</span> 出品数</span>
+          </div>
+
+          {profile.last_login_at && (
+            <p class="mt-2 text-xs text-stone-400">最終ログイン：{formatRelativeTime(profile.last_login_at)}</p>
+          )}
+
+          <!-- Edit button (own profile - shown via JS) -->
+          <a href="/dashboard/profile" id="edit-profile-btn" class="hidden mt-3 inline-flex items-center gap-1.5 rounded-full border border-stone-300 px-4 py-1.5 text-xs font-semibold text-stone-700 hover:bg-stone-50">
+            プロフィールを編集
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bio -->
+    {profile.bio && (
+      <div class="mt-6 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+        <h2 class="text-base font-semibold mb-3">自己紹介</h2>
+        <div class="whitespace-pre-wrap text-sm leading-relaxed text-stone-600" id="bio-body" style="max-height:200px;overflow:hidden">{profile.bio}</div>
+        <button id="bio-more" class="mt-2 text-xs text-[var(--primary)] hover:underline">もっとみる</button>
+      </div>
+    )}
+
+    <!-- Reviews -->
+    <section class="mt-10 border-t border-[var(--border-light)] pt-6">
+      <h2 class="mb-4 text-base font-semibold">
+        レビュー{reviews.length > 0 && <span class="font-normal text-[var(--text-secondary)]">（{reviews.length}件）</span>}
+      </h2>
+      {reviews.length > 0 ? (
+        <div class="space-y-4">
+          {reviews.map((review: any) => {
+            const prod = products.find((p: any) => p.id === review.product_id);
+            return (
+              <div class="rounded-xl border border-[var(--border-light)] p-4">
+                <div class="flex items-center gap-2">
+                  {review.reviewer_avatar_url ? (
+                    <img src={review.reviewer_avatar_url} alt="" class="h-8 w-8 rounded-full object-cover" />
+                  ) : (
+                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--bg-secondary)] text-xs">U</div>
+                  )}
+                  <div class="flex-1 min-w-0">
+                    <p class="text-xs font-semibold">{review.reviewer_name ?? '購入者'}</p>
+                    <div class="flex items-center gap-1 flex-wrap">
+                      <span class="text-xs text-[var(--star)]">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
+                      <span class="text-[10px] text-[var(--text-placeholder)]">{formatRelativeTime(review.created_at)}</span>
+                      {prod && <a href={`/products/${prod.id.slice(0,8)}`} class="text-[10px] text-[var(--primary)] hover:underline truncate max-w-[160px]">{prod.title}</a>}
+                    </div>
+                  </div>
+                </div>
+                {review.title && <p class="mt-2 text-sm font-semibold">{review.title}</p>}
+                {review.body && <p class="mt-1 text-sm text-[var(--text-secondary)]">{review.body}</p>}
+                {review.reply && (
+                  <div class="mt-3 rounded-lg bg-[var(--bg-secondary)] p-3">
+                    <p class="mb-1 text-[10px] font-semibold text-[var(--text-secondary)]">出品者からの返信</p>
+                    <p class="text-sm">{review.reply}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p class="text-sm text-[var(--text-secondary)]">まだレビューはありません</p>
+      )}
+    </section>
+
+    <!-- Admin: review management (shown only to admins via JS) -->
+    <div id="admin-review-section" class="hidden mt-10 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+      <h3 class="text-lg font-semibold">レビュー管理（管理者）</h3>
+      <form id="review-admin-form" class="mt-4 space-y-4">
+        <input type="hidden" id="review-id" />
+        <div class="grid gap-4 md:grid-cols-2">
+          <div>
+            <label class="text-xs text-stone-500">商品</label>
+            <select id="review-product" required class="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm">
+              <option value="">選択してください</option>
+              {products.map((p: any) => <option value={p.id}>{p.title}</option>)}
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-stone-500">評価</label>
+            <select id="review-rating" required class="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm">
+              <option value="">選択してください</option>
+              {[5,4,3,2,1].map(n => <option value={n}>{n}</option>)}
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-stone-500">レビュー名</label>
+            <input id="review-name" class="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm" placeholder="例: 購入者A" />
+          </div>
+          <div>
+            <label class="text-xs text-stone-500">投稿日</label>
+            <input type="text" id="review-date" class="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm" placeholder="例: 2025-01-15" />
+          </div>
+        </div>
+        <div>
+          <label class="text-xs text-stone-500">アバター画像</label>
+          <div class="mt-1 flex items-center gap-3">
+            <div class="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-stone-100" id="review-avatar-preview">
+              <div class="flex h-full w-full items-center justify-center text-xs text-stone-400">U</div>
+            </div>
+            <label class="cursor-pointer rounded-full border border-stone-200 px-3 py-2 text-xs hover:bg-stone-50">
+              選択<input type="file" id="review-avatar-input" accept="image/*" class="hidden" />
+            </label>
+          </div>
+          <input type="hidden" id="review-avatar-url" />
+        </div>
+        <div>
+          <label class="text-xs text-stone-500">ラベル</label>
+          <input id="review-title" class="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm" placeholder="例: 見積り相談" />
+        </div>
+        <div>
+          <label class="text-xs text-stone-500">本文</label>
+          <textarea id="review-body" rows="4" class="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm" placeholder="レビュー本文"></textarea>
+        </div>
+        <div>
+          <label class="text-xs text-stone-500">出品者からの返信</label>
+          <textarea id="review-reply" rows="3" class="mt-1 w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm" placeholder="出品者からの返信（任意）"></textarea>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button type="submit" class="rounded-full bg-stone-900 px-6 py-3 text-sm font-semibold text-white">保存する</button>
+          <button type="button" id="review-reset" class="rounded-full border border-stone-200 px-6 py-3 text-sm font-semibold">クリア</button>
+        </div>
+        <p id="review-message" class="text-xs text-stone-500"></p>
+      </form>
+      <div id="admin-review-list" class="mt-6 space-y-2 border-t border-stone-100 pt-4"></div>
+    </div>
+
+    <!-- Products -->
+    <div class="mt-8">
+      <h2 class="mb-4 text-base font-semibold">出品中の商品 <span class="text-sm font-normal text-stone-400">({products.length}件)</span></h2>
+      {products.length > 0 ? (
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          {products.map((product: any) => {
+            const shortId = product.id.slice(0, 8);
+            return (
+              <a href={`/products/${shortId}`} class="card block group">
+                <div class="relative aspect-square w-full bg-[var(--bg-secondary)]">
+                  <div class="absolute inset-0 overflow-hidden">
+                    {product.thumbnail_url ? (
+                      <img src={product.thumbnail_url} alt={product.title} class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy" />
+                    ) : (
+                      <div class="flex h-full w-full items-center justify-center text-xs text-[var(--text-placeholder)]">No Image</div>
+                    )}
+                  </div>
+                  <div class="absolute bottom-2 left-2 rounded-full bg-black/70 text-white text-sm font-bold px-3 py-1 leading-tight">
+                    {formatJPY(product.price)}
+                  </div>
+                </div>
+                <div class="px-2 py-2">
+                  <p class="text-xs leading-snug line-clamp-2">{product.title}</p>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      ) : (
+        <p class="text-sm text-stone-400 py-8 text-center">出品中の商品はありません</p>
+      )}
+    </div>
+  </div>
+
+  <span id="page-user-id" data-uid={id} class="hidden"></span>
+
+  <script>
+    import { supabase } from '../../lib/supabaseClient';
+
+    const userId = (document.getElementById('page-user-id') as HTMLElement)?.dataset.uid;
+
+    const { data: { session } } = await supabase.auth.getSession();
+
+    // Show edit button if own profile
+    if (session?.user.id === userId) {
+      document.getElementById('edit-profile-btn')?.classList.remove('hidden');
+    }
+
+    // Admin review management
+    if (session) {
+      const { data: myProfile } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).single();
+      if (myProfile?.is_admin) {
+        document.getElementById('admin-review-section')?.classList.remove('hidden');
+
+        // Avatar upload
+        document.getElementById('review-avatar-input')?.addEventListener('change', async (e) => {
+          const file = (e.target as HTMLInputElement).files?.[0];
+          if (!file) return;
+          const ext = file.name.split('.').pop() || 'jpg';
+          const path = `reviews/${Date.now()}.${ext}`;
+          const { error } = await supabase.storage.from('product-images').upload(path, file, { cacheControl: '3600' });
+          if (!error) {
+            const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path);
+            (document.getElementById('review-avatar-url') as HTMLInputElement).value = urlData.publicUrl;
+            document.getElementById('review-avatar-preview')!.innerHTML = `<img src="${urlData.publicUrl}" class="h-full w-full object-cover rounded-full" />`;
+          }
+        });
+
+        // Load existing reviews for editing
+        async function loadAdminReviews() {
+          const productSelect = document.getElementById('review-product') as HTMLSelectElement;
+          const productId = productSelect?.value;
+          if (!productId) {
+            document.getElementById('admin-review-list')!.innerHTML = '';
+            return;
+          }
+          const { data } = await supabase.from('reviews').select('*').eq('product_id', productId).order('created_at', { ascending: false });
+          const list = document.getElementById('admin-review-list')!;
+          list.innerHTML = (data ?? []).map((r: any) => `
+            <div class="flex items-center justify-between gap-2 rounded-lg border border-stone-100 px-3 py-2 text-sm cursor-pointer hover:bg-stone-50" data-edit-review="${r.id}"
+              data-product="${r.product_id}" data-rating="${r.rating}" data-name="${r.reviewer_name ?? ''}" data-title="${r.title ?? ''}"
+              data-body="${(r.body ?? '').replace(/"/g, '&quot;')}" data-reply="${(r.reply ?? '').replace(/"/g, '&quot;')}"
+              data-date="${(r.created_at ?? '').slice(0,10)}" data-avatar="${r.reviewer_avatar_url ?? ''}">
+              <span>★${r.rating} ${r.reviewer_name ?? ''} — ${(r.title ?? r.body ?? '').slice(0, 30)}</span>
+              <button class="text-xs text-red-400 hover:text-red-600" data-delete-review="${r.id}">削除</button>
+            </div>`).join('');
+
+          list.querySelectorAll<HTMLElement>('[data-edit-review]').forEach(el => {
+            el.addEventListener('click', (e) => {
+              if ((e.target as HTMLElement).dataset.deleteReview) return;
+              (document.getElementById('review-id') as HTMLInputElement).value = el.dataset.editReview!;
+              (document.getElementById('review-product') as HTMLSelectElement).value = el.dataset.product!;
+              (document.getElementById('review-rating') as HTMLSelectElement).value = el.dataset.rating!;
+              (document.getElementById('review-name') as HTMLInputElement).value = el.dataset.name!;
+              (document.getElementById('review-title') as HTMLInputElement).value = el.dataset.title!;
+              (document.getElementById('review-body') as HTMLTextAreaElement).value = el.dataset.body!;
+              (document.getElementById('review-reply') as HTMLTextAreaElement).value = el.dataset.reply!;
+              (document.getElementById('review-date') as HTMLInputElement).value = el.dataset.date!;
+              (document.getElementById('review-avatar-url') as HTMLInputElement).value = el.dataset.avatar!;
+              if (el.dataset.avatar) document.getElementById('review-avatar-preview')!.innerHTML = `<img src="${el.dataset.avatar}" class="h-full w-full object-cover rounded-full" />`;
+            });
+          });
+
+          list.querySelectorAll<HTMLElement>('[data-delete-review]').forEach(el => {
+            el.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              if (!confirm('このレビューを削除しますか？')) return;
+              await supabase.from('reviews').delete().eq('id', el.dataset.deleteReview!);
+              loadAdminReviews();
+            });
+          });
+        }
+
+        document.getElementById('review-product')?.addEventListener('change', loadAdminReviews);
+
+        // Form submit
+        document.getElementById('review-admin-form')?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const msg = document.getElementById('review-message')!;
+          msg.textContent = '保存中...';
+          const reviewId = (document.getElementById('review-id') as HTMLInputElement).value;
+          const payload: any = {
+            product_id: (document.getElementById('review-product') as HTMLSelectElement).value,
+            rating: Number((document.getElementById('review-rating') as HTMLSelectElement).value),
+            reviewer_name: (document.getElementById('review-name') as HTMLInputElement).value || null,
+            title: (document.getElementById('review-title') as HTMLInputElement).value || null,
+            body: (document.getElementById('review-body') as HTMLTextAreaElement).value || null,
+            reply: (document.getElementById('review-reply') as HTMLTextAreaElement).value || null,
+            reviewer_avatar_url: (document.getElementById('review-avatar-url') as HTMLInputElement).value || null,
+          };
+          const dateVal = (document.getElementById('review-date') as HTMLInputElement).value;
+          if (dateVal) payload.created_at = dateVal;
+          const { error } = reviewId
+            ? await supabase.from('reviews').update(payload).eq('id', reviewId)
+            : await supabase.from('reviews').insert(payload);
+          msg.textContent = error ? `エラー: ${error.message}` : '保存しました';
+          if (!error) { loadAdminReviews(); setTimeout(() => { msg.textContent = ''; }, 3000); }
+        });
+
+        // Reset form
+        document.getElementById('review-reset')?.addEventListener('click', () => {
+          (document.getElementById('review-id') as HTMLInputElement).value = '';
+          (document.getElementById('review-product') as HTMLSelectElement).value = '';
+          (document.getElementById('review-rating') as HTMLSelectElement).value = '';
+          (document.getElementById('review-name') as HTMLInputElement).value = '';
+          (document.getElementById('review-title') as HTMLInputElement).value = '';
+          (document.getElementById('review-body') as HTMLTextAreaElement).value = '';
+          (document.getElementById('review-reply') as HTMLTextAreaElement).value = '';
+          (document.getElementById('review-date') as HTMLInputElement).value = '';
+          (document.getElementById('review-avatar-url') as HTMLInputElement).value = '';
+          document.getElementById('review-avatar-preview')!.innerHTML = '<div class="flex h-full w-full items-center justify-center text-xs text-stone-400">U</div>';
+          document.getElementById('admin-review-list')!.innerHTML = '';
+        });
+      }
+    }
+  </script>
+
+  <script>
+    // Bio expand
+    const bioBody = document.getElementById('bio-body');
+    const bioMore = document.getElementById('bio-more');
+    if (bioBody && bioMore) {
+      if (bioBody.scrollHeight <= 200) {
+        bioMore.remove();
+        bioBody.style.maxHeight = 'none';
+      } else {
+        bioMore.addEventListener('click', () => {
+          bioBody.style.maxHeight = 'none';
+          bioMore.remove();
+        });
+      }
+    }
+  </script>
+</BaseLayout>

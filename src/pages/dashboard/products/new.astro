@@ -108,6 +108,12 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
         <input type="number" name="price" min="300" required class="input-field mt-1" placeholder="¥300以上" />
       </div>
 
+      <!-- 在庫数 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">在庫数 <span class="text-[10px] text-[var(--text-placeholder)]">（空欄=無制限）</span></label>
+        <input type="number" name="stock" min="0" class="input-field mt-1" placeholder="例: 1" />
+      </div>
+
       <!-- サブスク -->
       <div>
         <label class="flex items-center gap-2 text-sm">
@@ -233,6 +239,7 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
       shipping_duration: fd.get('shipping_duration') || null,
       shipping_from: fd.get('shipping_from') || null,
       brand: fd.get('brand') || null,
+      stock: fd.get('stock') !== '' && fd.get('stock') !== null ? Number(fd.get('stock')) : null,
     }).select().single();
 
     if (error) {

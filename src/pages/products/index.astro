@@ -6,22 +6,57 @@ import { CATEGORIES } from '../../lib/constants';
 
 export const prerender = false;
 
+const CATEGORY_KEYWORDS: Record<string, string[]> = {
+  'ファッション':      ['ファッション', 'レディース', 'メンズ', 'アパレル', '服', 'バッグ', '靴', 'シューズ', 'アクセサリー'],
+  '家電・スマホ':      ['家電', 'スマホ', 'スマートフォン', 'PC', 'パソコン', 'オーディオ', 'カメラ', 'テレビ', '冷蔵庫', '洗濯機'],
+  'インテリア・住まい': ['インテリア', '住まい', '家具', 'ラグ', 'マット', 'カーテン', 'ソファ', 'テーブル', 'キッチン', 'バス'],
+  '本・音楽・ゲーム':  ['本', '書籍', '音楽', 'ゲーム', 'CD', 'DVD', 'Blu-ray', 'マンガ', '漫画', '楽器'],
+  'おもちゃ・ホビー':  ['おもちゃ', 'ホビー', 'フィギュア', 'プラモ', 'ぬいぐるみ', 'トレカ', 'カード'],
+  'コスメ・美容':      ['コスメ', '美容', '化粧', 'スキンケア', '香水', 'ネイル', 'シャンプー'],
+  'スポーツ・レジャー': ['スポーツ', 'レジャー', 'アウトドア', 'フィットネス', 'キャンプ', 'ゴルフ', '自転車'],
+  '食品・飲料':        ['食品', '飲料', '食べ物', 'お菓子', '飲み物', 'グルメ', 'コーヒー', 'お茶'],
+  'ハンドメイド':      ['ハンドメイド', '手作り', 'クラフト', 'アクリル'],
+  'その他':            ['その他'],
+};
+
 const url = new URL(Astro.request.url);
 const q = url.searchParams.get('q')?.trim() ?? '';
 const category = url.searchParams.get('category') ?? '';
 
 let products: any[] = [];
+let activeCategories: Set<string> = new Set();
 
 try {
   const supabase = createSupabaseServer();
+
+  // Fetch all published categories to determine which chips to show
+  const { data: catRows } = await supabase
+    .from('products')
+    .select('category')
+    .eq('status', 'published')
+    .not('category', 'is', null);
+
+  if (catRows) {
+    const allCats = catRows.map((r: any) => r.category as string);
+    for (const [filterCat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+      if (allCats.some((c) => keywords.some((kw) => c.toLowerCase().includes(kw.toLowerCase())))) {
+        activeCategories.add(filterCat);
+      }
+    }
+  }
+
   let query = supabase
     .from('products')
     .select('id,title,price,category,thumbnail_url,profiles:owner_id(display_name,avatar_url)')
     .eq('status', 'published')
     .order('created_at', { ascending: false });
 
-  if (category) query = query.eq('category', category);
-  if (q) query = query.ilike('title', `%${q}%`);
+  if (category) {
+    const keywords = CATEGORY_KEYWORDS[category] ?? [category];
+    const conditions = keywords.map(k => `category.ilike.%${k}%`).join(',');
+    query = query.or(conditions);
+  }
+  if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%,category.ilike.%${q}%`);
 
   const { data } = await query.limit(60);
   products = data ?? [];
@@ -51,7 +86,7 @@ try {
       <a href="/products" class:list={["shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition", !category ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--primary-light)]' : 'border-[var(--border)] hover:border-[var(--primary)]']}>
         すべて
       </a>
-      {CATEGORIES.map((cat) => (
+      {CATEGORIES.filter((cat) => activeCategories.has(cat)).map((cat) => (
         <a
           href={`/products?category=${encodeURIComponent(cat)}`}
           class:list={["shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition", category === cat ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--primary-light)]' : 'border-[var(--border)] hover:border-[var(--primary)]']}

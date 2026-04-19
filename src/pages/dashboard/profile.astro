@@ -2,23 +2,49 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Toast from '../../components/Toast.astro';
 ---
-<BaseLayout title="プロフィール編集 | Free Market">
+<BaseLayout title="プロフィール編集 | felikko">
   <Toast />
   <div class="mx-auto max-w-lg px-4 py-6">
     <h1 class="text-lg font-bold mb-6">プロフィール編集</h1>
-    <form class="space-y-4" id="profile-form">
+    <form class="space-y-5" id="profile-form">
+
+      <!-- Avatar -->
+      <div class="rounded-xl border border-[var(--border-light)] bg-white p-5">
+        <h2 class="text-sm font-semibold mb-4">アイコン画像</h2>
+        <div class="flex items-center gap-6">
+          <div class="relative">
+            <div class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-[var(--bg-secondary)]" id="avatar-container">
+              <img src="" alt="アバター" class="hidden h-full w-full object-cover" id="avatar-preview" />
+              <span class="text-sm text-[var(--text-placeholder)]" id="avatar-placeholder">No Image</span>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border)] px-4 py-2 text-sm font-semibold hover:bg-[var(--bg-secondary)]">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              画像を選択
+              <input type="file" accept="image/*" class="hidden" id="avatar-input" />
+            </label>
+            <p class="text-xs text-[var(--text-secondary)]">推奨: 200×200px以上の正方形画像</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Display name -->
       <div>
         <label class="text-xs text-[var(--text-secondary)]">表示名</label>
         <input type="text" name="display_name" class="input-field mt-1" />
       </div>
+
+      <!-- Bio -->
       <div>
         <label class="text-xs text-[var(--text-secondary)]">自己紹介</label>
         <textarea name="bio" rows="4" class="input-field mt-1"></textarea>
       </div>
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">アバターURL</label>
-        <input type="url" name="avatar_url" class="input-field mt-1" placeholder="https://..." />
-      </div>
+
       <button type="submit" class="btn-primary w-full py-3 text-sm">保存</button>
     </form>
   </div>
@@ -29,6 +55,10 @@ import Toast from '../../components/Toast.astro';
   declare global { interface Window { showToast: (type: 'success' | 'error' | 'info', title: string, message: string) => void; } }
 
   const form = document.getElementById('profile-form') as HTMLFormElement;
+  const avatarInput = document.getElementById('avatar-input') as HTMLInputElement;
+  const avatarPreview = document.getElementById('avatar-preview') as HTMLImageElement;
+  const avatarPlaceholder = document.getElementById('avatar-placeholder') as HTMLElement;
+
   const { data: sessionData } = await supabase.auth.getSession();
   if (!sessionData.session) { window.location.href = '/auth/login'; }
   else {
@@ -37,17 +67,55 @@ import Toast from '../../components/Toast.astro';
     if (profile) {
       (form.elements.namedItem('display_name') as HTMLInputElement).value = profile.display_name ?? '';
       (form.elements.namedItem('bio') as HTMLTextAreaElement).value = profile.bio ?? '';
-      (form.elements.namedItem('avatar_url') as HTMLInputElement).value = profile.avatar_url ?? '';
+      if (profile.avatar_url) {
+        avatarPreview.src = profile.avatar_url;
+        avatarPreview.classList.remove('hidden');
+        avatarPlaceholder.classList.add('hidden');
+      }
     }
+
+    // Preview on file select
+    avatarInput.addEventListener('change', () => {
+      const file = avatarInput.files?.[0];
+      if (!file) return;
+      avatarPreview.src = URL.createObjectURL(file);
+      avatarPreview.classList.remove('hidden');
+      avatarPlaceholder.classList.add('hidden');
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(form);
-      const { error } = await supabase.from('profiles').update({
+      const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+      submitBtn.disabled = true;
+      submitBtn.textContent = '保存中...';
+
+      let avatarUrl: string | null = null;
+
+      const file = avatarInput.files?.[0];
+      if (file) {
+        const ext = file.name.split('.').pop() || 'jpg';
+        const path = `avatars/${userId}/avatar_${Date.now()}.${ext}`;
+        const { error: upErr } = await supabase.storage.from('product-images').upload(path, file, { cacheControl: '3600' });
+        if (upErr) {
+          window.showToast?.('error', 'アップロードエラー', upErr.message);
+          submitBtn.disabled = false;
+          submitBtn.textContent = '保存';
+          return;
+        }
+        const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path);
+        avatarUrl = urlData.publicUrl;
+      }
+
+      const updates: Record<string, any> = {
         display_name: fd.get('display_name') || null,
         bio: fd.get('bio') || null,
-        avatar_url: fd.get('avatar_url') || null,
-      }).eq('id', userId);
+      };
+      if (avatarUrl) updates.avatar_url = avatarUrl;
+
+      const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
+      submitBtn.disabled = false;
+      submitBtn.textContent = '保存';
       if (error) window.showToast?.('error', 'エラー', error.message);
       else window.showToast?.('success', '保存しました', 'プロフィールを更新しました。');
     });

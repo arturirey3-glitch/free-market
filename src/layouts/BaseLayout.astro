@@ -14,7 +14,7 @@ const siteUrl = import.meta.env.SITE_URL || 'https://free-market.pages.dev';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="stylesheet" href={globalStyles} />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
@@ -26,8 +26,10 @@ const siteUrl = import.meta.env.SITE_URL || 'https://free-market.pages.dev';
     <div class="min-h-screen flex flex-col">
       <!-- Header -->
       <header class="sticky top-0 z-40 bg-white border-b border-[var(--border-light)]">
-        <div class="mx-auto flex max-w-[1440px] items-center justify-between px-4 h-14">
-          <a href="/" class="text-lg font-bold text-[var(--primary)]">Free Market</a>
+        <div class="mx-auto flex max-w-[1440px] items-center justify-between px-4 h-16">
+          <a href="/" class="shrink-0">
+            <img src="/felikko-logo.png" alt="felikko" class="h-11 w-auto" />
+          </a>
 
           <!-- Search -->
           <div class="hidden sm:flex flex-1 max-w-md mx-6">

@@ -18,7 +18,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const stripe = new Stripe(stripeSecretKey);
 
     const body = await request.json();
-    const { productId, productTitle, price, mode } = body;
+    const { productId, productTitle, price, mode, sellerName, thumbnailUrl } = body;
 
     if (!productId || !productTitle || !price) {
       return new Response(JSON.stringify({ error: '必須パラメータが不足しています' }), { status: 400, headers });
@@ -32,15 +32,25 @@ export const POST: APIRoute = async ({ request, locals }) => {
       line_items: [{
         price_data: {
           currency: 'jpy',
-          product_data: { name: productTitle },
+          product_data: {
+            name: productTitle,
+            ...(thumbnailUrl ? { images: [thumbnailUrl] } : {}),
+          },
           unit_amount: price,
           ...(isSubscription ? { recurring: { interval: 'month' } } : {})
         },
         quantity: 1
       }],
       mode: isSubscription ? 'subscription' : 'payment',
+      shipping_address_collection: { allowed_countries: ['JP'] },
       success_url: `${siteUrl}/products/${shortId}?checkout=success`,
       cancel_url: `${siteUrl}/products/${shortId}?checkout=cancel`,
+      metadata: {
+        product_id: productId,
+        product_title: productTitle,
+        seller_name: sellerName ?? '',
+        product_url: `${siteUrl}/products/${shortId}`,
+      },
     });
 
     return new Response(JSON.stringify({ url: session.url }), { status: 200, headers });
