@@ -1,21 +1,17 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Toast from '../../../components/Toast.astro';
-import { CATEGORIES } from '../../../lib/constants';
+import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURES } from '../../../lib/constants';
 ---
-<BaseLayout title="新規出品 | Free Market">
+<BaseLayout title="新規出品 | felikko">
   <Toast />
   <div class="mx-auto max-w-lg px-4 py-6">
     <h1 class="text-lg font-bold mb-6">新規出品</h1>
-    <form class="space-y-4" id="product-form">
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">商品名 <span class="text-[var(--danger)]">*</span></label>
-        <input type="text" name="title" required class="input-field mt-1" placeholder="商品名" />
-      </div>
+    <form class="space-y-5" id="product-form">
 
-      <!-- 商品画像 -->
+      <!-- 商品画像（最上部） -->
       <div>
-        <label class="text-xs text-[var(--text-secondary)]">商品画像</label>
+        <label class="text-xs text-[var(--text-secondary)]">商品画像 <span class="text-[10px] text-[var(--text-placeholder)]">（最大20枚）</span></label>
         <div
           id="drop-zone"
           class="mt-1 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-[var(--border)] bg-[var(--bg-secondary)] p-6 transition hover:border-[var(--primary)] cursor-pointer"
@@ -28,39 +24,114 @@ import { CATEGORIES } from '../../../lib/constants';
           <input type="file" id="image-input" accept="image/*" multiple class="hidden" />
         </div>
         <div id="image-preview" class="mt-2 flex gap-2 flex-wrap"></div>
-        <p class="mt-1 text-[10px] text-[var(--text-placeholder)]">最大10枚まで。1枚目がサムネイルになります。</p>
+        <p class="mt-1 text-[10px] text-[var(--text-placeholder)]">1枚目がサムネイルになります。</p>
       </div>
 
+      <!-- 商品名 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">商品名 <span class="text-[var(--danger)]">*</span></label>
+        <input type="text" name="title" required maxlength="65" class="input-field mt-1" placeholder="商品名（65文字以内）" />
+      </div>
+
+      <!-- 商品の状態 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">商品の状態 <span class="text-[var(--danger)]">*</span></label>
+        <select name="condition" required class="input-field mt-1">
+          <option value="">選択してください</option>
+          {CONDITIONS.map((c) => <option value={c}>{c}</option>)}
+        </select>
+      </div>
+
+      <!-- カテゴリ（自由入力） -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">カテゴリ</label>
+        <input
+          type="text"
+          name="category"
+          list="category-suggestions"
+          class="input-field mt-1"
+          placeholder="例: ファッション、家電、ハンドメイド など"
+          autocomplete="off"
+        />
+        <datalist id="category-suggestions">
+          {CATEGORIES.map((cat) => <option value={cat} />)}
+        </datalist>
+      </div>
+
+      <!-- 商品の説明 -->
       <div>
         <label class="text-xs text-[var(--text-secondary)]">商品の説明 <span class="text-[var(--danger)]">*</span></label>
         <textarea name="description" rows="6" required class="input-field mt-1" placeholder="サイズ・状態・購入時期など、できるだけ詳しく記載してください。"></textarea>
       </div>
+
+      <!-- ブランド -->
       <div>
-        <label class="text-xs text-[var(--text-secondary)]">カテゴリ</label>
-        <select name="category" class="input-field mt-1">
-          <option value="">選択してください</option>
-          {CATEGORIES.map((cat) => <option value={cat}>{cat}</option>)}
+        <label class="text-xs text-[var(--text-secondary)]">ブランド <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+        <input type="text" name="brand" class="input-field mt-1" placeholder="例: Nike、無印良品" />
+      </div>
+
+      <!-- 商品コード -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">商品コード・型番 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+        <input type="text" name="sku" class="input-field mt-1" placeholder="JANコード・型番など" />
+      </div>
+
+      <!-- 配送料の負担 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">配送料の負担 <span class="text-[var(--danger)]">*</span></label>
+        <select name="shipping_payer" required class="input-field mt-1">
+          {SHIPPING_PAYERS.map((p) => <option value={p}>{p}</option>)}
         </select>
       </div>
+
+      <!-- 配送方法（自由入力） -->
       <div>
-        <label class="text-xs text-[var(--text-secondary)]">価格（税込） <span class="text-[var(--danger)]">*</span></label>
-        <input type="number" name="price" min="300" required class="input-field mt-1" placeholder="1000" />
+        <label class="text-xs text-[var(--text-secondary)]">配送方法 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+        <input type="text" name="shipping_method" class="input-field mt-1" placeholder="例: ヤマト宅急便、ゆうパックなど" />
       </div>
+
+      <!-- 発送元の地域 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">発送元の地域</label>
+        <select name="shipping_from" class="input-field mt-1">
+          <option value="">選択してください</option>
+          {PREFECTURES.map((p) => <option value={p}>{p}</option>)}
+        </select>
+      </div>
+
+      <!-- 発送までの日数 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">発送までの日数</label>
+        <select name="shipping_duration" class="input-field mt-1">
+          <option value="">選択してください</option>
+          {SHIPPING_DURATIONS.map((d) => <option value={d}>{d}</option>)}
+        </select>
+      </div>
+
+      <!-- 価格 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">販売価格（税込） <span class="text-[var(--danger)]">*</span></label>
+        <div class="relative mt-1">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[var(--text-secondary)]">¥</span>
+          <input type="number" name="price" min="300" required class="input-field pl-7" placeholder="300以上" />
+        </div>
+      </div>
+
+      <!-- サブスク -->
       <div>
         <label class="flex items-center gap-2 text-sm">
           <input type="checkbox" name="is_subscription" value="true" class="accent-[var(--primary)]" />
           月額サブスクリプション
         </label>
       </div>
+
+      <!-- 購入にあたっての注意 -->
       <div>
-        <label class="text-xs text-[var(--text-secondary)]">お届け日数</label>
-        <input type="number" name="delivery_time" min="1" class="input-field mt-1" />
+        <label class="text-xs text-[var(--text-secondary)]">購入にあたっての注意 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+        <textarea name="purchase_notes" rows="3" class="input-field mt-1" placeholder="発送タイミングや注意事項など"></textarea>
       </div>
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">購入にあたっての注意</label>
-        <textarea name="purchase_notes" rows="3" class="input-field mt-1"></textarea>
-      </div>
-      <div class="flex gap-2">
+
+      <div class="flex gap-2 pt-2">
         <button type="submit" name="status" value="draft" class="btn-outline flex-1 py-3 text-sm">下書き保存</button>
         <button type="submit" name="status" value="published" class="btn-primary flex-1 py-3 text-sm">出品する</button>
       </div>
@@ -81,7 +152,7 @@ import { CATEGORIES } from '../../../lib/constants';
   const { data: sessionData } = await supabase.auth.getSession();
   if (!sessionData.session) { window.location.href = '/auth/login'; }
 
-  // Image handling
+  const MAX_IMAGES = 20;
   let selectedFiles: File[] = [];
 
   const renderPreviews = () => {
@@ -112,9 +183,8 @@ import { CATEGORIES } from '../../../lib/constants';
 
   const addFiles = (files: FileList | File[]) => {
     const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
-    const remaining = 10 - selectedFiles.length;
+    const remaining = MAX_IMAGES - selectedFiles.length;
     selectedFiles.push(...arr.slice(0, remaining));
-    if (selectedFiles.length > 10) selectedFiles = selectedFiles.slice(0, 10);
     renderPreviews();
   };
 
@@ -129,7 +199,6 @@ import { CATEGORIES } from '../../../lib/constants';
     if (e.dataTransfer?.files) addFiles(e.dataTransfer.files);
   });
 
-  // Upload images to Supabase Storage
   const uploadImages = async (productId: string): Promise<string[]> => {
     const urls: string[] = [];
     for (let i = 0; i < selectedFiles.length; i++) {
@@ -144,7 +213,6 @@ import { CATEGORIES } from '../../../lib/constants';
     return urls;
   };
 
-  // Submit
   let submitStatus = 'draft';
   form.querySelectorAll<HTMLButtonElement>('button[name="status"]').forEach((btn) => {
     btn.addEventListener('click', () => { submitStatus = btn.value; });
@@ -155,11 +223,9 @@ import { CATEGORIES } from '../../../lib/constants';
     const fd = new FormData(form);
     const userId = sessionData.session!.user.id;
 
-    // ボタンを無効化
     const buttons = form.querySelectorAll<HTMLButtonElement>('button[type="submit"]');
     buttons.forEach(b => { b.disabled = true; b.textContent = '保存中...'; });
 
-    // 商品を作成
     const { data: product, error } = await supabase.from('products').insert({
       owner_id: userId,
       title: fd.get('title'),
@@ -167,27 +233,29 @@ import { CATEGORIES } from '../../../lib/constants';
       category: fd.get('category') || null,
       price: Number(fd.get('price')),
       is_subscription: fd.get('is_subscription') === 'true',
-      delivery_time: fd.get('delivery_time') ? Number(fd.get('delivery_time')) : null,
+      delivery_time: null,
       purchase_notes: fd.get('purchase_notes') || null,
       status: submitStatus,
+      condition: fd.get('condition') || null,
+      shipping_payer: fd.get('shipping_payer') || null,
+      shipping_method: fd.get('shipping_method') || null,
+      shipping_duration: fd.get('shipping_duration') || null,
+      shipping_from: fd.get('shipping_from') || null,
+      brand: fd.get('brand') || null,
+      sku: fd.get('sku') || null,
     }).select().single();
 
     if (error) {
       window.showToast?.('error', 'エラー', error.message);
-      buttons.forEach(b => { b.disabled = false; });
+      buttons.forEach(b => { b.disabled = false; b.textContent = b.value === 'draft' ? '下書き保存' : '出品する'; });
       return;
     }
 
-    // 画像をアップロード
     if (selectedFiles.length > 0 && product) {
       const urls = await uploadImages(product.id);
-
-      // サムネイルを設定
       if (urls.length > 0) {
         await supabase.from('products').update({ thumbnail_url: urls[0] }).eq('id', product.id);
       }
-
-      // product_imagesテーブルに保存
       const imageRows = urls.map((url, i) => ({
         product_id: product.id,
         image_url: url,

@@ -28,6 +28,14 @@ create table if not exists products (
   is_subscription boolean not null default false,
   delivery_time integer,
   purchase_notes text,
+  condition text,
+  shipping_payer text default '送料込み（出品者負担）',
+  shipping_method text,
+  shipping_duration text,
+  shipping_from text,
+  brand text,
+  sku text,
+  jan_code text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
