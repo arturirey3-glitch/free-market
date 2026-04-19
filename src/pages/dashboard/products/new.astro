@@ -70,12 +70,6 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
         <input type="text" name="brand" class="input-field mt-1" placeholder="例: Nike、無印良品" />
       </div>
 
-      <!-- 商品コード -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">商品コード・型番 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
-        <input type="text" name="sku" class="input-field mt-1" placeholder="JANコード・型番など" />
-      </div>
-
       <!-- 配送料の負担 -->
       <div>
         <label class="text-xs text-[var(--text-secondary)]">配送料の負担 <span class="text-[var(--danger)]">*</span></label>
@@ -239,7 +233,6 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
       shipping_duration: fd.get('shipping_duration') || null,
       shipping_from: fd.get('shipping_from') || null,
       brand: fd.get('brand') || null,
-      sku: fd.get('sku') || null,
     }).select().single();
 
     if (error) {
