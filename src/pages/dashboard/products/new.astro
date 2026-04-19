@@ -9,12 +9,31 @@ import { CATEGORIES } from '../../../lib/constants';
     <h1 class="text-lg font-bold mb-6">新規出品</h1>
     <form class="space-y-4" id="product-form">
       <div>
-        <label class="text-xs text-[var(--text-secondary)]">商品名 *</label>
-        <input type="text" name="title" required class="input-field mt-1" />
+        <label class="text-xs text-[var(--text-secondary)]">商品名 <span class="text-[var(--danger)]">*</span></label>
+        <input type="text" name="title" required class="input-field mt-1" placeholder="商品名" />
       </div>
+
+      <!-- 商品画像 -->
       <div>
-        <label class="text-xs text-[var(--text-secondary)]">商品の説明 *</label>
-        <textarea name="description" rows="6" required class="input-field mt-1"></textarea>
+        <label class="text-xs text-[var(--text-secondary)]">商品画像</label>
+        <div
+          id="drop-zone"
+          class="mt-1 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-[var(--border)] bg-[var(--bg-secondary)] p-6 transition hover:border-[var(--primary)] cursor-pointer"
+        >
+          <svg class="h-10 w-10 text-[var(--text-placeholder)] mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <p class="text-xs text-[var(--text-secondary)]">ドラッグ＆ドロップで画像を追加</p>
+          <button type="button" id="select-images-btn" class="mt-2 btn-outline text-xs py-1.5 px-4">画像を選択</button>
+          <input type="file" id="image-input" accept="image/*" multiple class="hidden" />
+        </div>
+        <div id="image-preview" class="mt-2 flex gap-2 flex-wrap"></div>
+        <p class="mt-1 text-[10px] text-[var(--text-placeholder)]">最大10枚まで。1枚目がサムネイルになります。</p>
+      </div>
+
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">商品の説明 <span class="text-[var(--danger)]">*</span></label>
+        <textarea name="description" rows="6" required class="input-field mt-1" placeholder="サイズ・状態・購入時期など、できるだけ詳しく記載してください。"></textarea>
       </div>
       <div>
         <label class="text-xs text-[var(--text-secondary)]">カテゴリ</label>
@@ -24,22 +43,18 @@ import { CATEGORIES } from '../../../lib/constants';
         </select>
       </div>
       <div>
-        <label class="text-xs text-[var(--text-secondary)]">価格（円） *</label>
-        <input type="number" name="price" min="300" required class="input-field mt-1" />
+        <label class="text-xs text-[var(--text-secondary)]">価格（税込） <span class="text-[var(--danger)]">*</span></label>
+        <input type="number" name="price" min="300" required class="input-field mt-1" placeholder="1000" />
       </div>
       <div>
         <label class="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="is_subscription" value="true" />
+          <input type="checkbox" name="is_subscription" value="true" class="accent-[var(--primary)]" />
           月額サブスクリプション
         </label>
       </div>
       <div>
         <label class="text-xs text-[var(--text-secondary)]">お届け日数</label>
         <input type="number" name="delivery_time" min="1" class="input-field mt-1" />
-      </div>
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">サムネイル画像URL</label>
-        <input type="url" name="thumbnail_url" class="input-field mt-1" placeholder="https://..." />
       </div>
       <div>
         <label class="text-xs text-[var(--text-secondary)]">購入にあたっての注意</label>
@@ -58,9 +73,78 @@ import { CATEGORIES } from '../../../lib/constants';
   declare global { interface Window { showToast: (type: 'success' | 'error' | 'info', title: string, message: string) => void; } }
 
   const form = document.getElementById('product-form') as HTMLFormElement;
+  const dropZone = document.getElementById('drop-zone')!;
+  const imageInput = document.getElementById('image-input') as HTMLInputElement;
+  const selectBtn = document.getElementById('select-images-btn')!;
+  const previewContainer = document.getElementById('image-preview')!;
+
   const { data: sessionData } = await supabase.auth.getSession();
   if (!sessionData.session) { window.location.href = '/auth/login'; }
 
+  // Image handling
+  let selectedFiles: File[] = [];
+
+  const renderPreviews = () => {
+    previewContainer.innerHTML = '';
+    selectedFiles.forEach((file, i) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'relative group';
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      img.className = 'h-20 w-20 rounded-lg object-cover border border-[var(--border-light)]';
+      const badge = document.createElement('span');
+      badge.className = 'absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--primary)] text-[10px] text-white font-bold';
+      badge.textContent = String(i + 1);
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--danger)] text-white text-xs leading-none opacity-0 group-hover:opacity-100 transition';
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', () => {
+        selectedFiles.splice(i, 1);
+        renderPreviews();
+      });
+      wrapper.appendChild(img);
+      wrapper.appendChild(badge);
+      wrapper.appendChild(removeBtn);
+      previewContainer.appendChild(wrapper);
+    });
+  };
+
+  const addFiles = (files: FileList | File[]) => {
+    const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
+    const remaining = 10 - selectedFiles.length;
+    selectedFiles.push(...arr.slice(0, remaining));
+    if (selectedFiles.length > 10) selectedFiles = selectedFiles.slice(0, 10);
+    renderPreviews();
+  };
+
+  selectBtn.addEventListener('click', (e) => { e.preventDefault(); imageInput.click(); });
+  imageInput.addEventListener('change', () => { if (imageInput.files) addFiles(imageInput.files); imageInput.value = ''; });
+
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-[var(--primary)]', 'bg-[var(--primary-light)]'); });
+  dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-[var(--primary)]', 'bg-[var(--primary-light)]'); });
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('border-[var(--primary)]', 'bg-[var(--primary-light)]');
+    if (e.dataTransfer?.files) addFiles(e.dataTransfer.files);
+  });
+
+  // Upload images to Supabase Storage
+  const uploadImages = async (productId: string): Promise<string[]> => {
+    const urls: string[] = [];
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const file = selectedFiles[i];
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${productId}/${i}_${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from('product-images').upload(path, file, { upsert: true });
+      if (error) { console.error('Upload error:', error); continue; }
+      const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path);
+      urls.push(urlData.publicUrl);
+    }
+    return urls;
+  };
+
+  // Submit
   let submitStatus = 'draft';
   form.querySelectorAll<HTMLButtonElement>('button[name="status"]').forEach((btn) => {
     btn.addEventListener('click', () => { submitStatus = btn.value; });
@@ -71,7 +155,12 @@ import { CATEGORIES } from '../../../lib/constants';
     const fd = new FormData(form);
     const userId = sessionData.session!.user.id;
 
-    const { data, error } = await supabase.from('products').insert({
+    // ボタンを無効化
+    const buttons = form.querySelectorAll<HTMLButtonElement>('button[type="submit"]');
+    buttons.forEach(b => { b.disabled = true; b.textContent = '保存中...'; });
+
+    // 商品を作成
+    const { data: product, error } = await supabase.from('products').insert({
       owner_id: userId,
       title: fd.get('title'),
       description: fd.get('description'),
@@ -79,12 +168,36 @@ import { CATEGORIES } from '../../../lib/constants';
       price: Number(fd.get('price')),
       is_subscription: fd.get('is_subscription') === 'true',
       delivery_time: fd.get('delivery_time') ? Number(fd.get('delivery_time')) : null,
-      thumbnail_url: fd.get('thumbnail_url') || null,
       purchase_notes: fd.get('purchase_notes') || null,
       status: submitStatus,
     }).select().single();
 
-    if (error) { window.showToast?.('error', 'エラー', error.message); return; }
+    if (error) {
+      window.showToast?.('error', 'エラー', error.message);
+      buttons.forEach(b => { b.disabled = false; });
+      return;
+    }
+
+    // 画像をアップロード
+    if (selectedFiles.length > 0 && product) {
+      const urls = await uploadImages(product.id);
+
+      // サムネイルを設定
+      if (urls.length > 0) {
+        await supabase.from('products').update({ thumbnail_url: urls[0] }).eq('id', product.id);
+      }
+
+      // product_imagesテーブルに保存
+      const imageRows = urls.map((url, i) => ({
+        product_id: product.id,
+        image_url: url,
+        sort_order: i,
+      }));
+      if (imageRows.length > 0) {
+        await supabase.from('product_images').insert(imageRows);
+      }
+    }
+
     window.showToast?.('success', '保存しました', submitStatus === 'published' ? '商品を出品しました！' : '下書きに保存しました。');
     setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
   });
