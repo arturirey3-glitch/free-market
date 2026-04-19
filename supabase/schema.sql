@@ -36,6 +36,7 @@ create table if not exists products (
   brand text,
   sku text,
   jan_code text,
+  mercari_item_id text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );

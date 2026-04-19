@@ -15,7 +15,7 @@ let ratingRounded = '0.0';
 try {
   const supabase = createSupabaseServer();
   const isShort = id && id.length === 8;
-  const fields = 'id,owner_id,title,description,price,category,thumbnail_url,is_subscription,delivery_time,purchase_notes,created_at,updated_at,profiles:owner_id(display_name,avatar_url,bio,is_verified,sales_count,rating,rating_count),product_images(id,image_url,sort_order)';
+  const fields = 'id,owner_id,title,description,price,category,thumbnail_url,is_subscription,delivery_time,purchase_notes,condition,shipping_payer,shipping_method,shipping_duration,shipping_from,brand,created_at,updated_at,profiles:owner_id(display_name,avatar_url,bio,is_verified,sales_count,rating,rating_count),product_images(id,image_url,sort_order)';
 
   if (isShort) {
     const { data } = await supabase.from('products').select(fields).eq('status', 'published');
@@ -30,7 +30,7 @@ try {
     const { data: revData } = await supabase.from('reviews').select('*').eq('product_id', product.id).order('created_at', { ascending: false });
     reviews = revData ?? [];
     if (reviews.length > 0) {
-      averageRating = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+      averageRating = reviews.reduce((s: number, r: any) => s + r.rating, 0) / reviews.length;
       ratingRounded = averageRating.toFixed(1);
     }
   }
@@ -38,132 +38,238 @@ try {
 
 if (!product) return Astro.redirect('/products');
 const profile = product.profiles;
-const allImages = galleryImages.length > 0
+const allImages: string[] = galleryImages.length > 0
   ? galleryImages.map((img: any) => img.image_url)
   : product.thumbnail_url ? [product.thumbnail_url] : [];
 ---
-<BaseLayout title={`${product.title} | Free Market`}>
+<BaseLayout title={`${product.title} | felikko`}>
   <div class="mx-auto max-w-[960px] px-4 py-6">
-    <div class="md:flex md:gap-8">
-      <!-- Images -->
-      <div class="md:w-1/2">
+    <div class="md:flex md:gap-10">
+
+      <!-- LEFT: Images -->
+      <div class="md:w-[460px] md:shrink-0">
         {allImages.length > 0 ? (
           <>
-            <div class="aspect-square w-full overflow-hidden rounded-lg bg-[var(--bg-secondary)]">
-              <img src={allImages[0]} alt={product.title} class="h-full w-full object-cover" id="main-image" />
+            <div class="relative aspect-square bg-[var(--bg-secondary)]">
+              <div id="gallery" class="scrollbar-hidden relative flex h-full w-full snap-x snap-mandatory overflow-x-auto">
+                {allImages.map((src: string, i: number) => (
+                  <div class="relative h-full w-full shrink-0 snap-start">
+                    <img
+                      src={src}
+                      alt={`${product.title} | ${i + 1}枚目`}
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                      class="h-full w-full object-contain object-center"
+                    />
+                  </div>
+                ))}
+              </div>
+              {allImages.length > 1 && (
+                <>
+                  <button id="btn-prev" aria-label="前の画像" class="absolute left-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white text-xl leading-none hover:bg-black/60">‹</button>
+                  <button id="btn-next" aria-label="次の画像" class="absolute right-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white text-xl leading-none hover:bg-black/60">›</button>
+                  <div id="img-counter" class="absolute bottom-2 right-2 rounded bg-black/50 px-2 py-0.5 text-xs font-semibold text-white opacity-70">1 / {allImages.length}</div>
+                </>
+              )}
             </div>
+
             {allImages.length > 1 && (
-              <div class="mt-2 flex gap-2 overflow-x-auto">
-                {allImages.map((src: string) => (
-                  <button
-                    class="h-16 w-16 shrink-0 overflow-hidden rounded border border-[var(--border-light)] hover:border-[var(--primary)]"
-                    data-gallery-thumb={src}
+              <div class="mt-5 flex flex-wrap gap-2 pb-3 pt-4">
+                {allImages.map((src: string, i: number) => (
+                  <div
+                    class="relative h-[60px] w-[60px] cursor-pointer overflow-hidden border-2"
+                    style={i === 0 ? 'border-color: var(--text-primary)' : 'border-color: transparent'}
+                    data-thumb={i}
                   >
-                    <img src={src} alt="" class="h-full w-full object-cover" />
-                  </button>
+                    <img src={src} alt="" class="h-full w-full object-cover object-center" />
+                  </div>
                 ))}
               </div>
             )}
           </>
         ) : (
-          <div class="flex aspect-square w-full items-center justify-center rounded-lg bg-[var(--bg-secondary)] text-[var(--text-placeholder)]">No Image</div>
+          <div class="flex aspect-square w-full items-center justify-center bg-[var(--bg-secondary)] text-[var(--text-placeholder)] text-sm">No Image</div>
         )}
+
+        <!-- Shipping info (desktop: under images) -->
+        <div class="mt-5 hidden border-t border-[var(--border-light)] md:block">
+          {product.shipping_duration && (
+            <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
+              <dt class="text-sm text-[var(--text-secondary)]">発送目安</dt>
+              <dd class="text-sm">{product.shipping_duration}</dd>
+            </dl>
+          )}
+          {(product.shipping_method || product.shipping_payer || product.shipping_from) && (
+            <details class="border-b border-[var(--border-light)]">
+              <summary class="flex h-[54px] cursor-pointer items-center justify-between text-sm">
+                <span>送料・配送方法</span>
+                <svg width="13" height="7" viewBox="0 0 13 7" fill="none" class="chevron-icon transition-transform duration-200">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
+                </svg>
+              </summary>
+              <div class="space-y-1 pb-4 pt-1 text-sm text-[var(--text-secondary)]">
+                {product.shipping_from && <p>発送元地域：{product.shipping_from}</p>}
+                {product.shipping_payer && <p>送料：{product.shipping_payer}</p>}
+                {product.shipping_method && <p>配送方法：{product.shipping_method}</p>}
+              </div>
+            </details>
+          )}
+        </div>
       </div>
 
-      <!-- Info -->
-      <div class="mt-6 md:mt-0 md:w-1/2">
-        <h1 class="text-lg font-bold leading-snug">{product.title}</h1>
+      <!-- RIGHT: Product info -->
+      <div class="mt-6 min-w-0 grow md:mt-0">
+        <h1 class="mb-5 text-base font-light leading-snug md:font-semibold">{product.title}</h1>
 
-        <div class="mt-2 flex items-center gap-2">
-          <span class="text-2xl font-bold text-[var(--danger)]">{formatJPY(product.price)}</span>
-          {product.is_subscription && <span class="rounded bg-[var(--primary-light)] px-2 py-0.5 text-[10px] font-bold text-[var(--primary)]">月額</span>}
+        <div class="flex items-center gap-3">
+          <span class="text-2xl font-semibold">{formatJPY(product.price)}</span>
+          {product.is_subscription && (
+            <span class="rounded bg-[var(--primary-light)] px-2 py-0.5 text-xs font-bold text-[var(--primary)]">月額</span>
+          )}
         </div>
 
         {reviews.length > 0 && (
-          <div class="mt-2 flex items-center gap-1 text-sm">
+          <div class="mt-3 flex items-center gap-1 text-sm">
             <span class="text-[var(--star)]">★</span>
-            <span class="font-bold">{ratingRounded}</span>
+            <span class="font-semibold">{ratingRounded}</span>
             <span class="text-[var(--text-secondary)]">({reviews.length}件)</span>
           </div>
         )}
 
-        <div class="mt-4 flex gap-2">
-          <button class="btn-primary flex-1 py-3 text-base" data-checkout data-product-id={product.id} data-title={product.title} data-price={product.price} data-mode={product.is_subscription ? 'subscription' : 'payment'}>
-            {product.is_subscription ? '月額プランに申し込む' : '購入手続きへ'}
+        <!-- Purchase button -->
+        <div class="mt-5">
+          <button
+            class="inline-flex w-full items-center justify-center gap-3 bg-[var(--primary)] text-white h-[52px] px-3 text-lg font-semibold tracking-wide transition-colors hover:bg-[var(--primary-hover)]"
+            data-checkout
+            data-product-id={product.id}
+            data-title={product.title}
+            data-price={product.price}
+            data-mode={product.is_subscription ? 'subscription' : 'payment'}
+          >
+            <svg width="18" height="18" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M0.785 1.68C0.785 1.184 1.188.781 1.685.781H3.343c.915 0 1.724.601 1.992 1.481l2.68 9.85c.13.48-.153.975-.632 1.105-.48.13-.975-.153-1.105-.632L3.61 2.779C3.57 2.656 3.458 2.581 3.343 2.581H1.685C1.188 2.581.785 2.178.785 1.681Z" fill="#fff"/>
+              <circle cx="8.446" cy="19.674" r="1.688" fill="#fff"/>
+              <circle cx="16.376" cy="19.674" r="1.688" fill="#fff"/>
+              <path d="M4.574 4.474a.9.9 0 0 1 .9-.9h13.904c.271 0 .528.123.699.334.17.211.237.488.18.754l-1.406 6.596c-.078.368-.376.648-.747.702l-.428.063c-.272.04-.663.1-1.133.17-1.858.277-4.438.682-6.538 1.014l-.07.013c-.253.05-.522.116-.687.161-.053.016-.075.024-.075.024l-.004.002c-.268.123-.443.383-.443.683 0 .41.342.754.758.754H18.015a.9.9 0 1 1 0 1.8H7.33c-1.407 0-2.558-1.146-2.558-2.554 0-1.035.614-1.914 1.487-2.317.203-.095.475-.162.62-.196l.343-.077C7.638 11.726 10.298 11.317 12.79 10.94l.943-.14 1.044-4.926H5.474a.9.9 0 0 1-.9-.9Z" fill="#fff"/>
+            </svg>
+            {product.is_subscription ? '申し込む' : '購入する'}
           </button>
         </div>
 
-        {product.category && (
-          <div class="mt-4">
-            <span class="inline-block rounded-full border border-[var(--border)] px-3 py-1 text-xs">{product.category}</span>
-          </div>
-        )}
+        <!-- Spec table -->
+        <div class="mt-8 border-t border-[var(--border-light)]">
+          {product.condition && (
+            <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
+              <dt class="shrink-0 text-sm text-[var(--text-secondary)]">商品の状態</dt>
+              <dd class="text-sm">{product.condition}</dd>
+            </dl>
+          )}
+          {product.brand && (
+            <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
+              <dt class="shrink-0 text-sm text-[var(--text-secondary)]">ブランド</dt>
+              <dd class="text-sm">{product.brand}</dd>
+            </dl>
+          )}
+          {product.category && (
+            <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
+              <dt class="shrink-0 text-sm text-[var(--text-secondary)]">カテゴリー</dt>
+              <dd class="text-sm">{product.category}</dd>
+            </dl>
+          )}
+        </div>
 
-        {product.delivery_time && (
-          <p class="mt-3 text-xs text-[var(--text-secondary)]">お届け日数: 約{product.delivery_time}日</p>
-        )}
+        <!-- Shipping info (mobile: in right column) -->
+        <div class="mt-0 border-[var(--border-light)] md:hidden">
+          {product.shipping_duration && (
+            <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
+              <dt class="text-sm text-[var(--text-secondary)]">発送目安</dt>
+              <dd class="text-sm">{product.shipping_duration}</dd>
+            </dl>
+          )}
+          {(product.shipping_method || product.shipping_payer || product.shipping_from) && (
+            <details class="border-b border-[var(--border-light)]">
+              <summary class="flex h-[54px] cursor-pointer items-center justify-between text-sm">
+                <span>送料・配送方法</span>
+                <svg width="13" height="7" viewBox="0 0 13 7" fill="none" class="chevron-icon transition-transform duration-200">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
+                </svg>
+              </summary>
+              <div class="space-y-1 pb-4 pt-1 text-sm text-[var(--text-secondary)]">
+                {product.shipping_from && <p>発送元地域：{product.shipping_from}</p>}
+                {product.shipping_payer && <p>送料：{product.shipping_payer}</p>}
+                {product.shipping_method && <p>配送方法：{product.shipping_method}</p>}
+              </div>
+            </details>
+          )}
+        </div>
 
         <!-- Seller -->
         {profile && (
-          <div class="mt-6 flex items-center gap-3 rounded-lg border border-[var(--border-light)] p-3">
+          <div class="mt-6 flex items-center gap-3 border border-[var(--border-light)] p-3">
             {profile.avatar_url ? (
-              <img src={profile.avatar_url} alt="" class="h-10 w-10 rounded-full object-cover" />
+              <img src={profile.avatar_url} alt="" class="h-10 w-10 shrink-0 rounded-full object-cover" />
             ) : (
-              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bg-secondary)] text-xs text-[var(--text-placeholder)]">U</div>
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--bg-secondary)] text-xs text-[var(--text-placeholder)]">U</div>
             )}
-            <div>
-              <p class="text-sm font-bold">{profile.display_name ?? '出品者'}</p>
+            <div class="min-w-0">
+              <p class="truncate text-sm font-semibold">{profile.display_name ?? '出品者'}</p>
               {profile.rating && (
                 <p class="text-xs text-[var(--text-secondary)]">★ {Number(profile.rating).toFixed(1)} ({profile.rating_count}件)</p>
               )}
             </div>
           </div>
         )}
+
+        <!-- Description with expand -->
+        <div class="relative mt-8 overflow-hidden text-sm leading-relaxed" id="desc-wrapper">
+          <div id="desc-body" class="whitespace-pre-wrap" style="max-height:360px;overflow:hidden">{product.description}</div>
+          <div id="read-more" class="absolute bottom-0 left-0 right-0 cursor-pointer">
+            <div class="h-[60px] bg-gradient-to-b from-transparent via-white/80 to-white"></div>
+            <div class="flex flex-col items-center bg-white pb-1 text-center text-sm text-[var(--text-secondary)]">
+              <span>続きを読む</span>
+              <svg width="13" height="7" viewBox="0 0 13 7" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {product.purchase_notes && (
+          <div class="mt-8 border-t border-[var(--border-light)] pt-5">
+            <h2 class="mb-3 text-sm font-semibold">購入にあたって</h2>
+            <div class="whitespace-pre-wrap text-sm leading-relaxed text-[var(--text-secondary)]">{product.purchase_notes}</div>
+          </div>
+        )}
       </div>
     </div>
 
-    <!-- Description -->
-    <section class="mt-8 border-t border-[var(--border-light)] pt-6">
-      <h2 class="text-base font-bold mb-3">商品の説明</h2>
-      <div class="text-sm leading-relaxed whitespace-pre-wrap">{product.description}</div>
-    </section>
-
-    {product.purchase_notes && (
-      <section class="mt-6 border-t border-[var(--border-light)] pt-6">
-        <h2 class="text-base font-bold mb-3">購入にあたって</h2>
-        <div class="text-sm leading-relaxed whitespace-pre-wrap">{product.purchase_notes}</div>
-      </section>
-    )}
-
-    <!-- Reviews -->
-    <section class="mt-6 border-t border-[var(--border-light)] pt-6">
-      <h2 class="text-base font-bold mb-4">
-        レビュー
-        {reviews.length > 0 && <span class="text-[var(--text-secondary)] font-normal">({reviews.length}件)</span>}
+    <!-- Reviews (full width) -->
+    <section class="mt-10 border-t border-[var(--border-light)] pt-6">
+      <h2 class="mb-4 text-base font-semibold">
+        レビュー{reviews.length > 0 && <span class="font-normal text-[var(--text-secondary)]">（{reviews.length}件）</span>}
       </h2>
       {reviews.length > 0 ? (
         <div class="space-y-4">
-          {reviews.map((review) => (
-            <div class="rounded-lg border border-[var(--border-light)] p-4">
+          {reviews.map((review: any) => (
+            <div class="border border-[var(--border-light)] p-4">
               <div class="flex items-center gap-2">
                 {review.reviewer_avatar_url ? (
                   <img src={review.reviewer_avatar_url} alt="" class="h-8 w-8 rounded-full object-cover" />
                 ) : (
-                  <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--bg-secondary)] text-xs">U</div>
+                  <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--bg-secondary)] text-xs">U</div>
                 )}
                 <div>
-                  <p class="text-xs font-bold">{review.reviewer_name ?? '購入者'}</p>
+                  <p class="text-xs font-semibold">{review.reviewer_name ?? '購入者'}</p>
                   <div class="flex items-center gap-1">
                     <span class="text-xs text-[var(--star)]">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
                     <span class="text-[10px] text-[var(--text-placeholder)]">{formatRelativeTime(review.created_at)}</span>
                   </div>
                 </div>
               </div>
-              {review.title && <p class="mt-2 text-sm font-bold">{review.title}</p>}
+              {review.title && <p class="mt-2 text-sm font-semibold">{review.title}</p>}
               {review.body && <p class="mt-1 text-sm text-[var(--text-secondary)]">{review.body}</p>}
               {review.reply && (
-                <div class="mt-3 rounded bg-[var(--bg-secondary)] p-3">
-                  <p class="text-[10px] font-bold text-[var(--text-secondary)] mb-1">出品者からの返信</p>
+                <div class="mt-3 bg-[var(--bg-secondary)] p-3">
+                  <p class="mb-1 text-[10px] font-semibold text-[var(--text-secondary)]">出品者からの返信</p>
                   <p class="text-sm">{review.reply}</p>
                 </div>
               )}
@@ -177,18 +283,65 @@ const allImages = galleryImages.length > 0
   </div>
 
   <script>
-    // Gallery thumbnail click
-    document.querySelectorAll<HTMLButtonElement>('[data-gallery-thumb]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const img = document.getElementById('main-image') as HTMLImageElement;
-        if (img && btn.dataset.galleryThumb) img.src = btn.dataset.galleryThumb;
+    // --- Gallery ---
+    const gallery = document.getElementById('gallery') as HTMLElement | null;
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const counter = document.getElementById('img-counter');
+    const thumbs = document.querySelectorAll<HTMLElement>('[data-thumb]');
+    const total = thumbs.length || 1;
+    let current = 0;
+
+    function updateUI(idx: number) {
+      current = idx;
+      if (counter) counter.textContent = `${idx + 1} / ${total}`;
+      thumbs.forEach((t) => {
+        t.style.borderColor = Number(t.dataset.thumb) === idx ? 'var(--text-primary)' : 'transparent';
       });
+    }
+
+    function goTo(idx: number) {
+      if (!gallery) return;
+      const clamped = Math.max(0, Math.min(idx, total - 1));
+      gallery.scrollTo({ left: clamped * gallery.offsetWidth, behavior: 'smooth' });
+    }
+
+    btnPrev?.addEventListener('click', () => goTo(current - 1));
+    btnNext?.addEventListener('click', () => goTo(current + 1));
+    thumbs.forEach((t) => t.addEventListener('click', () => goTo(Number(t.dataset.thumb))));
+
+    let scrollTimer = 0;
+    gallery?.addEventListener('scroll', () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(() => {
+        if (!gallery) return;
+        updateUI(Math.round(gallery.scrollLeft / gallery.offsetWidth));
+      }, 80);
     });
 
-    // Checkout
+    updateUI(0);
+
+    // --- Description expand ---
+    const descBody = document.getElementById('desc-body') as HTMLElement | null;
+    const readMore = document.getElementById('read-more');
+    if (descBody && readMore) {
+      if (descBody.scrollHeight <= 360) {
+        readMore.remove();
+        descBody.style.maxHeight = 'none';
+      } else {
+        readMore.addEventListener('click', () => {
+          descBody.style.maxHeight = 'none';
+          descBody.style.overflow = 'visible';
+          readMore.remove();
+        });
+      }
+    }
+
+    // --- Checkout ---
     document.querySelectorAll<HTMLButtonElement>('[data-checkout]').forEach((btn) => {
       btn.addEventListener('click', async () => {
         btn.disabled = true;
+        const origHTML = btn.innerHTML;
         btn.textContent = '処理中...';
         try {
           const res = await fetch('/api/checkout', {
@@ -198,8 +351,8 @@ const allImages = galleryImages.length > 0
               productId: btn.dataset.productId,
               productTitle: btn.dataset.title,
               price: Number(btn.dataset.price),
-              mode: btn.dataset.mode
-            })
+              mode: btn.dataset.mode,
+            }),
           });
           const data = await res.json();
           if (data.url) {
@@ -207,12 +360,12 @@ const allImages = galleryImages.length > 0
           } else {
             alert(data.error || 'エラーが発生しました');
             btn.disabled = false;
-            btn.textContent = btn.dataset.mode === 'subscription' ? '月額プランに申し込む' : '購入手続きへ';
+            btn.innerHTML = origHTML;
           }
         } catch {
           alert('エラーが発生しました');
           btn.disabled = false;
-          btn.textContent = '購入手続きへ';
+          btn.innerHTML = origHTML;
         }
       });
     });
