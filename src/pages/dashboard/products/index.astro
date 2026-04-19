@@ -53,7 +53,7 @@ import Toast from '../../../components/Toast.astro';
             </div>
             <p class="text-sm font-bold shrink-0">¥${Number(p.price).toLocaleString()}</p>
             <div class="flex gap-2 shrink-0">
-              <a href="/products/${p.id.slice(0,8)}" class="btn-outline text-xs py-1 px-2">詳細</a>
+              <a href="/dashboard/products/${p.id}" class="btn-outline text-xs py-1 px-2">編集</a>
               <button class="btn-danger text-xs py-1 px-2" data-id="${p.id}">削除</button>
             </div>
           </div>

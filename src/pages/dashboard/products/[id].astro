@@ -1,0 +1,355 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Toast from '../../../components/Toast.astro';
+import { CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURES, CATEGORIES } from '../../../lib/constants';
+
+export const prerender = false;
+const { id } = Astro.params;
+---
+<BaseLayout title="商品編集 | felikko">
+  <Toast />
+  <div class="mx-auto max-w-lg px-4 py-6">
+    <div class="flex items-center gap-3 mb-6">
+      <a href="/dashboard/products" class="text-xs text-[var(--text-secondary)] hover:text-[var(--primary)]">← 出品一覧</a>
+      <h1 class="text-lg font-bold">商品編集</h1>
+    </div>
+
+    <div id="loading" class="py-16 text-center text-sm text-[var(--text-secondary)]">読み込み中...</div>
+    <form class="space-y-5 hidden" id="product-form" data-product-id={id}>
+
+      <!-- 商品画像 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">商品画像 <span class="text-[10px] text-[var(--text-placeholder)]">（最大20枚）</span></label>
+        <div id="existing-images" class="mt-1 flex gap-2 flex-wrap"></div>
+        <div
+          id="drop-zone"
+          class="mt-2 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-[var(--border)] bg-[var(--bg-secondary)] p-4 transition hover:border-[var(--primary)] cursor-pointer"
+        >
+          <p class="text-xs text-[var(--text-secondary)]">新しい画像を追加（ドラッグ＆ドロップ）</p>
+          <button type="button" id="select-images-btn" class="mt-2 btn-outline text-xs py-1.5 px-4">画像を選択</button>
+          <input type="file" id="image-input" accept="image/*" multiple class="hidden" />
+        </div>
+        <div id="image-preview" class="mt-2 flex gap-2 flex-wrap"></div>
+        <p class="mt-1 text-[10px] text-[var(--text-placeholder)]">1枚目がサムネイルになります。</p>
+      </div>
+
+      <!-- 商品名 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">商品名 <span class="text-[var(--danger)]">*</span></label>
+        <input type="text" name="title" required maxlength="65" class="input-field mt-1" placeholder="商品名（65文字以内）" />
+      </div>
+
+      <!-- 商品の状態 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">商品の状態 <span class="text-[var(--danger)]">*</span></label>
+        <select name="condition" required class="input-field mt-1">
+          <option value="">選択してください</option>
+          {CONDITIONS.map((c) => <option value={c}>{c}</option>)}
+        </select>
+      </div>
+
+      <!-- カテゴリ -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">カテゴリ</label>
+        <input type="text" name="category" list="category-suggestions" class="input-field mt-1"
+          placeholder="例: ファッション、家電、ハンドメイド など" autocomplete="off" />
+        <datalist id="category-suggestions">
+          {CATEGORIES.map((cat) => <option value={cat} />)}
+        </datalist>
+      </div>
+
+      <!-- 商品の説明 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">商品の説明 <span class="text-[var(--danger)]">*</span></label>
+        <textarea name="description" rows="6" required class="input-field mt-1" placeholder="サイズ・状態・購入時期など"></textarea>
+      </div>
+
+      <!-- ブランド -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">ブランド <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+        <input type="text" name="brand" class="input-field mt-1" placeholder="例: Nike、無印良品" />
+      </div>
+
+      <!-- 配送料の負担 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">配送料の負担 <span class="text-[var(--danger)]">*</span></label>
+        <select name="shipping_payer" required class="input-field mt-1">
+          {SHIPPING_PAYERS.map((p) => <option value={p}>{p}</option>)}
+        </select>
+      </div>
+
+      <!-- 配送方法 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">配送方法 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+        <input type="text" name="shipping_method" class="input-field mt-1" placeholder="例: ヤマト宅急便、クリックポストなど" />
+      </div>
+
+      <!-- 発送元の地域 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">発送元の地域</label>
+        <select name="shipping_from" class="input-field mt-1">
+          <option value="">選択してください</option>
+          {PREFECTURES.map((p) => <option value={p}>{p}</option>)}
+        </select>
+      </div>
+
+      <!-- 発送までの日数 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">発送までの日数</label>
+        <select name="shipping_duration" class="input-field mt-1">
+          <option value="">選択してください</option>
+          {SHIPPING_DURATIONS.map((d) => <option value={d}>{d}</option>)}
+        </select>
+      </div>
+
+      <!-- 価格 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">販売価格（税込） <span class="text-[var(--danger)]">*</span></label>
+        <input type="number" name="price" min="300" required class="input-field mt-1" placeholder="¥300以上" />
+      </div>
+
+      <!-- サブスク -->
+      <div>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" name="is_subscription" value="true" class="accent-[var(--primary)]" />
+          月額サブスクリプション
+        </label>
+      </div>
+
+      <!-- 購入にあたっての注意 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">購入にあたっての注意 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+        <textarea name="purchase_notes" rows="3" class="input-field mt-1" placeholder="発送タイミングや注意事項など"></textarea>
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button type="submit" name="status" value="draft" class="btn-outline flex-1 py-3 text-sm">下書きに変更</button>
+        <button type="submit" name="status" value="published" class="btn-primary flex-1 py-3 text-sm">更新する</button>
+      </div>
+
+      <div class="pt-2 border-t border-[var(--border-light)]">
+        <button type="button" id="delete-btn" class="btn-danger w-full py-3 text-sm">この商品を削除する</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+  import { supabase } from '../../../lib/supabaseClient';
+
+  declare global { interface Window { showToast: (type: 'success' | 'error' | 'info', title: string, message: string) => void; } }
+
+  const form = document.getElementById('product-form') as HTMLFormElement;
+  const loadingEl = document.getElementById('loading')!;
+  const productId = form.dataset.productId!;
+
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (!sessionData.session) { window.location.href = '/auth/login'; }
+
+  const userId = sessionData.session!.user.id;
+
+  // 既存データ読み込み
+  const { data: product, error } = await supabase
+    .from('products')
+    .select('*, product_images(id, image_url, sort_order)')
+    .eq('id', productId)
+    .single();
+
+  if (error || !product || product.owner_id !== userId) {
+    loadingEl.textContent = '商品が見つかりません';
+    loadingEl.className = 'py-16 text-center text-sm text-[var(--danger)]';
+  } else {
+    loadingEl.classList.add('hidden');
+    form.classList.remove('hidden');
+
+    // フォームに既存値をセット
+    const set = (name: string, val: any) => {
+      const el = form.querySelector(`[name="${name}"]`) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+      if (!el || val == null) return;
+      if (el instanceof HTMLInputElement && el.type === 'checkbox') {
+        el.checked = val === true;
+      } else {
+        el.value = String(val);
+      }
+    };
+
+    set('title', product.title);
+    set('description', product.description);
+    set('price', product.price);
+    set('category', product.category);
+    set('condition', product.condition);
+    set('brand', product.brand);
+    set('shipping_payer', product.shipping_payer);
+    set('shipping_method', product.shipping_method);
+    set('shipping_from', product.shipping_from);
+    set('shipping_duration', product.shipping_duration);
+    set('purchase_notes', product.purchase_notes);
+    set('is_subscription', product.is_subscription);
+
+    // 既存画像表示
+    const existingImagesEl = document.getElementById('existing-images')!;
+    const sortedImages = (product.product_images || []).sort((a: any, b: any) => a.sort_order - b.sort_order);
+    let existingImageIds: string[] = sortedImages.map((img: any) => img.id);
+
+    const renderExistingImages = () => {
+      existingImagesEl.innerHTML = '';
+      sortedImages
+        .filter((img: any) => existingImageIds.includes(img.id))
+        .forEach((img: any, i: number) => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'relative group';
+          const image = document.createElement('img');
+          image.src = img.image_url;
+          image.className = 'h-20 w-20 rounded-lg object-cover border border-[var(--border-light)]';
+          const badge = document.createElement('span');
+          badge.className = 'absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--primary)] text-[10px] text-white font-bold';
+          badge.textContent = String(i + 1);
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--danger)] text-white text-xs leading-none opacity-0 group-hover:opacity-100 transition';
+          removeBtn.textContent = '×';
+          removeBtn.addEventListener('click', () => {
+            existingImageIds = existingImageIds.filter(id => id !== img.id);
+            renderExistingImages();
+          });
+          wrapper.appendChild(image);
+          wrapper.appendChild(badge);
+          wrapper.appendChild(removeBtn);
+          existingImagesEl.appendChild(wrapper);
+        });
+    };
+    renderExistingImages();
+
+    // 新規画像追加
+    const dropZone = document.getElementById('drop-zone')!;
+    const imageInput = document.getElementById('image-input') as HTMLInputElement;
+    const selectBtn = document.getElementById('select-images-btn')!;
+    const previewContainer = document.getElementById('image-preview')!;
+    let newFiles: File[] = [];
+    const MAX_IMAGES = 20;
+
+    const renderNewPreviews = () => {
+      previewContainer.innerHTML = '';
+      newFiles.forEach((file, i) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'relative group';
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.className = 'h-20 w-20 rounded-lg object-cover border border-[var(--border-light)]';
+        const badge = document.createElement('span');
+        badge.className = 'absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] text-white font-bold';
+        badge.textContent = '新';
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--danger)] text-white text-xs leading-none opacity-0 group-hover:opacity-100 transition';
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', () => { newFiles.splice(i, 1); renderNewPreviews(); });
+        wrapper.appendChild(img); wrapper.appendChild(badge); wrapper.appendChild(removeBtn);
+        previewContainer.appendChild(wrapper);
+      });
+    };
+
+    const addFiles = (files: FileList | File[]) => {
+      const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
+      const remaining = MAX_IMAGES - existingImageIds.length - newFiles.length;
+      newFiles.push(...arr.slice(0, remaining));
+      renderNewPreviews();
+    };
+
+    selectBtn.addEventListener('click', (e) => { e.preventDefault(); imageInput.click(); });
+    imageInput.addEventListener('change', () => { if (imageInput.files) addFiles(imageInput.files); imageInput.value = ''; });
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-[var(--primary)]'); });
+    dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-[var(--primary)]'); });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault(); dropZone.classList.remove('border-[var(--primary)]');
+      if (e.dataTransfer?.files) addFiles(e.dataTransfer.files);
+    });
+
+    // 新規画像アップロード
+    const uploadImages = async (): Promise<string[]> => {
+      const urls: string[] = [];
+      for (let i = 0; i < newFiles.length; i++) {
+        const file = newFiles[i];
+        const ext = file.name.split('.').pop() || 'jpg';
+        const path = `${productId}/edit_${i}_${Date.now()}.${ext}`;
+        const { error } = await supabase.storage.from('product-images').upload(path, file, { upsert: true });
+        if (error) { console.error('Upload error:', error); continue; }
+        const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path);
+        urls.push(urlData.publicUrl);
+      }
+      return urls;
+    };
+
+    // 削除ボタン
+    document.getElementById('delete-btn')!.addEventListener('click', async () => {
+      if (!confirm('この商品を削除しますか？')) return;
+      const { error } = await supabase.from('products').delete().eq('id', productId);
+      if (error) { window.showToast?.('error', 'エラー', error.message); return; }
+      window.showToast?.('success', '削除しました', '');
+      setTimeout(() => { window.location.href = '/dashboard/products'; }, 1500);
+    });
+
+    // 送信
+    let submitStatus = product.status || 'draft';
+    form.querySelectorAll<HTMLButtonElement>('button[name="status"]').forEach(btn => {
+      btn.addEventListener('click', () => { submitStatus = btn.value; });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const buttons = form.querySelectorAll<HTMLButtonElement>('button[type="submit"]');
+      buttons.forEach(b => { b.disabled = true; b.textContent = '保存中...'; });
+
+      // 新規画像アップロード
+      const newUrls = newFiles.length > 0 ? await uploadImages() : [];
+
+      // 削除された既存画像をDBから削除
+      const removedIds = sortedImages
+        .filter((img: any) => !existingImageIds.includes(img.id))
+        .map((img: any) => img.id);
+      for (const imgId of removedIds) {
+        await supabase.from('product_images').delete().eq('id', imgId);
+      }
+
+      // 新規画像をproduct_imagesに追加
+      const currentCount = existingImageIds.length;
+      if (newUrls.length > 0) {
+        await supabase.from('product_images').insert(
+          newUrls.map((url, i) => ({ product_id: productId, image_url: url, sort_order: currentCount + i }))
+        );
+      }
+
+      // サムネイル更新（残っている最初の画像）
+      const remainingImages = sortedImages.filter((img: any) => existingImageIds.includes(img.id));
+      const thumbnailUrl = remainingImages[0]?.image_url || newUrls[0] || null;
+
+      // 商品レコード更新
+      const { error: updateError } = await supabase.from('products').update({
+        title:            fd.get('title'),
+        description:      fd.get('description'),
+        price:            Number(fd.get('price')),
+        category:         fd.get('category') || null,
+        condition:        fd.get('condition') || null,
+        brand:            fd.get('brand') || null,
+        shipping_payer:   fd.get('shipping_payer') || null,
+        shipping_method:  fd.get('shipping_method') || null,
+        shipping_from:    fd.get('shipping_from') || null,
+        shipping_duration: fd.get('shipping_duration') || null,
+        purchase_notes:   fd.get('purchase_notes') || null,
+        is_subscription:  fd.get('is_subscription') === 'true',
+        thumbnail_url:    thumbnailUrl,
+        status:           submitStatus,
+      }).eq('id', productId);
+
+      if (updateError) {
+        window.showToast?.('error', 'エラー', updateError.message);
+        buttons.forEach(b => { b.disabled = false; b.textContent = b.value === 'draft' ? '下書きに変更' : '更新する'; });
+        return;
+      }
+
+      window.showToast?.('success', '更新しました', submitStatus === 'published' ? '商品を公開しました' : '下書きに保存しました');
+      setTimeout(() => { window.location.href = '/dashboard/products'; }, 1500);
+    });
+  }
+  </script>
+</BaseLayout>
