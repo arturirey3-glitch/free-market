@@ -30,3 +30,21 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 024a2968eda48c6eaea6d761c59eaa72
           command: pages deploy dist --project-name=free-market
+
+      - name: Ping Google sitemap
+        run: |
+          curl -s "https://www.google.com/ping?sitemap=https://www.felikko.com/sitemap.xml" || true
+
+      - name: Ping Bing via IndexNow
+        run: |
+          curl -s -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d '{
+              "host": "www.felikko.com",
+              "key": "e0ddcb9227cd44f1a877926bb1db4a06",
+              "keyLocation": "https://www.felikko.com/e0ddcb9227cd44f1a877926bb1db4a06.txt",
+              "urlList": [
+                "https://www.felikko.com/",
+                "https://www.felikko.com/products"
+              ]
+            }' || true

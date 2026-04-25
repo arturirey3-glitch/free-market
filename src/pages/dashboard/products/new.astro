@@ -263,6 +263,16 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
       }
     }
 
+    // 出品時にIndexNow/Googleへ自動通知
+    if (submitStatus === 'published' && product) {
+      const shortId = product.id.slice(0, 8);
+      fetch('/api/indexnow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ urls: [`https://www.felikko.com/products/${shortId}`] }),
+      }).catch(() => {});
+    }
+
     window.showToast?.('success', '保存しました', submitStatus === 'published' ? '商品を出品しました！' : '下書きに保存しました。');
     setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
   });
