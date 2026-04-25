@@ -18,15 +18,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const stripe = new Stripe(stripeSecretKey);
 
     const body = await request.json();
-    const { productId, productTitle, price, mode, sellerName, thumbnailUrl } = body;
+    const { productId, productTitle, price, mode, sellerName, thumbnailUrl, stock } = body;
 
     if (!productId || !productTitle || !price) {
       return new Response(JSON.stringify({ error: '必須パラメータが不足しています' }), { status: 400, headers });
     }
 
-    const siteUrl = env.SITE_URL || import.meta.env.SITE_URL || 'https://free-market.pages.dev';
+    const siteUrl = new URL(request.url).origin;
     const isSubscription = mode === 'subscription';
     const shortId = productId.slice(0, 8);
+    const maxQty = stock != null ? Math.min(Number(stock), 10) : 10;
 
     const session = await stripe.checkout.sessions.create({
       line_items: [{
@@ -39,7 +40,14 @@ export const POST: APIRoute = async ({ request, locals }) => {
           unit_amount: price,
           ...(isSubscription ? { recurring: { interval: 'month' } } : {})
         },
-        quantity: 1
+        quantity: 1,
+        ...(!isSubscription ? {
+          adjustable_quantity: {
+            enabled: true,
+            minimum: 1,
+            maximum: maxQty,
+          }
+        } : {})
       }],
       mode: isSubscription ? 'subscription' : 'payment',
       shipping_address_collection: { allowed_countries: ['JP'] },
