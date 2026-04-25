@@ -63,7 +63,7 @@ import Toast from '../../../components/Toast.astro';
             <!-- ドラッグハンドル -->
             <div class="drag-handle cursor-grab active:cursor-grabbing text-[var(--text-placeholder)] select-none px-1 shrink-0 text-lg" title="ドラッグして並び替え">⠿</div>
             <!-- 順番 -->
-            <span class="item-order shrink-0 w-6 text-center text-xs font-bold text-[var(--text-secondary)]">${i + 1}</span>
+            <span class="item-order shrink-0 w-6 text-center text-xs font-bold text-[var(--text-secondary)] cursor-pointer hover:underline hover:text-[var(--primary)]" title="クリックで位置変更">${i + 1}</span>
             <!-- サムネイル -->
             <div class="h-14 w-14 shrink-0 rounded-lg bg-[var(--bg-secondary)] overflow-hidden">
               ${p.thumbnail_url
@@ -146,56 +146,65 @@ import Toast from '../../../components/Toast.astro';
       }, 100);
     }
 
-    // 順番クリックで位置指定移動
-    container.querySelectorAll<HTMLElement>('.item-order').forEach(span => {
-      span.classList.add('cursor-pointer', 'hover:underline', 'hover:text-[var(--primary)]');
-      span.title = 'クリックで位置変更';
+    // 順番クリックで位置指定移動（イベントデリゲーション）
+    document.getElementById('sortable-list')!.addEventListener('click', async (e) => {
+      const span = (e.target as HTMLElement).closest<HTMLElement>('.item-order');
+      if (!span || span.tagName !== 'SPAN') return;
 
-      span.addEventListener('click', () => {
-        const currentNum = parseInt(span.textContent ?? '1', 10);
-        const total = document.querySelectorAll('#sortable-list [data-id]').length;
+      const list = document.getElementById('sortable-list')!;
+      const row = span.closest<HTMLElement>('[data-id]');
+      if (!row) return;
 
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.min = '1';
-        input.max = String(total);
-        input.value = String(currentNum);
-        input.className = 'w-10 text-center text-xs font-bold border border-[var(--primary)] rounded outline-none';
+      const getItems = () => Array.from(list.querySelectorAll<HTMLElement>('[data-id]'));
+      const currentIdx = getItems().indexOf(row);
+      const currentNum = currentIdx + 1;
+      const total = getItems().length;
+      const spanClass = span.className;
+      const spanTitle = span.title;
 
-        span.replaceWith(input);
-        input.focus();
-        input.select();
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = '1';
+      input.max = String(total);
+      input.value = String(currentNum);
+      input.className = 'w-10 text-center text-xs font-bold border border-[var(--primary)] rounded outline-none';
+      span.replaceWith(input);
+      input.focus();
+      input.select();
 
-        const commit = async () => {
-          const val = parseInt(input.value, 10);
-          const items = Array.from(document.querySelectorAll<HTMLElement>('#sortable-list [data-id]'));
-          const currentIdx = items.findIndex(el => el.contains(input));
+      const restore = (text: string) => {
+        const s = document.createElement('span');
+        s.className = spanClass;
+        s.title = spanTitle;
+        s.textContent = text;
+        if (input.isConnected) input.replaceWith(s);
+      };
 
-          const newSpan = document.createElement('span');
-          newSpan.className = span.className;
-          newSpan.title = span.title;
-          input.replaceWith(newSpan);
-
-          if (!isNaN(val) && val >= 1 && val <= total && val !== currentNum) {
-            const row = items[currentIdx];
-            const list = document.getElementById('sortable-list')!;
-            const newPos = val - 1; // 0-indexed
-            const refItem = items[newPos];
-            if (newPos < currentIdx) {
-              list.insertBefore(row, refItem);
-            } else {
-              list.insertBefore(row, refItem.nextSibling);
-            }
-            updateOrderNumbers();
-            await saveSortOrder();
+      const commit = async () => {
+        const val = parseInt(input.value, 10);
+        if (!isNaN(val) && val >= 1 && val <= total && val !== currentNum) {
+          restore(String(val));
+          const fresh = getItems();
+          const rowNow = fresh.find(el => el.dataset.id === row.dataset.id);
+          if (!rowNow) return;
+          const fromIdx = fresh.indexOf(rowNow);
+          const toIdx = val - 1;
+          const ref = fresh[toIdx];
+          if (!ref) return;
+          if (toIdx < fromIdx) {
+            list.insertBefore(rowNow, ref);
           } else {
-            newSpan.textContent = String(currentNum);
+            list.insertBefore(rowNow, ref.nextSibling ?? null);
           }
-        };
+          updateOrderNumbers();
+          await saveSortOrder();
+        } else {
+          restore(String(currentNum));
+        }
+      };
 
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
-        input.addEventListener('blur', commit);
-      });
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
+      input.addEventListener('blur', commit, { once: true });
     });
 
     // ピックアップトグル
