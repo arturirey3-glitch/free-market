@@ -79,7 +79,7 @@ import Toast from '../../../components/Toast.astro';
             </div>
             <p class="text-sm font-bold shrink-0">¥${Number(p.price).toLocaleString()}</p>
             <div class="flex gap-2 shrink-0">
-              <button class="pickup-btn text-lg leading-none transition-transform hover:scale-110" data-id="${p.id}" data-pickup="${p.is_pickup ? '1' : '0'}" title="${p.is_pickup ? 'ピックアップ解除' : 'ピックアップに追加'}">${p.is_pickup ? '⭐' : '☆'}</button>
+              <button class="pickup-btn shrink-0 rounded border px-2 py-1 text-xs font-medium transition ${p.is_pickup ? 'border-amber-400 bg-amber-50 text-amber-600' : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-amber-400 hover:text-amber-500'}" data-id="${p.id}" data-pickup="${p.is_pickup ? '1' : '0'}">${p.is_pickup ? '⭐ 固定中' : '☆ 固定'}</button>
               <a href="/dashboard/products/${p.id}" class="btn-outline text-xs py-1 px-2">編集</a>
               <button class="btn-danger text-xs py-1 px-2" data-delete="${p.id}">削除</button>
             </div>
@@ -158,8 +158,12 @@ import Toast from '../../../components/Toast.astro';
           window.showToast?.('error', 'エラー', error.message);
         } else {
           btn.dataset.pickup = next ? '1' : '0';
-          btn.textContent = next ? '⭐' : '☆';
-          btn.title = next ? 'ピックアップ解除' : 'ピックアップに追加';
+          btn.textContent = next ? '⭐ 固定中' : '☆ 固定';
+          if (next) {
+            btn.className = btn.className.replace('border-[var(--border)] text-[var(--text-secondary)] hover:border-amber-400 hover:text-amber-500', 'border-amber-400 bg-amber-50 text-amber-600');
+          } else {
+            btn.className = btn.className.replace('border-amber-400 bg-amber-50 text-amber-600', 'border-[var(--border)] text-[var(--text-secondary)] hover:border-amber-400 hover:text-amber-500');
+          }
           window.showToast?.('success', next ? 'ピックアップに追加しました' : 'ピックアップを解除しました', '');
         }
         btn.disabled = false;
