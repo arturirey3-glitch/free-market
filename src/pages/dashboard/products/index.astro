@@ -147,7 +147,7 @@ import Toast from '../../../components/Toast.astro';
     }
 
     // 順番クリックで位置指定移動（イベントデリゲーション）
-    document.getElementById('sortable-list')!.addEventListener('click', async (e) => {
+    document.getElementById('sortable-list')!.addEventListener('click', (e) => {
       const span = (e.target as HTMLElement).closest<HTMLElement>('.item-order');
       if (!span || span.tagName !== 'SPAN') return;
 
@@ -155,10 +155,10 @@ import Toast from '../../../components/Toast.astro';
       const row = span.closest<HTMLElement>('[data-id]');
       if (!row) return;
 
-      const getItems = () => Array.from(list.querySelectorAll<HTMLElement>('[data-id]'));
-      const currentIdx = getItems().indexOf(row);
+      const allItems = () => Array.from(list.querySelectorAll<HTMLElement>('[data-id]'));
+      const currentIdx = allItems().indexOf(row);
       const currentNum = currentIdx + 1;
-      const total = getItems().length;
+      const total = allItems().length;
       const spanClass = span.className;
       const spanTitle = span.title;
 
@@ -172,39 +172,44 @@ import Toast from '../../../components/Toast.astro';
       input.focus();
       input.select();
 
-      const restore = (text: string) => {
-        const s = document.createElement('span');
-        s.className = spanClass;
-        s.title = spanTitle;
-        s.textContent = text;
-        if (input.isConnected) input.replaceWith(s);
-      };
-
+      let committed = false;
       const commit = async () => {
+        if (committed) return;
+        committed = true;
+
         const val = parseInt(input.value, 10);
-        if (!isNaN(val) && val >= 1 && val <= total && val !== currentNum) {
-          restore(String(val));
-          const fresh = getItems();
-          const rowNow = fresh.find(el => el.dataset.id === row.dataset.id);
-          if (!rowNow) return;
-          const fromIdx = fresh.indexOf(rowNow);
-          const toIdx = val - 1;
-          const ref = fresh[toIdx];
-          if (!ref) return;
-          if (toIdx < fromIdx) {
-            list.insertBefore(rowNow, ref);
-          } else {
-            list.insertBefore(rowNow, ref.nextSibling ?? null);
-          }
-          updateOrderNumbers();
-          await saveSortOrder();
+
+        // inputをspanに戻す
+        const newSpan = document.createElement('span');
+        newSpan.className = spanClass;
+        newSpan.title = spanTitle;
+        newSpan.textContent = String(currentNum);
+        if (input.parentNode) input.replaceWith(newSpan);
+
+        // 無効値なら何もしない
+        if (isNaN(val) || val < 1 || val > total || val === currentNum) return;
+
+        // rowのDOM上の現在位置を取得（inputがspanに戻った後なので正確）
+        const items = allItems();
+        const fromIdx = items.indexOf(row);
+        if (fromIdx === -1) return;
+        const toIdx = val - 1;
+
+        // DOM移動
+        if (toIdx < fromIdx) {
+          list.insertBefore(row, items[toIdx]);
         } else {
-          restore(String(currentNum));
+          const ref = items[toIdx];
+          list.insertBefore(row, ref.nextSibling ?? null);
         }
+
+        // 番号更新 & 保存
+        updateOrderNumbers();
+        await saveSortOrder();
       };
 
       input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
-      input.addEventListener('blur', commit, { once: true });
+      input.addEventListener('blur', commit);
     });
 
     // ピックアップトグル
