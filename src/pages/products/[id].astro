@@ -72,8 +72,88 @@ const ogDescription = product.description
   ? product.description.replace(/[#＃]\S+/g, '').replace(/\s+/g, ' ').trim().slice(0, 120)
   : '';
 const ogImage = product.thumbnail_url ?? allImages[0] ?? '';
-const siteOrigin = import.meta.env.SITE_URL || 'https://www.felikko.com';
+const siteOrigin = 'https://www.felikko.com';
 const ogUrl = `${siteOrigin}/products/${product.id.slice(0, 8)}`;
+
+// JSON-LD 構造化データ
+const availability = isSoldOut
+  ? 'https://schema.org/OutOfStock'
+  : 'https://schema.org/InStock';
+
+const jsonLd: Record<string, any> = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Product',
+      name: product.title,
+      description: ogDescription || undefined,
+      image: allImages.length > 0 ? allImages : undefined,
+      url: ogUrl,
+      ...(product.brand ? { brand: { '@type': 'Brand', name: product.brand } } : {}),
+      ...(product.condition ? { itemCondition: `https://schema.org/${
+        product.condition.includes('新品') ? 'NewCondition' :
+        product.condition.includes('未使用') ? 'LikeNewCondition' :
+        product.condition.includes('傷や汚れなし') ? 'UsedCondition' :
+        'UsedCondition'
+      }` } : {}),
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'JPY',
+        price: product.price,
+        availability,
+        url: ogUrl,
+        seller: {
+          '@type': 'Person',
+          name: profile?.display_name ?? 'felikko出品者',
+        },
+      },
+      ...(reviews.length > 0 ? {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: averageRating.toFixed(1),
+          reviewCount: reviews.length,
+          bestRating: 5,
+          worstRating: 1,
+        },
+        review: reviews.slice(0, 5).map((r: any) => ({
+          '@type': 'Review',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: r.rating,
+            bestRating: 5,
+            worstRating: 1,
+          },
+          author: { '@type': 'Person', name: r.reviewer_name ?? '購入者' },
+          reviewBody: r.body ?? undefined,
+          datePublished: (r.created_at ?? '').slice(0, 10),
+        })),
+      } : {}),
+    },
+    // パンくずリスト
+    ...(breadcrumbs.length > 0 ? [{
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'ホーム', item: siteOrigin },
+        { '@type': 'ListItem', position: 2, name: '商品一覧', item: `${siteOrigin}/products` },
+        ...breadcrumbs.map((name: string, i: number) => ({
+          '@type': 'ListItem',
+          position: i + 3,
+          name,
+          item: `${siteOrigin}/products?q=${encodeURIComponent(name)}`,
+        })),
+        { '@type': 'ListItem', position: breadcrumbs.length + 3, name: product.title, item: ogUrl },
+      ],
+    }] : [{
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'ホーム', item: siteOrigin },
+        { '@type': 'ListItem', position: 2, name: '商品一覧', item: `${siteOrigin}/products` },
+        { '@type': 'ListItem', position: 3, name: product.title, item: ogUrl },
+      ],
+    }]),
+  ],
+};
+const jsonLdString = JSON.stringify(jsonLd);
 
 ---
 <BaseLayout
@@ -83,7 +163,8 @@ const ogUrl = `${siteOrigin}/products/${product.id.slice(0, 8)}`;
   ogUrl={ogUrl}
   ogType="product"
 >
-  <div class="mx-auto max-w-[960px] px-4 py-4">
+  <script slot="head" type="application/ld+json" set:html={jsonLdString} />
+  <div class="mx-auto max-w-[960px] px-4 py-4 pb-[88px] md:pb-4">
 
     <!-- Breadcrumb -->
     {breadcrumbs.length > 0 && (
@@ -224,8 +305,8 @@ const ogUrl = `${siteOrigin}/products/${product.id.slice(0, 8)}`;
           </div>
         )}
 
-        <!-- Buttons -->
-        <div class="mt-5 flex flex-col gap-3">
+        <!-- Buttons (desktop only) -->
+        <div class="mt-5 hidden md:flex flex-col gap-3">
           {isSoldOut ? (
             <button disabled class="inline-flex w-full items-center justify-center gap-3 rounded-full bg-[var(--border)] text-[var(--text-secondary)] h-[44px] px-3 text-sm font-semibold cursor-not-allowed">
               SOLD OUT
@@ -682,6 +763,7 @@ const ogUrl = `${siteOrigin}/products/${product.id.slice(0, 8)}`;
     function openLineModal() { lineModal.classList.remove('hidden'); lineModal.classList.add('flex'); document.body.style.overflow = 'hidden'; }
     function closeLineModal() { lineModal.classList.add('hidden'); lineModal.classList.remove('flex'); document.body.style.overflow = ''; }
     lineModalOpen?.addEventListener('click', openLineModal);
+    document.getElementById('line-modal-open-mobile')?.addEventListener('click', openLineModal);
     document.querySelectorAll('[data-line-modal-close]').forEach(el => el.addEventListener('click', closeLineModal));
     lineModal.addEventListener('click', (e) => { if (e.target === lineModal) closeLineModal(); });
     document.querySelector('[data-line-copy-url]')?.addEventListener('click', async () => {
@@ -878,6 +960,64 @@ const ogUrl = `${siteOrigin}/products/${product.id.slice(0, 8)}`;
       }
     }
   </script>
+
+<!-- Mobile Sticky Buy Bar -->
+<div class="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white border-t border-[var(--border-light)] shadow-[0_-2px_12px_rgba(0,0,0,0.10)] px-4 pt-3" style="padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px))">
+  <div class="flex items-center gap-3">
+    <!-- Price + rating -->
+    <div class="min-w-0 flex-1">
+      <div class="text-lg font-semibold leading-tight">{formatJPY(product.price)}</div>
+      {reviews.length > 0 ? (
+        <div class="mt-0.5 flex items-center gap-1 text-xs">
+          <span class="text-[var(--star)]">★</span>
+          <span class="font-semibold">{ratingRounded}</span>
+          <span class="text-[var(--text-secondary)]">({reviews.length}件)</span>
+        </div>
+      ) : (
+        <div class="mt-0.5 text-xs text-[var(--text-secondary)]">
+          {product.shipping_payer?.includes('出品者') ? '送料込み' : product.shipping_payer ? '着払い' : ''}
+        </div>
+      )}
+    </div>
+    <!-- Buttons -->
+    {isSoldOut ? (
+      <button disabled class="shrink-0 rounded-full bg-[var(--border)] text-[var(--text-secondary)] h-[48px] px-8 text-sm font-semibold cursor-not-allowed">
+        SOLD OUT
+      </button>
+    ) : (
+      <div class="flex items-center gap-2 shrink-0">
+        <button
+          type="button"
+          id="line-modal-open-mobile"
+          aria-label="LINEで問い合わせる"
+          class="flex h-[48px] w-[48px] items-center justify-center rounded-full border-2 transition hover:opacity-80"
+          style="border-color: #06C755;"
+        >
+          <img src="/icons/LINE_APP_Android.png" alt="LINE" width="24" height="24" class="rounded-[5px]" />
+        </button>
+        <button
+          class="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--primary)] text-white h-[48px] px-7 text-sm font-semibold tracking-wide transition-colors hover:bg-[var(--primary-hover)] active:scale-[0.98]"
+          data-checkout
+          data-product-id={product.id}
+          data-title={product.title}
+          data-price={product.price}
+          data-mode={product.is_subscription ? 'subscription' : 'payment'}
+          data-seller-name={profile?.display_name ?? ''}
+          data-thumbnail={product.thumbnail_url ?? ''}
+          data-stock={product.stock ?? ''}
+        >
+          <svg width="17" height="17" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0.785 1.68C0.785 1.184 1.188.781 1.685.781H3.343c.915 0 1.724.601 1.992 1.481l2.68 9.85c.13.48-.153.975-.632 1.105-.48.13-.975-.153-1.105-.632L3.61 2.779C3.57 2.656 3.458 2.581 3.343 2.581H1.685C1.188 2.581.785 2.178.785 1.681Z" fill="#fff"/>
+            <circle cx="8.446" cy="19.674" r="1.688" fill="#fff"/>
+            <circle cx="16.376" cy="19.674" r="1.688" fill="#fff"/>
+            <path d="M4.574 4.474a.9.9 0 0 1 .9-.9h13.904c.271 0 .528.123.699.334.17.211.237.488.18.754l-1.406 6.596c-.078.368-.376.648-.747.702l-.428.063c-.272.04-.663.1-1.133.17-1.858.277-4.438.682-6.538 1.014l-.07.013c-.253.05-.522.116-.687.161-.053.016-.075.024-.075.024l-.004.002c-.268.123-.443.383-.443.683 0 .41.342.754.758.754H18.015a.9.9 0 1 1 0 1.8H7.33c-1.407 0-2.558-1.146-2.558-2.554 0-1.035.614-1.914 1.487-2.317.203-.095.475-.162.62-.196l.343-.077C7.638 11.726 10.298 11.317 12.79 10.94l.943-.14 1.044-4.926H5.474a.9.9 0 0 1-.9-.9Z" fill="#fff"/>
+          </svg>
+          {product.is_subscription ? '申し込む' : '購入手続きへ'}
+        </button>
+      </div>
+    )}
+  </div>
+</div>
 
 <!-- Purchase Success Modal -->
 <div id="purchase-success-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4">
