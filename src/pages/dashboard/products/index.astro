@@ -12,7 +12,7 @@ import Toast from '../../../components/Toast.astro';
 
     <!-- 並び替えヒント -->
     <p id="sort-hint" class="hidden mb-3 text-xs text-[var(--text-secondary)]">
-      ⠿ をドラッグして並び替えできます。順番は自動で保存されます。
+      ⠿ をドラッグして並び替えできます。番号をクリックすると位置を直接指定できます。順番は自動で保存されます。
     </p>
 
     <div id="products-list">
@@ -145,6 +145,58 @@ import Toast from '../../../components/Toast.astro';
         if (window.Sortable || ++tries > 20) { clearInterval(poll); initSortable(); }
       }, 100);
     }
+
+    // 順番クリックで位置指定移動
+    container.querySelectorAll<HTMLElement>('.item-order').forEach(span => {
+      span.classList.add('cursor-pointer', 'hover:underline', 'hover:text-[var(--primary)]');
+      span.title = 'クリックで位置変更';
+
+      span.addEventListener('click', () => {
+        const currentNum = parseInt(span.textContent ?? '1', 10);
+        const total = document.querySelectorAll('#sortable-list [data-id]').length;
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '1';
+        input.max = String(total);
+        input.value = String(currentNum);
+        input.className = 'w-10 text-center text-xs font-bold border border-[var(--primary)] rounded outline-none';
+
+        span.replaceWith(input);
+        input.focus();
+        input.select();
+
+        const commit = async () => {
+          const val = parseInt(input.value, 10);
+          const items = Array.from(document.querySelectorAll<HTMLElement>('#sortable-list [data-id]'));
+          const currentIdx = items.findIndex(el => el.contains(input));
+
+          const newSpan = document.createElement('span');
+          newSpan.className = span.className;
+          newSpan.title = span.title;
+          input.replaceWith(newSpan);
+
+          if (!isNaN(val) && val >= 1 && val <= total && val !== currentNum) {
+            const row = items[currentIdx];
+            const list = document.getElementById('sortable-list')!;
+            const newPos = val - 1; // 0-indexed
+            const refItem = items[newPos];
+            if (newPos < currentIdx) {
+              list.insertBefore(row, refItem);
+            } else {
+              list.insertBefore(row, refItem.nextSibling);
+            }
+            updateOrderNumbers();
+            await saveSortOrder();
+          } else {
+            newSpan.textContent = String(currentNum);
+          }
+        };
+
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
+        input.addEventListener('blur', commit);
+      });
+    });
 
     // ピックアップトグル
     container.querySelectorAll<HTMLButtonElement>('.pickup-btn').forEach(btn => {
