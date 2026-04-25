@@ -90,7 +90,7 @@ import Toast from '../../../components/Toast.astro';
 
     // 順番表示を更新する関数
     function updateOrderNumbers() {
-      const items = document.querySelectorAll<HTMLElement>('#sortable-list [data-id]');
+      const items = document.querySelectorAll<HTMLElement>('#sortable-list > [data-id]');
       items.forEach((el, i) => {
         const orderEl = el.querySelector('.item-order');
         if (orderEl) orderEl.textContent = String(i + 1);
@@ -99,7 +99,7 @@ import Toast from '../../../components/Toast.astro';
 
     // Supabase に sort_order を一括保存する関数
     async function saveSortOrder() {
-      const items = document.querySelectorAll<HTMLElement>('#sortable-list [data-id]');
+      const items = document.querySelectorAll<HTMLElement>('#sortable-list > [data-id]');
       const updates = Array.from(items).map((el, i) => ({
         id: el.dataset.id!,
         sort_order: i + 1,
@@ -155,7 +155,7 @@ import Toast from '../../../components/Toast.astro';
       const row = span.closest<HTMLElement>('[data-id]');
       if (!row) return;
 
-      const allItems = () => Array.from(list.querySelectorAll<HTMLElement>('[data-id]'));
+      const allItems = () => Array.from(list.querySelectorAll<HTMLElement>(':scope > [data-id]'));
       const currentIdx = allItems().indexOf(row);
       const currentNum = currentIdx + 1;
       const total = allItems().length;
