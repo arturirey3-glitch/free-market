@@ -49,7 +49,7 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
         </script>
       </>
     )}
-    {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+    {jsonLd && <Fragment set:html={`<script type="application/ld+json">${jsonLd}</script>`} />}
     <slot name="head" />
   </head>
   <body>
