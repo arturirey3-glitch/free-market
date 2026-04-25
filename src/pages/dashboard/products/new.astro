@@ -248,12 +248,13 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
       return;
     }
 
+    let uploadedUrls: string[] = [];
     if (selectedFiles.length > 0 && product) {
-      const urls = await uploadImages(product.id);
-      if (urls.length > 0) {
-        await supabase.from('products').update({ thumbnail_url: urls[0] }).eq('id', product.id);
+      uploadedUrls = await uploadImages(product.id);
+      if (uploadedUrls.length > 0) {
+        await supabase.from('products').update({ thumbnail_url: uploadedUrls[0] }).eq('id', product.id);
       }
-      const imageRows = urls.map((url, i) => ({
+      const imageRows = uploadedUrls.map((url, i) => ({
         product_id: product.id,
         image_url: url,
         sort_order: i,
@@ -270,6 +271,22 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ urls: [`https://www.felikko.com/products/${shortId}`] }),
+      }).catch(() => {});
+
+      // X（Twitter）に自動投稿
+      const uploadedImageUrls = uploadedUrls ?? [];
+      fetch('/api/post-to-x', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product: {
+            id: product.id,
+            title: formData.get('title'),
+            price: Number(formData.get('price')),
+            shipping_payer: formData.get('shipping_payer') ?? '',
+          },
+          imageUrls: uploadedImageUrls.slice(0, 4),
+        }),
       }).catch(() => {});
     }
 
