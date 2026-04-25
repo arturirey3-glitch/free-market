@@ -163,7 +163,9 @@ const jsonLdString = JSON.stringify(jsonLd);
   ogUrl={ogUrl}
   ogType="product"
 >
-  <script slot="head" type="application/ld+json" set:html={jsonLdString} />
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={jsonLdString} />
+  </Fragment>
   <div class="mx-auto max-w-[960px] px-4 py-4 pb-[88px] md:pb-4">
 
     <!-- Breadcrumb -->
