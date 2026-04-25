@@ -4,6 +4,8 @@ import ProductCard from '../components/ProductCard.astro';
 import { createSupabaseServer } from '../lib/supabaseServer';
 export const prerender = false;
 
+Astro.response.headers.set('Cache-Control', 'no-store');
+
 let products: any[] = [];
 let pickupProducts: any[] = [];
 let errorMessage = '';

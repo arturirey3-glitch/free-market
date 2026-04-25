@@ -6,6 +6,8 @@ import { CATEGORIES } from '../../lib/constants';
 
 export const prerender = false;
 
+Astro.response.headers.set('Cache-Control', 'no-store');
+
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
   'ファッション':      ['ファッション', 'レディース', 'メンズ', 'アパレル', '服', 'バッグ', '靴', 'シューズ', 'アクセサリー'],
   '家電・スマホ':      ['家電', 'スマホ', 'スマートフォン', 'PC', 'パソコン', 'オーディオ', 'カメラ', 'テレビ', '冷蔵庫', '洗濯機'],
