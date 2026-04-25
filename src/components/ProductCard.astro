@@ -7,6 +7,7 @@ interface Props {
     title: string;
     price: number;
     thumbnail_url: string | null;
+    is_pickup?: boolean;
     review_count?: number;
     review_average?: number;
     profiles?: { display_name: string | null; avatar_url: string | null };
@@ -18,6 +19,11 @@ const shortId = product.id.slice(0, 8);
 ---
 <a href={`/products/${shortId}`} class="card block group">
   <div class="relative aspect-square w-full bg-[var(--bg-secondary)]">
+    {product.is_pickup && (
+      <div class="absolute top-2 left-2 z-10 flex items-center gap-0.5 rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-bold text-white shadow">
+        ⭐ PICKUP
+      </div>
+    )}
     <div class="absolute inset-0 overflow-hidden">
       {product.thumbnail_url ? (
         <img

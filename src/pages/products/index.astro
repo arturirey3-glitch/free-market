@@ -47,8 +47,10 @@ try {
 
   let query = supabase
     .from('products')
-    .select('id,title,price,category,thumbnail_url,profiles:owner_id(display_name,avatar_url)')
+    .select('id,title,price,category,thumbnail_url,is_pickup,profiles:owner_id(display_name,avatar_url)')
     .eq('status', 'published')
+    .order('is_pickup', { ascending: false })
+    .order('sort_order', { ascending: true, nullsFirst: false })
     .order('created_at', { ascending: false });
 
   if (category) {

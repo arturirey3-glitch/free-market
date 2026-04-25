@@ -5,6 +5,7 @@ import { createSupabaseServer } from '../lib/supabaseServer';
 export const prerender = false;
 
 let products: any[] = [];
+let pickupProducts: any[] = [];
 let errorMessage = '';
 
 const buildRatingMap = (rows: { product_id: string; rating: number | null }[]) => {
@@ -23,25 +24,30 @@ try {
   const supabase = createSupabaseServer();
   const { data, error } = await supabase
     .from('products')
-    .select('id,title,price,category,thumbnail_url,profiles:owner_id(display_name,avatar_url)')
+    .select('id,title,price,category,thumbnail_url,is_pickup,profiles:owner_id(display_name,avatar_url)')
     .eq('status', 'published')
+    .order('is_pickup', { ascending: false })
+    .order('sort_order', { ascending: true, nullsFirst: false })
     .order('created_at', { ascending: false })
-    .limit(30);
+    .limit(60);
 
   if (error) throw error;
-  products = data ?? [];
+  const all = data ?? [];
 
-  const ids = products.map((p) => p.id).filter(Boolean);
+  const ids = all.map((p) => p.id).filter(Boolean);
+  let ratingMap = new Map<string, { count: number; sum: number }>();
   if (ids.length > 0) {
     const { data: revRows } = await supabase.from('reviews').select('product_id,rating').in('product_id', ids);
-    if (revRows) {
-      const ratingMap = buildRatingMap(revRows);
-      products = products.map((p) => {
-        const s = ratingMap.get(p.id);
-        return { ...p, review_count: s?.count ?? 0, review_average: s && s.count > 0 ? s.sum / s.count : 0 };
-      });
-    }
+    if (revRows) ratingMap = buildRatingMap(revRows);
   }
+
+  const withRatings = all.map((p) => {
+    const s = ratingMap.get(p.id);
+    return { ...p, review_count: s?.count ?? 0, review_average: s && s.count > 0 ? s.sum / s.count : 0 };
+  });
+
+  pickupProducts = withRatings.filter((p) => p.is_pickup);
+  products = withRatings.filter((p) => !p.is_pickup);
 } catch {
   errorMessage = 'データの取得に失敗しました。';
 }
@@ -52,6 +58,17 @@ try {
       <div class="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-700">
         {errorMessage}
       </div>
+    )}
+
+    {pickupProducts.length > 0 && (
+      <section class="mb-8">
+        <h2 class="text-base font-bold mb-4 flex items-center gap-1.5">
+          <span>⭐</span> ピックアップ商品
+        </h2>
+        <div class="grid-products">
+          {pickupProducts.map((product) => <ProductCard product={product} />)}
+        </div>
+      </section>
     )}
 
     <h2 class="text-base font-bold mb-4">新着商品</h2>
