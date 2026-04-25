@@ -107,7 +107,7 @@ try {
 
       await supabase.from('review_tokens').update({ used: true }).eq('token', token);
       window.showToast?.('success', '投稿完了', 'レビューを投稿しました。ありがとうございます！');
-      setTimeout(() => { window.location.href = `/products/${productId.slice(0, 8)}`; }, 2000);
+      setTimeout(() => { window.location.href = `/products/${productId.slice(0, 8)}?t=${Date.now()}`; }, 2000);
     });
   }
   </script>
