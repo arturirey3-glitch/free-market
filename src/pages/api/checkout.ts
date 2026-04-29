@@ -50,13 +50,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
         } : {})
       }],
       mode: isSubscription ? 'subscription' : 'payment',
-      // サブスク以外はコンビニ支払いも追加
+      // ダッシュボードで有効な支払い方法を自動表示（コンビニ含む）
+      automatic_payment_methods: { enabled: true },
       ...(!isSubscription ? {
-        payment_method_types: ['card', 'konbini'],
         payment_method_options: {
-          konbini: {
-            expires_after_days: 3,
-          },
+          konbini: { expires_after_days: 3 },
         },
       } : {}),
       phone_number_collection: { enabled: true },
