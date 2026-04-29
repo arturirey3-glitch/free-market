@@ -50,6 +50,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
         } : {})
       }],
       mode: isSubscription ? 'subscription' : 'payment',
+      // サブスク以外はコンビニ支払いも追加
+      ...(!isSubscription ? {
+        payment_method_types: ['card', 'konbini'],
+        payment_method_options: {
+          konbini: {
+            expires_after_days: 3,
+          },
+        },
+      } : {}),
+      phone_number_collection: { enabled: true },
       shipping_address_collection: { allowed_countries: ['JP'] },
       success_url: `${siteUrl}/products/${shortId}?checkout=success`,
       cancel_url: `${siteUrl}/products/${shortId}?checkout=cancel`,
