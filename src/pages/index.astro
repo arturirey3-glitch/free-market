@@ -54,8 +54,24 @@ try {
   errorMessage = 'データの取得に失敗しました。';
 }
 ---
-<BaseLayout title="felikko">
+<BaseLayout
+  title="felikko | スタバ・マリメッコ雑貨のフリマ通販"
+  description="felikkoはスタバグッズ・マリメッコ・北欧インテリア雑貨を中心としたフリマ通販サイトです。クッションカバー・マット・スマホリングなど人気商品を多数取り揃え。即購入OK・送料込みで安心お買い物。"
+  jsonLd={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "felikko",
+    "url": "https://www.felikko.com",
+    "description": "スタバ・マリメッコ・北欧インテリア雑貨のフリマ通販サイト",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": { "@type": "EntryPoint", "urlTemplate": "https://www.felikko.com/products?q={search_term_string}" },
+      "query-input": "required name=search_term_string"
+    }
+  })}
+>
   <div class="mx-auto max-w-[1440px] px-4 py-6">
+    <h1 class="sr-only">felikko | スタバ・マリメッコ雑貨のフリマ通販</h1>
     {errorMessage && (
       <div class="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-700">
         {errorMessage}

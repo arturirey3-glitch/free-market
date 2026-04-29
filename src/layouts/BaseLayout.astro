@@ -10,7 +10,7 @@ interface Props {
   jsonLd?: string;
 }
 
-const { title = 'felikko | フリマサイト', description, ogImage, ogUrl, ogType = 'website', jsonLd } = Astro.props;
+const { title = 'felikko | スタバ・マリメッコ雑貨のフリマ通販', description = 'felikkoはスタバグッズ・マリメッコ・北欧インテリア雑貨を中心としたフリマ通販サイト。即購入OK・送料込みで安心お買い物。', ogImage, ogUrl, ogType = 'website', jsonLd } = Astro.props;
 const siteUrl = 'https://www.felikko.com';
 const canonicalUrl = ogUrl || siteUrl + Astro.url.pathname;
 const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';

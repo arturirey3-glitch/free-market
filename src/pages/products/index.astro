@@ -84,7 +84,11 @@ try {
   }
 } catch {}
 ---
-<BaseLayout title={`${category || q || '商品一覧'} | Free Market`}>
+<BaseLayout
+  title={q ? `「${q}」の検索結果 | felikko` : category ? `${category}の商品一覧 | felikko` : '商品一覧 | felikko フリマ通販'}
+  description={q ? `felikkoで「${q}」を検索した結果${products.length}件。スタバ・マリメッコ・北欧インテリア雑貨を即購入OK・送料込みで販売中。` : category ? `felikkoの${category}カテゴリの商品一覧。即購入OK・送料込みで安心お買い物。` : 'felikkoの全商品一覧。スタバグッズ・マリメッコ・北欧インテリア雑貨など人気商品を多数掲載。即購入OK・送料込み。'}
+>
+  <h1 class="sr-only">{q ? `「${q}」の検索結果` : category ? `${category}の商品一覧` : '商品一覧'}</h1>
   <div class="border-b border-[var(--border-light)] bg-white">
     <div class="mx-auto max-w-[1440px] px-4 py-3 flex gap-2 overflow-x-auto">
       <a href="/products" class:list={["shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition", !category ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--primary-light)]' : 'border-[var(--border)] hover:border-[var(--primary)]']}>
