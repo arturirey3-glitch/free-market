@@ -335,16 +335,14 @@ const jsonLdString = JSON.stringify(jsonLd);
             </>
           )}
 
-          <!-- LINE inquiry button -->
-          <button
-            type="button"
-            id="line-modal-open"
-            class="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 h-[44px] px-3 text-sm font-semibold tracking-wide transition-colors hover:opacity-90"
-            style="border-color: #06C755; color: #06C755;"
-          >
-            <img src="/icons/LINE_APP_Android.png" alt="LINE" width="22" height="22" class="rounded-[5px]" />
-            LINEで問い合わせる
-          </button>
+          <a href="/contact"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 h-[44px] px-3 text-sm font-semibold transition hover:opacity-90"
+            style="border-color: var(--primary); color: var(--primary);">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            お問い合わせ
+          </a>
 
         </div>
 
@@ -757,20 +755,6 @@ const jsonLdString = JSON.stringify(jsonLd);
       });
     });
 
-    // --- LINE Modal ---
-    const lineModalOpen = document.getElementById('line-modal-open');
-    const lineModal = document.getElementById('line-modal')!;
-    function openLineModal() { lineModal.classList.remove('hidden'); lineModal.classList.add('flex'); document.body.style.overflow = 'hidden'; }
-    function closeLineModal() { lineModal.classList.add('hidden'); lineModal.classList.remove('flex'); document.body.style.overflow = ''; }
-    lineModalOpen?.addEventListener('click', openLineModal);
-    document.getElementById('line-modal-open-mobile')?.addEventListener('click', openLineModal);
-    document.querySelectorAll('[data-line-modal-close]').forEach(el => el.addEventListener('click', closeLineModal));
-    lineModal.addEventListener('click', (e) => { if (e.target === lineModal) closeLineModal(); });
-    document.querySelector('[data-line-copy-url]')?.addEventListener('click', async () => {
-      const span = document.querySelector<HTMLElement>('[data-line-copy-text]');
-      await navigator.clipboard.writeText('https://lin.ee/t47Nzid');
-      if (span) { span.textContent = 'コピーしました！'; setTimeout(() => { span.textContent = 'URLをコピー'; }, 2000); }
-    });
 
     // --- Admin sections ---
     import { supabase } from '../../lib/supabaseClient';
@@ -986,15 +970,14 @@ const jsonLdString = JSON.stringify(jsonLd);
       </button>
     ) : (
       <div class="flex items-center gap-2 shrink-0">
-        <button
-          type="button"
-          id="line-modal-open-mobile"
-          aria-label="LINEで問い合わせる"
+        <a href="/contact"
+          aria-label="お問い合わせ"
           class="flex h-[48px] w-[48px] items-center justify-center rounded-full border-2 transition hover:opacity-80"
-          style="border-color: #06C755;"
-        >
-          <img src="/icons/LINE_APP_Android.png" alt="LINE" width="24" height="24" class="rounded-[5px]" />
-        </button>
+          style="border-color: var(--primary); color: var(--primary);">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </a>
         <button
           class="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--primary)] text-white h-[48px] px-7 text-sm font-semibold tracking-wide transition-colors hover:bg-[var(--primary-hover)] active:scale-[0.98]"
           data-checkout
@@ -1044,30 +1027,5 @@ const jsonLdString = JSON.stringify(jsonLd);
   </div>
 </div>
 
-<!-- LINE Modal -->
-<div id="line-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4">
-  <div class="mx-4 max-w-sm w-full transform rounded-2xl bg-white p-6 shadow-xl">
-    <div class="text-center">
-      <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#06C755]">
-        <img src="/icons/LINE_APP_Android.png" alt="LINE" width="28" height="28" class="rounded-[6px]" />
-      </div>
-      <h3 class="text-lg font-semibold text-stone-900">LINE で見積り相談</h3>
-      <p class="mt-2 text-sm text-stone-600">スマートフォンでアクセスする必要があります。<br />QRコードを読み込んでください。</p>
-      <div class="mt-4 flex justify-center">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Flin.ee%2Ft47Nzid" alt="LINE QRコード" class="h-[200px] w-[200px] rounded-lg border border-stone-200" />
-      </div>
-      <div class="mt-4 space-y-2">
-        <a href="https://lin.ee/t47Nzid" target="_blank" rel="noreferrer" class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#06C755] px-6 py-3 text-sm font-semibold text-white hover:bg-[#05b04c]">
-          <img src="/icons/LINE_APP_Android.png" alt="LINE" width="16" height="16" class="rounded-[3px]" />
-          スマホで開く
-        </a>
-        <button type="button" data-line-copy-url class="inline-flex w-full items-center justify-center gap-2 rounded-full border border-stone-300 px-6 py-3 text-sm font-medium text-stone-700 hover:bg-stone-50">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          <span data-line-copy-text>URLをコピー</span>
-        </button>
-        <button type="button" data-line-modal-close class="w-full rounded-full border border-stone-200 px-6 py-2 text-sm text-stone-500 hover:bg-stone-50">閉じる</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- LINE Modal removed -->
 </BaseLayout>
