@@ -14,7 +14,7 @@
 <body>
   <div class="min-h-screen flex flex-col">
 
-    <!-- Header（既存と同じ） -->
+    <!-- Header -->
     <header class="sticky top-0 z-40 bg-white border-b border-[var(--border-light)]">
       <div class="mx-auto flex max-w-[1440px] items-center justify-between px-4 h-16">
         <a href="/" class="shrink-0">
@@ -131,16 +131,18 @@
                 ></textarea>
               </div>
 
-              <!-- 送信ボタン -->
-              <button
-                type="submit" id="submit-btn"
-                class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[var(--primary)] text-white h-[48px] px-4 text-sm font-semibold hover:bg-[var(--primary-hover)] transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
-                送信する
-              </button>
+              <!-- 送信ボタン（短く中央寄せ） -->
+              <div class="flex justify-center">
+                <button
+                  type="submit" id="submit-btn"
+                  class="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--primary)] text-white h-[48px] px-10 text-sm font-semibold hover:bg-[var(--primary-hover)] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                  送信する
+                </button>
+              </div>
 
               <p class="text-center text-xs text-stone-400">
                 通常2〜3営業日以内にご返信いたします
@@ -152,21 +154,21 @@
           <!-- ── サイドバー：LINE ── -->
           <div class="space-y-4">
 
-            <!-- LINEで連絡 -->
+            <!-- LINEで連絡（クリックでQRモーダル） -->
             <div class="rounded-2xl bg-white p-6 shadow-sm">
               <h2 class="mb-1 text-base font-semibold text-stone-900">LINEで問い合わせ</h2>
               <p class="mb-4 text-xs text-stone-500">
                 LINEからでもお気軽にご連絡ください。
               </p>
-              <a
-                href="https://lin.ee/YOUR_LINE_ID"
-                target="_blank" rel="noopener noreferrer"
+              <button
+                type="button"
+                id="line-modal-open"
                 class="inline-flex w-full items-center justify-center gap-2 rounded-full h-[48px] px-4 text-sm font-semibold text-white transition hover:opacity-90"
                 style="background-color: #06C755;"
               >
                 <img src="/icons/LINE_APP_Android.png" alt="LINE" width="22" height="22" class="rounded-[5px]">
                 LINEで連絡する
-              </a>
+              </button>
               <p class="mt-3 text-xs text-center text-stone-400">
                 返信時間：毎日 10:00〜18:00
               </p>
@@ -214,7 +216,40 @@
 
   </div>
 
+  <!-- LINE QR モーダル -->
+  <div id="line-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4">
+    <div class="mx-4 max-w-sm w-full transform rounded-2xl bg-white p-6 shadow-xl">
+      <div class="text-center">
+        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#06C755]">
+          <img src="/icons/LINE_APP_Android.png" alt="LINE" width="28" height="28" class="rounded-[6px]">
+        </div>
+        <h3 class="text-lg font-semibold text-stone-900">LINEで問い合わせ</h3>
+        <p class="mt-2 text-sm text-stone-600">QRコードを読み込むか、ボタンからLINEを開いてください。</p>
+        <div class="mt-4 flex justify-center">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Flin.ee%2Ft47Nzid" alt="LINE QRコード" class="h-[200px] w-[200px] rounded-lg border border-stone-200">
+        </div>
+        <div class="mt-4 space-y-2">
+          <a href="https://lin.ee/t47Nzid" target="_blank" rel="noreferrer"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#06C755] px-6 py-3 text-sm font-semibold text-white hover:bg-[#05b04c]">
+            <img src="/icons/LINE_APP_Android.png" alt="LINE" width="16" height="16" class="rounded-[3px]">
+            LINEを開く
+          </a>
+          <button type="button" id="line-copy-btn"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-full border border-stone-300 px-6 py-3 text-sm font-medium text-stone-700 hover:bg-stone-50">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span id="line-copy-text">URLをコピー</span>
+          </button>
+          <button type="button" id="line-modal-close"
+            class="w-full rounded-full border border-stone-200 px-6 py-2 text-sm text-stone-500 hover:bg-stone-50">
+            閉じる
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // ── フォーム送信 ──
     const form = document.getElementById('contact-form') as HTMLFormElement;
     const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
     const successMsg = document.getElementById('success-msg')!;
@@ -258,6 +293,27 @@
           </svg>
           送信する`;
       }
+    });
+
+    // ── LINE モーダル ──
+    const lineModal = document.getElementById('line-modal')!;
+    function openModal() {
+      lineModal.classList.remove('hidden');
+      lineModal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal() {
+      lineModal.classList.add('hidden');
+      lineModal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('line-modal-open')?.addEventListener('click', openModal);
+    document.getElementById('line-modal-close')?.addEventListener('click', closeModal);
+    lineModal.addEventListener('click', (e) => { if (e.target === lineModal) closeModal(); });
+    document.getElementById('line-copy-btn')?.addEventListener('click', async () => {
+      await navigator.clipboard.writeText('https://lin.ee/t47Nzid');
+      const txt = document.getElementById('line-copy-text');
+      if (txt) { txt.textContent = 'コピーしました！'; setTimeout(() => { txt.textContent = 'URLをコピー'; }, 2000); }
     });
   </script>
 </body>
