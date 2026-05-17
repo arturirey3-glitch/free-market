@@ -244,7 +244,7 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
               const isUnread = n.created_at > lastRead;
               const shortId = n.product_id?.slice(0, 8) ?? '';
               const msg = n.message.length > 60 ? n.message.slice(0, 60) + '…' : n.message;
-              return `<a href="/products/${shortId}" class="flex items-start gap-3 px-4 py-3 hover:bg-stone-50 transition-colors ${isUnread ? 'bg-green-50/60' : ''}">
+              return `<a href="/products/${shortId}#comment-${n.id}" class="flex items-start gap-3 px-4 py-3 hover:bg-stone-50 transition-colors ${isUnread ? 'bg-green-50/60' : ''}">
                 ${isUnread ? '<span class="mt-1.5 w-2 h-2 rounded-full bg-[var(--primary)] shrink-0"></span>' : '<span class="mt-1.5 w-2 h-2 shrink-0"></span>'}
                 <div class="flex-1 min-w-0">
                   <p class="text-[11px] text-stone-400 truncate">${n.product_title}</p>
@@ -362,7 +362,7 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
               const isUnread = toMs(n.created_at) > toMs(lastRead);
               const shortId = n.product_id?.slice(0, 8) ?? '';
               const msg = n.message.length > 60 ? n.message.slice(0, 60) + '…' : n.message;
-              return `<a href="/products/${shortId}" class="flex items-start gap-3 px-4 py-3 hover:bg-stone-50 transition-colors ${isUnread ? 'bg-green-50/60' : ''}">
+              return `<a href="/products/${shortId}#comment-${n.id}" class="flex items-start gap-3 px-4 py-3 hover:bg-stone-50 transition-colors ${isUnread ? 'bg-green-50/60' : ''}">
                 ${isUnread ? '<span class="mt-1.5 w-2 h-2 rounded-full bg-[var(--primary)] shrink-0"></span>' : '<span class="mt-1.5 w-2 h-2 shrink-0"></span>'}
                 <div class="flex-1 min-w-0">
                   <p class="text-[11px] text-stone-400 truncate">${n.product_title}</p>

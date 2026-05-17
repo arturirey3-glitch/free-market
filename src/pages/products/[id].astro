@@ -578,6 +578,7 @@ const jsonLdString = JSON.stringify(jsonLd);
         <form id="comment-form" class="space-y-3">
           <input type="hidden" id="comment-product-id" value={product.id} />
           <input type="hidden" id="comment-product-title" value={product.title} />
+          <input type="hidden" id="owner-avatar-url" value={profile?.avatar_url ?? ''} />
           <!-- お名前入力 -->
           <div class="flex items-center gap-3">
             <div id="comment-avatar-preview"
@@ -1154,20 +1155,21 @@ function fmtDate(iso: string) {
 function buildCommentEl(c: any): HTMLElement {
   const div = document.createElement('div');
   div.dataset.commentId = c.id;
+  div.id = `comment-${c.id}`;
   const adminBadge = c.is_admin ? '<span class="rounded-full bg-[var(--primary)] px-2 py-0.5 text-[9px] text-white font-bold">出品者</span>' : '';
   const dateStr = fmtDate(c.created_at ?? '');
   div.className = 'rounded-xl border border-[var(--border-light)] p-4 bg-white';
 
   const parentHtml = ''; // スレッド表示に変更したため引用は不要
 
-  // アバター生成
+  // アバター生成（owner-avatar-urlはサーバー側から直接取得 → タイミング問題なし）
+  const ownerAvatarUrl = (document.getElementById('owner-avatar-url') as HTMLInputElement)?.value || '';
   const avatarHtml = (() => {
     if (c.is_admin) {
-      const avatarUrl = (window as any).__adminAvatar;
-      if (avatarUrl) {
-        return `<div class="h-9 w-9 shrink-0 overflow-hidden rounded-full border-2 border-[var(--primary)]"><img src="${avatarUrl}" alt="出品者" class="h-full w-full object-cover"/></div>`;
+      if (ownerAvatarUrl) {
+        return `<div class="h-9 w-9 shrink-0 overflow-hidden rounded-full border-2 border-[var(--primary)]"><img src="${ownerAvatarUrl}" alt="出品者" class="h-full w-full object-cover"/></div>`;
       }
-      return `<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-white text-xs font-bold border-2 border-[var(--primary)]">出</div>`;
+      return `<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-white text-xs font-bold">出</div>`;
     }
     const displayName = c.name && c.name !== '匿名' ? c.name : '';
     if (displayName) {
@@ -1346,7 +1348,19 @@ function checkReplyNotify(comments: any[]) {
   } catch {}
 }
 
-loadComments();
+loadComments().then(() => {
+  const hash = window.location.hash;
+  if (hash.startsWith('#comment-')) {
+    const target = document.getElementById(hash.slice(1));
+    if (target) {
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.add('ring-2', 'ring-[var(--primary)]', 'ring-offset-2', 'transition-all');
+        setTimeout(() => target.classList.remove('ring-2', 'ring-[var(--primary)]', 'ring-offset-2'), 3000);
+      }, 300);
+    }
+  }
+});
 
 // Char count
 const msgEl = document.getElementById('comment-message') as HTMLTextAreaElement | null;
