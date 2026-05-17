@@ -578,6 +578,19 @@ const jsonLdString = JSON.stringify(jsonLd);
         <form id="comment-form" class="space-y-3">
           <input type="hidden" id="comment-product-id" value={product.id} />
           <input type="hidden" id="comment-product-title" value={product.title} />
+          <!-- お名前入力 -->
+          <div class="flex items-center gap-3">
+            <div id="comment-avatar-preview"
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-400 text-base font-bold transition-all"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            </div>
+            <div class="flex-1">
+              <input id="comment-name" type="text" maxlength="30" placeholder="お名前（任意）"
+                class="w-full rounded-xl border border-[var(--border)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)] transition"
+              />
+            </div>
+          </div>
           <div>
             <textarea id="comment-message" required rows="4" maxlength="500"
               placeholder="商品についての質問・コメントをご記入ください。"
@@ -1116,6 +1129,11 @@ let _accessToken: string | null = null;
       _accessToken = session.access_token;
       const { data: prof } = await sb.from('profiles').select('display_name').eq('id', session.user.id).single();
       _loggedInName = prof?.display_name?.trim() || null;
+      // ログイン済みなら名前欄に自動セット
+      if (_loggedInName && nameInput && !nameInput.value) {
+        nameInput.value = _loggedInName;
+        updateAvatar(_loggedInName);
+      }
     }
   } catch {}
 })();
@@ -1306,6 +1324,35 @@ msgEl?.addEventListener('input', () => {
   if (charEl) charEl.textContent = String(msgEl.value.length);
 });
 
+// お名前入力でアバターをリアルタイム更新
+const nameInput = document.getElementById('comment-name') as HTMLInputElement | null;
+const avatarEl = document.getElementById('comment-avatar-preview');
+const AVATAR_COLORS_FORM = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#8b5cf6','#ec4899','#6366f1','#10b981'];
+function getAvatarColor(name: string) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return AVATAR_COLORS_FORM[Math.abs(h) % AVATAR_COLORS_FORM.length];
+}
+function updateAvatar(name: string) {
+  if (!avatarEl) return;
+  if (name.trim()) {
+    const color = getAvatarColor(name.trim());
+    avatarEl.style.backgroundColor = color;
+    avatarEl.style.color = '#fff';
+    avatarEl.innerHTML = `<span>${Array.from(name.trim())[0].toUpperCase()}</span>`;
+  } else {
+    avatarEl.style.backgroundColor = '';
+    avatarEl.style.color = '';
+    avatarEl.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>`;
+  }
+}
+nameInput?.addEventListener('input', () => updateAvatar(nameInput.value));
+// ログイン済みの場合は名前をプリセット
+if (_loggedInName && nameInput) {
+  nameInput.value = _loggedInName;
+  updateAvatar(_loggedInName);
+}
+
 // Form submit
 const commentForm = document.getElementById('comment-form') as HTMLFormElement | null;
 const commentSubmit = document.getElementById('comment-submit-btn') as HTMLButtonElement | null;
@@ -1327,11 +1374,13 @@ commentForm?.addEventListener('submit', async (e) => {
     const res = await fetch('/api/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, message, name: _loggedInName || undefined, access_token: _accessToken || undefined }),
+      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, message, name: nameInput?.value.trim() || _loggedInName || undefined, access_token: _accessToken || undefined }),
     });
     if (res.ok) {
       commentSuccess?.classList.remove('hidden');
+      const savedName = nameInput?.value ?? '';
       commentForm.reset();
+      if (nameInput) { nameInput.value = savedName; updateAvatar(savedName); } // 名前は残す
       if (charEl) charEl.textContent = '0';
 
       // コメントした商品・時刻をlocalStorageに記録（返信通知用）
