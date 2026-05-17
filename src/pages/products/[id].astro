@@ -294,18 +294,30 @@ const jsonLdString = JSON.stringify(jsonLd);
 
         <h1 class="mb-4 text-[1.0625rem] font-semibold leading-snug">{product.title}</h1>
 
-        <!-- Price -->
-        <div class="flex items-baseline gap-2">
-          <span class="text-[1.75rem] font-semibold leading-none">{formatJPY(product.price)}</span>
-          <span class="text-sm text-[var(--text-secondary)]">税込</span>
-          {product.shipping_payer && (
-            <span class="text-sm text-[var(--text-secondary)]">
-              {product.shipping_payer.includes('出品者') ? '送料込み' : '着払い'}
-            </span>
-          )}
-          {product.is_subscription && (
-            <span class="rounded bg-[var(--primary-light)] px-2 py-0.5 text-xs font-bold text-[var(--primary)]">月額</span>
-          )}
+        <!-- Price + Like -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-baseline gap-2 flex-1">
+            <span class="text-[1.75rem] font-semibold leading-none">{formatJPY(product.price)}</span>
+            <span class="text-sm text-[var(--text-secondary)]">税込</span>
+            {product.shipping_payer && (
+              <span class="text-sm text-[var(--text-secondary)]">
+                {product.shipping_payer.includes('出品者') ? '送料込み' : '着払い'}
+              </span>
+            )}
+            {product.is_subscription && (
+              <span class="rounded bg-[var(--primary-light)] px-2 py-0.5 text-xs font-bold text-[var(--primary)]">月額</span>
+            )}
+          </div>
+          <!-- Like button (desktop) -->
+          <button id="like-btn-desktop"
+            class="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-[var(--border-light)] text-[var(--text-secondary)] hover:border-red-300 hover:text-red-500 transition group shrink-0"
+            aria-label="いいね"
+          >
+            <svg id="like-icon-desktop" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span id="like-count-desktop" class="text-[11px] font-semibold leading-none">{product.likes_count ?? 0}</span>
+          </button>
         </div>
 
         {reviews.length > 0 && (
@@ -545,14 +557,6 @@ const jsonLdString = JSON.stringify(jsonLd);
           <input type="hidden" id="comment-product-id" value={product.id} />
           <input type="hidden" id="comment-product-title" value={product.title} />
           <div>
-            <label class="block text-xs font-semibold text-stone-600 mb-1">お名前 <span class="text-red-500">*</span></label>
-            <input type="text" id="comment-name" required maxlength="50"
-              placeholder="例：山田 太郎"
-              class="w-full rounded-xl border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition"
-            />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-stone-600 mb-1">コメント <span class="text-red-500">*</span></label>
             <textarea id="comment-message" required rows="4" maxlength="500"
               placeholder="商品についての質問・コメントをご記入ください。"
               class="w-full rounded-xl border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition resize-none"
@@ -1001,6 +1005,64 @@ const jsonLdString = JSON.stringify(jsonLd);
   </script>
 
 <script>
+// ── いいね ──
+(function() {
+  const pid = (document.getElementById('comment-product-id') as HTMLInputElement)?.value;
+  if (!pid) return;
+
+  const STORAGE_KEY = `liked_${pid}`;
+  const isLiked = localStorage.getItem(STORAGE_KEY) === '1';
+
+  const FILLED_SVG = `<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="currentColor" stroke="currentColor"/>`;
+  const EMPTY_SVG = `<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>`;
+
+  function applyLikedState(liked: boolean) {
+    ['desktop', 'mobile'].forEach(suffix => {
+      const btn = document.getElementById(`like-btn-${suffix}`);
+      const icon = document.getElementById(`like-icon-${suffix}`);
+      if (!btn || !icon) return;
+      if (liked) {
+        icon.innerHTML = FILLED_SVG;
+        btn.classList.add('text-red-500', 'border-red-300');
+        btn.classList.remove('text-[var(--text-secondary)]');
+      } else {
+        icon.innerHTML = EMPTY_SVG;
+        btn.classList.remove('text-red-500', 'border-red-300');
+        btn.classList.add('text-[var(--text-secondary)]');
+      }
+    });
+  }
+
+  applyLikedState(isLiked);
+
+  async function handleLike() {
+    if (localStorage.getItem(STORAGE_KEY) === '1') return; // 既にいいね済み
+    localStorage.setItem(STORAGE_KEY, '1');
+    applyLikedState(true);
+
+    try {
+      const res = await fetch('/api/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: pid }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const count = data.likes_count ?? null;
+        if (count !== null) {
+          const cd = document.getElementById('like-count-desktop');
+          const cm = document.getElementById('like-count-mobile');
+          if (cd) cd.textContent = String(count);
+          if (cm) cm.textContent = String(count);
+        }
+      }
+    } catch {}
+  }
+
+  document.getElementById('like-btn-desktop')?.addEventListener('click', handleLike);
+  document.getElementById('like-btn-mobile')?.addEventListener('click', handleLike);
+})();
+
 // ── 商品コメント ──
 const productId = (document.getElementById('comment-product-id') as HTMLInputElement)?.value;
 const productTitle = (document.getElementById('comment-product-title') as HTMLInputElement)?.value;
@@ -1018,20 +1080,20 @@ function fmtDate(iso: string) {
 
 function buildCommentEl(c: any): HTMLElement {
   const div = document.createElement('div');
-  const initial = (c.name ?? 'ゲスト').charAt(0).toUpperCase();
-  const color = c.is_admin ? '#07b53b' : getColorC(c.name ?? 'ゲスト');
-  const adminBadge = c.is_admin ? '<span class="ml-1 rounded-full bg-[var(--primary)] px-2 py-0.5 text-[9px] text-white font-bold">出品者</span>' : '';
+  const adminBadge = c.is_admin ? '<span class="rounded-full bg-[var(--primary)] px-2 py-0.5 text-[9px] text-white font-bold">出品者</span>' : '';
+  const dateStr = fmtDate(c.created_at ?? '');
   div.className = 'rounded-xl border border-[var(--border-light)] p-4 bg-white';
   div.innerHTML = `
     <div class="flex items-start gap-3">
-      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style="background-color:${color}">${initial}</div>
+      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-400">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-2">
-          <div class="flex items-center gap-1 flex-wrap">
-            <span class="text-sm font-semibold text-stone-900">${c.name ?? 'ゲスト'}</span>
-            ${adminBadge}
+          <div class="flex items-center gap-1.5 flex-wrap">
+            ${c.is_admin ? adminBadge : '<span class="text-xs text-stone-500">匿名ユーザー</span>'}
           </div>
-          <span class="text-[10px] text-stone-400 shrink-0">${fmtDate(c.created_at ?? '')}</span>
+          <span class="text-[10px] text-stone-400 shrink-0">${dateStr}</span>
         </div>
         <p class="mt-1.5 text-sm text-stone-700 whitespace-pre-wrap leading-relaxed">${c.message.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
       </div>
@@ -1071,9 +1133,8 @@ const commentError = document.getElementById('comment-error');
 commentForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!commentSubmit) return;
-  const name = (document.getElementById('comment-name') as HTMLInputElement).value.trim();
   const message = (document.getElementById('comment-message') as HTMLTextAreaElement).value.trim();
-  if (!name || !message) return;
+  if (!message) return;
 
   commentSubmit.disabled = true;
   commentSubmit.textContent = '送信中...';
@@ -1084,7 +1145,7 @@ commentForm?.addEventListener('submit', async (e) => {
     const res = await fetch('/api/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, name, message }),
+      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, message }),
     });
     if (res.ok) {
       commentSuccess?.classList.remove('hidden');
@@ -1127,6 +1188,15 @@ commentForm?.addEventListener('submit', async (e) => {
     <!-- Buttons -->
     {isSoldOut ? (
       <div class="flex items-center gap-2 shrink-0">
+        <button id="like-btn-mobile"
+          class="inline-flex flex-col items-center justify-center rounded-xl border border-[var(--border-light)] h-[48px] w-[52px] text-[var(--text-secondary)] hover:border-red-300 hover:text-red-500 transition shrink-0"
+          aria-label="いいね"
+        >
+          <svg id="like-icon-mobile" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span id="like-count-mobile" class="text-[9px] mt-0.5 font-semibold">{product.likes_count ?? 0}</span>
+        </button>
         <button
           onclick="document.getElementById('product-comments')?.scrollIntoView({behavior:'smooth'})"
           class="inline-flex flex-col items-center justify-center rounded-xl border border-[var(--border-light)] h-[48px] w-[52px] text-[var(--text-secondary)] hover:bg-stone-50 transition shrink-0"
@@ -1140,6 +1210,15 @@ commentForm?.addEventListener('submit', async (e) => {
       </div>
     ) : (
       <div class="flex items-center gap-2 shrink-0">
+        <button id="like-btn-mobile"
+          class="inline-flex flex-col items-center justify-center rounded-xl border border-[var(--border-light)] h-[48px] w-[52px] text-[var(--text-secondary)] hover:border-red-300 hover:text-red-500 transition shrink-0"
+          aria-label="いいね"
+        >
+          <svg id="like-icon-mobile" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span id="like-count-mobile" class="text-[9px] mt-0.5 font-semibold">{product.likes_count ?? 0}</span>
+        </button>
         <button
           onclick="document.getElementById('product-comments')?.scrollIntoView({behavior:'smooth'})"
           class="inline-flex flex-col items-center justify-center rounded-xl border border-[var(--border-light)] h-[48px] w-[52px] text-[var(--text-secondary)] hover:bg-stone-50 transition shrink-0"

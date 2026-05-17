@@ -31,9 +31,10 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
     const { product_id, product_title, product_url, name, message } = body;
+    const displayName = name?.trim() || '匿名';
 
-    if (!product_id || !name?.trim() || !message?.trim()) {
-      return new Response(JSON.stringify({ error: 'product_id, name, message are required' }), { status: 400 });
+    if (!product_id || !message?.trim()) {
+      return new Response(JSON.stringify({ error: 'product_id and message are required' }), { status: 400 });
     }
 
     const supabase = createSupabaseServer();
@@ -43,7 +44,7 @@ export const POST: APIRoute = async ({ request }) => {
       .from('product_comments')
       .insert({
         product_id,
-        name: name.trim().slice(0, 50),
+        name: displayName.slice(0, 50),
         message: message.trim().slice(0, 500),
         is_admin: false,
       })
@@ -62,7 +63,7 @@ export const POST: APIRoute = async ({ request }) => {
             color: 0x07b53b,
             fields: [
               { name: '商品名', value: product_title ?? '不明', inline: false },
-              { name: '投稿者', value: name.trim(), inline: true },
+              { name: '投稿者', value: displayName, inline: true },
               { name: 'コメント', value: message.trim().slice(0, 500), inline: false },
             ],
             footer: { text: 'felikko コメント通知' },
