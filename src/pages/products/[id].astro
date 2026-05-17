@@ -367,7 +367,7 @@ const jsonLdString = JSON.stringify(jsonLd);
               <button
                 class="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-[var(--primary)] text-[var(--primary)] h-[44px] px-3 text-sm font-semibold tracking-wide transition-colors hover:bg-[var(--primary)]/5"
                 data-checkout
-                data-payment-method="paidy"
+                data-payment-method="klarna"
                 data-product-id={product.id}
                 data-title={product.title}
                 data-price={product.price}
@@ -1283,7 +1283,7 @@ commentForm?.addEventListener('submit', async (e) => {
         <button
           class="inline-flex items-center justify-center gap-1.5 rounded-full border-2 border-[var(--primary)] text-[var(--primary)] h-[46px] text-sm font-semibold transition-colors hover:bg-[var(--primary)]/5 active:scale-[0.98]"
           data-checkout
-          data-payment-method="paidy"
+          data-payment-method="klarna"
           data-product-id={product.id}
           data-title={product.title}
           data-price={product.price}

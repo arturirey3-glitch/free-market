@@ -26,12 +26,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const siteUrl = new URL(request.url).origin;
     const isSubscription = mode === 'subscription';
-    const isPaidy = paymentMethod === 'paidy';
+    const isKlarna = paymentMethod === 'klarna';
     const shortId = productId.slice(0, 8);
     const maxQty = stock != null ? Math.min(Number(stock), 10) : 10;
 
     const session = await stripe.checkout.sessions.create({
-      ...(isPaidy ? { payment_method_types: ['paidy'] } : {}),
+      ...(isKlarna ? { payment_method_types: ['klarna'] } : {}),
       line_items: [{
         price_data: {
           currency: 'jpy',
@@ -52,7 +52,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         } : {})
       }],
       mode: isSubscription ? 'subscription' : 'payment',
-      phone_number_collection: { enabled: isPaidy },
+      phone_number_collection: { enabled: false },
       shipping_address_collection: { allowed_countries: ['JP'] },
       success_url: `${siteUrl}/products/${shortId}?checkout=success`,
       cancel_url: `${siteUrl}/products/${shortId}?checkout=cancel`,
@@ -61,7 +61,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         product_title: productTitle,
         seller_name: sellerName ?? '',
         product_url: `${siteUrl}/products/${shortId}`,
-        payment_method: paymentMethod ?? 'card',
+        payment_method: isKlarna ? 'klarna' : 'card',
       },
     });
 
