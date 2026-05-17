@@ -324,7 +324,7 @@ const jsonLdString = JSON.stringify(jsonLd);
             class="flex items-center gap-1.5 rounded-lg border border-stone-200 px-4 h-[40px] text-sm text-stone-500 hover:border-stone-400 hover:text-stone-700 transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            コメント<span id="comment-count-desktop-btn" class="ml-0.5 font-bold"></span>
+            <span id="comment-count-desktop-btn" class="font-bold"></span>
           </button>
         </div>
 
@@ -1371,6 +1371,52 @@ loadComments().then(() => {
   }
 });
 
+// ── Supabase Realtime: コメントをリアルタイム更新 ──
+(async () => {
+  if (!productId) return;
+
+  // トースト通知UI
+  function showCommentToast(isAdmin: boolean) {
+    const existing = document.getElementById('comment-toast');
+    existing?.remove();
+    const toast = document.createElement('div');
+    toast.id = 'comment-toast';
+    toast.className = [
+      'fixed bottom-24 left-1/2 -translate-x-1/2 z-50',
+      'flex items-center gap-2 rounded-full shadow-lg px-5 py-2.5 text-sm font-medium text-white',
+      'animate-[fadeInUp_0.3s_ease]',
+      isAdmin ? 'bg-[var(--primary)]' : 'bg-stone-700',
+    ].join(' ');
+    toast.innerHTML = isAdmin
+      ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 出品者からコメントが届きました`
+      : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 新しいコメントが届きました`;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.4s'; setTimeout(() => toast.remove(), 400); }, 3500);
+  }
+
+  // Supabase Realtimeチャンネル購読
+  const { supabase: realtimeClient } = await import('../../lib/supabaseClient');
+  let lastKnownIds = new Set(
+    Array.from(document.querySelectorAll<HTMLElement>('#comment-list [data-comment-id]')).map(el => el.dataset.commentId!)
+  );
+
+  realtimeClient
+    .channel(`product-comments-${productId}`)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'product_comments',
+      filter: `product_id=eq.${productId}`,
+    }, async (payload: any) => {
+      const newId = payload.new?.id;
+      if (!newId || lastKnownIds.has(newId)) return; // 自分の投稿は二重表示しない
+      lastKnownIds.add(newId);
+      await loadComments();
+      showCommentToast(!!payload.new?.is_admin);
+    })
+    .subscribe();
+})();
+
 // Char count
 const msgEl = document.getElementById('comment-message') as HTMLTextAreaElement | null;
 const charEl = document.getElementById('comment-char-count');
@@ -1560,4 +1606,11 @@ commentForm?.addEventListener('submit', async (e) => {
 </div>
 
 <!-- LINE Modal removed -->
+
+<style>
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+</style>
 </BaseLayout>
