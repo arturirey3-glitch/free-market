@@ -94,8 +94,7 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
               </button>
               <!-- Dropdown -->
               <div id="customer-notif-dropdown"
-                class="hidden absolute right-0 top-11 w-[min(320px,90vw)] bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] border border-[var(--border-light)] z-50 overflow-hidden"
-                style="right: max(0px, calc(50vw - 160px - env(safe-area-inset-right, 0px)));"
+                class="hidden absolute top-11 w-[min(320px,90vw)] bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] border border-[var(--border-light)] z-50 overflow-hidden"
               >
                 <div class="flex items-center justify-between px-4 py-3 border-b border-[var(--border-light)]">
                   <span class="text-sm font-semibold text-stone-800">返信通知</span>
@@ -371,13 +370,30 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
           } catch {}
         };
 
+        // ドロップダウンがはみ出さないよう位置を動的調整
+        const adjustDropdownPos = () => {
+          if (!customerDropdown || !customerWrap) return;
+          const wrapRect = customerWrap.getBoundingClientRect();
+          const dropW = Math.min(320, window.innerWidth * 0.9);
+          const rightAligned = wrapRect.right - dropW;
+          if (rightAligned < 8) {
+            customerDropdown.style.left = `${-wrapRect.left + 8}px`;
+            customerDropdown.style.right = 'auto';
+          } else {
+            customerDropdown.style.right = '0';
+            customerDropdown.style.left = 'auto';
+          }
+        };
+
         let cIsOpen = false;
         customerBell?.addEventListener('click', (e) => {
           e.stopPropagation();
           if (cIsOpen) {
             cIsOpen = false; customerDropdown?.classList.add('hidden');
           } else {
-            cIsOpen = true; customerDropdown?.classList.remove('hidden');
+            cIsOpen = true;
+            adjustDropdownPos();
+            customerDropdown?.classList.remove('hidden');
             loadCustomerNotifications();
           }
         });
