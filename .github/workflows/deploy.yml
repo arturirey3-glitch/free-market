@@ -22,7 +22,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: 024a2968eda48c6eaea6d761c59eaa72
         run: |
-          echo "${{ secrets.DISCORD_WEBHOOK_URL }}" | npx wrangler pages secret put DISCORD_WEBHOOK_URL --project-name=free-market
+          echo "${{ secrets.DISCORD_WEBHOOK_URL }}"   | npx wrangler pages secret put DISCORD_WEBHOOK_URL   --project-name=free-market
+          echo "${{ secrets.STRIPE_SECRET_KEY }}"     | npx wrangler pages secret put STRIPE_SECRET_KEY     --project-name=free-market
+          echo "${{ secrets.STRIPE_WEBHOOK_SECRET }}" | npx wrangler pages secret put STRIPE_WEBHOOK_SECRET --project-name=free-market || true
+          echo "${{ secrets.RESEND_API_KEY }}"        | npx wrangler pages secret put RESEND_API_KEY        --project-name=free-market || true
 
       - run: npm run build
         env:
