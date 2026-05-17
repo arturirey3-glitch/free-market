@@ -13,7 +13,7 @@ export const GET: APIRoute = async ({ url }) => {
     const supabase = createSupabaseServer();
     const { data, error } = await supabase
       .from('product_comments')
-      .select('*')
+      .select('*, parent:in_reply_to(id, name, message, is_admin)')
       .eq('product_id', productId)
       .order('created_at', { ascending: true });
 
@@ -30,7 +30,7 @@ export const GET: APIRoute = async ({ url }) => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { product_id, product_title, product_url, name, message, access_token } = body;
+    const { product_id, product_title, product_url, name, message, access_token, in_reply_to } = body;
     const displayName = name?.trim() || '匿名';
 
     if (!product_id || !message?.trim()) {
@@ -60,6 +60,7 @@ export const POST: APIRoute = async ({ request }) => {
         message: message.trim().slice(0, 500),
         is_admin: isAdmin,
         ...(userId ? { user_id: userId } : {}),
+        ...(in_reply_to ? { in_reply_to } : {}),
       })
       .select()
       .single();

@@ -1136,6 +1136,17 @@ function buildCommentEl(c: any): HTMLElement {
   const adminBadge = c.is_admin ? '<span class="rounded-full bg-[var(--primary)] px-2 py-0.5 text-[9px] text-white font-bold">出品者</span>' : '';
   const dateStr = fmtDate(c.created_at ?? '');
   div.className = 'rounded-xl border border-[var(--border-light)] p-4 bg-white';
+
+  // 返信元コメントの引用表示
+  const parentHtml = c.parent ? (() => {
+    const pName = c.parent.is_admin ? '出品者' : (c.parent.name && c.parent.name !== '匿名' ? c.parent.name : '匿名ユーザー');
+    const pMsg = (c.parent.message ?? '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const preview = pMsg.length > 40 ? pMsg.slice(0, 40) + '…' : pMsg;
+    return `<div class="mb-2 rounded-lg bg-stone-50 border-l-2 border-[var(--primary)] px-3 py-1.5 text-xs text-stone-500">
+      <span class="font-semibold text-stone-600">${pName}</span>：${preview}
+    </div>`;
+  })() : '';
+
   div.innerHTML = `
     <div class="flex items-start gap-3">
       <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-400">
@@ -1152,6 +1163,7 @@ function buildCommentEl(c: any): HTMLElement {
             <button type="button" data-comment-delete class="hidden text-[10px] text-red-400 hover:text-red-600 transition">削除</button>
           </div>
         </div>
+        ${parentHtml}
         <p class="mt-1.5 text-sm text-stone-700 whitespace-pre-wrap leading-relaxed">${c.message.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
       </div>
     </div>`;
@@ -1182,10 +1194,11 @@ function showAdminReplyForm(commentEl: HTMLElement, token: string) {
     if (!message) return;
     const submitBtn = form.querySelector('[data-reply-submit]') as HTMLButtonElement;
     submitBtn.disabled = true; submitBtn.textContent = '送信中...';
+    const parentId = commentEl.dataset.commentId;
     const res = await fetch('/api/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, message, access_token: token }),
+      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, message, access_token: token, in_reply_to: parentId }),
     });
     if (res.ok) { form.remove(); await loadComments(); }
     else { submitBtn.disabled = false; submitBtn.textContent = '返信する'; }
