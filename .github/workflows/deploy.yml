@@ -28,7 +28,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 024a2968eda48c6eaea6d761c59eaa72
-          command: pages deploy dist --project-name=free-market
+          command: pages deploy dist --project-name=free-market --commit-message="deploy"
 
       - name: Set Cloudflare Pages environment variables
         run: |

@@ -89,3 +89,31 @@ export const POST: APIRoute = async ({ request }) => {
     return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
   }
 };
+
+export const DELETE: APIRoute = async ({ request }) => {
+  try {
+    const { comment_id, access_token } = await request.json();
+    if (!comment_id || !access_token) {
+      return new Response(JSON.stringify({ error: 'comment_id and access_token required' }), { status: 400 });
+    }
+
+    const supabase = createSupabaseServer();
+
+    // Verify admin
+    const { data: { user } } = await supabase.auth.getUser(access_token);
+    if (!user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+    }
+    const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+    if (!profile?.is_admin) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403 });
+    }
+
+    const { error } = await supabase.from('product_comments').delete().eq('id', comment_id);
+    if (error) throw error;
+
+    return new Response(JSON.stringify({ ok: true }), { status: 200 });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: String(e) }), { status: 500 });
+  }
+};
