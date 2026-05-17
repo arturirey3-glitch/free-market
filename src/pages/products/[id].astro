@@ -324,7 +324,7 @@ const jsonLdString = JSON.stringify(jsonLd);
             class="flex items-center gap-1.5 rounded-lg border border-stone-200 px-4 h-[40px] text-sm text-stone-500 hover:border-stone-400 hover:text-stone-700 transition-colors"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            コメント
+            コメント<span id="comment-count-desktop-btn" class="ml-0.5 font-bold"></span>
           </button>
         </div>
 
@@ -1288,6 +1288,8 @@ async function loadComments() {
   if (countEl) countEl.textContent = customerCount > 0 ? `（${customerCount}件）` : '';
   const mobileCountEl = document.getElementById('comment-count-mobile');
   if (mobileCountEl) mobileCountEl.textContent = customerCount > 0 ? String(customerCount) : '';
+  const desktopBtnCountEl = document.getElementById('comment-count-desktop-btn');
+  if (desktopBtnCountEl) desktopBtnCountEl.textContent = customerCount > 0 ? String(customerCount) : '';
 
   // スレッド形式で表示：親コメントの直下に返信をネスト
   const topLevel = comments.filter(c => !c.in_reply_to);
