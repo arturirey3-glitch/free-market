@@ -6,9 +6,12 @@ export const prerender = false;
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
+const INITIAL_LIMIT = 24;
+
 let products: any[] = [];
 let pickupProducts: any[] = [];
 let errorMessage = '';
+let hasMore = false;
 
 const buildRatingMap = (rows: { product_id: string; rating: number | null }[]) => {
   const map = new Map<string, { count: number; sum: number }>();
@@ -24,17 +27,34 @@ const buildRatingMap = (rows: { product_id: string; rating: number | null }[]) =
 
 try {
   const supabase = createSupabaseServer();
+
+  // 全商品数を取得
+  const { count: totalCount } = await supabase
+    .from('products')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'published')
+    .eq('is_pickup', false);
+
+  // ピックアップ取得
+  const { data: pickupData } = await supabase
+    .from('products')
+    .select('id,title,price,thumbnail_url,is_pickup')
+    .eq('status', 'published')
+    .eq('is_pickup', true)
+    .order('sort_order', { ascending: true, nullsFirst: false });
+
+  // 通常商品（初期分）
   const { data, error } = await supabase
     .from('products')
-    .select('id,title,price,category,thumbnail_url,is_pickup,profiles:owner_id(display_name,avatar_url)')
+    .select('id,title,price,thumbnail_url,is_pickup')
     .eq('status', 'published')
-    .order('is_pickup', { ascending: false })
+    .eq('is_pickup', false)
     .order('sort_order', { ascending: true, nullsFirst: false })
     .order('created_at', { ascending: false })
-    .limit(60);
+    .range(0, INITIAL_LIMIT - 1);
 
   if (error) throw error;
-  const all = data ?? [];
+  const all = [...(pickupData ?? []), ...(data ?? [])];
 
   const ids = all.map((p) => p.id).filter(Boolean);
   let ratingMap = new Map<string, { count: number; sum: number }>();
@@ -50,6 +70,7 @@ try {
 
   pickupProducts = withRatings.filter((p) => p.is_pickup);
   products = withRatings.filter((p) => !p.is_pickup);
+  hasMore = (data?.length ?? 0) >= INITIAL_LIMIT && INITIAL_LIMIT < (totalCount ?? 0);
 } catch {
   errorMessage = 'データの取得に失敗しました。';
 }
@@ -91,9 +112,23 @@ try {
 
     <h2 class="text-base font-bold mb-4">新着商品</h2>
     {products.length > 0 ? (
-      <div class="grid-products">
-        {products.map((product) => <ProductCard product={product} />)}
-      </div>
+      <>
+        <div class="grid-products" id="products-grid">
+          {products.map((product) => <ProductCard product={product} />)}
+        </div>
+
+        {hasMore && (
+          <div class="mt-8 flex justify-center" id="load-more-wrapper">
+            <button
+              id="load-more-btn"
+              data-offset={String(products.length)}
+              class="rounded-full bg-[var(--primary)] px-10 py-3 text-sm font-bold text-white shadow hover:opacity-90 active:scale-95 transition disabled:opacity-50"
+            >
+              もっと見る
+            </button>
+          </div>
+        )}
+      </>
     ) : (
       <p class="text-sm text-[var(--text-secondary)] py-12 text-center">
         まだ商品がありません。<a href="/dashboard/products/new" class="text-[var(--primary)] font-bold">出品する</a>
@@ -101,3 +136,65 @@ try {
     )}
   </div>
 </BaseLayout>
+
+<script>
+const btn = document.getElementById('load-more-btn') as HTMLButtonElement | null;
+const grid = document.getElementById('products-grid');
+const wrapper = document.getElementById('load-more-wrapper');
+
+const LIMIT = 24;
+
+function formatJPY(price: number) {
+  return '￥' + price.toLocaleString('ja-JP');
+}
+
+function renderCard(p: any): string {
+  const shortId = p.id.slice(0, 8);
+  const img = p.thumbnail_url
+    ? `<img src="${p.thumbnail_url}" alt="${p.title.replace(/"/g, '&quot;')}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy" />`
+    : `<div class="flex h-full w-full items-center justify-center text-sm text-[var(--text-placeholder)]">No Image</div>`;
+  const stars = (p.review_count ?? 0) > 0
+    ? `<div class="mt-1 flex items-center gap-0.5 text-[10px] text-[var(--text-secondary)]"><span class="text-[var(--star)]">★</span><span>${Number(p.review_average).toFixed(1)}</span><span>(${p.review_count})</span></div>`
+    : '';
+  return `
+    <a href="/products/${shortId}" class="card block group">
+      <div class="relative aspect-square w-full bg-[var(--bg-secondary)]">
+        <div class="absolute inset-0 overflow-hidden">${img}</div>
+        <div class="absolute bottom-3 left-0 rounded-r-full bg-black/50 text-white text-base font-bold px-4 py-1.5 leading-tight">${formatJPY(p.price)}</div>
+      </div>
+      <div class="px-2 py-2">
+        <h3 class="text-xs leading-snug line-clamp-2">${p.title}</h3>
+        ${stars}
+      </div>
+    </a>`;
+}
+
+btn?.addEventListener('click', async () => {
+  if (!btn || !grid) return;
+  const offset = parseInt(btn.dataset.offset ?? '0', 10);
+
+  btn.disabled = true;
+  btn.textContent = '読み込み中...';
+
+  try {
+    const res = await fetch(`/api/products?offset=${offset}&limit=${LIMIT}`);
+    const json = await res.json();
+
+    json.products.forEach((p: any) => {
+      grid.insertAdjacentHTML('beforeend', renderCard(p));
+    });
+
+    btn.dataset.offset = String(offset + json.products.length);
+
+    if (!json.hasMore) {
+      wrapper?.remove();
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'もっと見る';
+    }
+  } catch {
+    btn.disabled = false;
+    btn.textContent = 'もっと見る';
+  }
+});
+</script>
