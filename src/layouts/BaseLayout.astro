@@ -282,8 +282,17 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
 
         // 初期バッジチェック
         loadNotifications();
-      } else {
-        // ── カスタマー通知ベル（非管理者ログイン済みユーザー）──
+      }
+    }
+
+    // ── カスタマー通知ベル（ログイン不問・コメント履歴がある全ユーザー）──
+    (async () => {
+      try {
+        const MY_KEY = 'my_commented_products';
+        const myList = JSON.parse(localStorage.getItem(MY_KEY) || '[]') as {id:string,at:string}[];
+        const productIds = myList.map((p: any) => p.id).filter(Boolean);
+        if (productIds.length === 0) return;
+
         const customerWrap = document.getElementById('customer-notif-wrap');
         const customerBell = document.getElementById('customer-notif-bell');
         const customerDropdown = document.getElementById('customer-notif-dropdown');
@@ -291,7 +300,10 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
         const customerBadge = document.getElementById('customer-notif-badge');
         const customerMarkRead = document.getElementById('customer-notif-mark-read');
         const C_LAST_READ = 'customer_notif_last_read';
-        let cIsOpen = false;
+
+        // 管理者ベルが表示されている場合はカスタマーベルは不要
+        const adminWrap = document.getElementById('admin-notif-wrap');
+        if (adminWrap && !adminWrap.classList.contains('hidden')) return;
 
         customerWrap?.classList.replace('hidden', 'flex');
 
@@ -308,13 +320,30 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
         const loadCustomerNotifications = async () => {
           if (!customerList) return;
           try {
-            const res = await fetch('/api/notifications/customer', {
-              headers: { 'x-access-token': data.session!.access_token },
-            });
+            // ログイン済みなら専用APIを使用、未ログインはpublic APIを使用
+            let res;
+            if (data.session) {
+              res = await fetch('/api/notifications/customer', {
+                headers: { 'x-access-token': data.session.access_token },
+              });
+            } else {
+              res = await fetch(`/api/notifications/public?product_ids=${productIds.join(',')}`);
+            }
             const json = await res.json();
-            const items: any[] = json.notifications ?? [];
+
+            // localStorage の投稿時刻より後の管理者返信のみ通知対象
+            const toMs = (iso: string) => new Date(iso).getTime();
+            const myLastByProduct: Record<string, number> = {};
+            myList.forEach((p: any) => { myLastByProduct[p.id] = toMs(p.at); });
+
+            const allItems: any[] = json.notifications ?? [];
+            const items = allItems.filter((n: any) => {
+              const myLast = myLastByProduct[n.product_id];
+              return myLast && toMs(n.created_at) > myLast;
+            });
+
             const lastRead = localStorage.getItem(C_LAST_READ) ?? '1970-01-01';
-            const unread = items.filter(n => n.created_at > lastRead).length;
+            const unread = items.filter((n: any) => toMs(n.created_at) > toMs(lastRead)).length;
             if (customerBadge) customerBadge.classList.toggle('hidden', unread === 0);
 
             if (items.length === 0) {
@@ -325,8 +354,8 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
               return;
             }
 
-            customerList.innerHTML = items.map(n => {
-              const isUnread = n.created_at > lastRead;
+            customerList.innerHTML = items.map((n: any) => {
+              const isUnread = toMs(n.created_at) > toMs(lastRead);
               const shortId = n.product_id?.slice(0, 8) ?? '';
               const msg = n.message.length > 60 ? n.message.slice(0, 60) + '…' : n.message;
               return `<a href="/products/${shortId}" class="flex items-start gap-3 px-4 py-3 hover:bg-stone-50 transition-colors ${isUnread ? 'bg-green-50/60' : ''}">
@@ -341,6 +370,7 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
           } catch {}
         };
 
+        let cIsOpen = false;
         customerBell?.addEventListener('click', (e) => {
           e.stopPropagation();
           if (cIsOpen) {
@@ -365,8 +395,8 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
 
         // 初期バッジチェック
         loadCustomerNotifications();
-      }
-    }
+      } catch {}
+    })();
 
     logoutButtons.forEach((btn) => {
       btn.addEventListener('click', async () => {
