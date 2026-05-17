@@ -14,6 +14,17 @@ let reviews: any[] = [];
 let averageRating = 0;
 let ratingRounded = '0.0';
 
+// ユーザー名からアバターカラーを生成
+const AVATAR_COLORS = [
+  '#ef4444','#f97316','#eab308','#22c55e','#14b8a6',
+  '#3b82f6','#8b5cf6','#ec4899','#6366f1','#10b981',
+];
+function getAvatarColor(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
 try {
   const supabase = createSupabaseServer();
   const isShort = id && id.length === 8;
@@ -457,6 +468,7 @@ const jsonLdString = JSON.stringify(jsonLd);
         <div class="space-y-4" id="review-list">
           {reviews.map((review: any) => {
             const initial = (review.reviewer_name ?? '購入者').charAt(0).toUpperCase();
+            const avatarColor = getAvatarColor(review.reviewer_name ?? '購入者');
             return (
               <article class="rounded-xl border border-[var(--border-light)] p-4"
                 data-review-item
@@ -472,7 +484,7 @@ const jsonLdString = JSON.stringify(jsonLd);
                   {review.reviewer_avatar_url ? (
                     <img src={review.reviewer_avatar_url} alt="" class="h-10 w-10 rounded-full object-cover shrink-0" />
                   ) : (
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-200 text-sm font-medium text-stone-600">{initial}</div>
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style={`background-color:${avatarColor}`}>{initial}</div>
                   )}
                   <div class="flex-1">
                     <div class="flex items-center justify-between">
@@ -854,6 +866,8 @@ const jsonLdString = JSON.stringify(jsonLd);
               `<svg width="13" height="13" viewBox="0 0 24 24" fill="${filled ? '#f59e0b' : '#e5e7eb'}"><path d="M22,9.69a.72.72,0,0,0-.57-.48l-6.06-.88L12.63,2.86a.73.73,0,0,0-1.26,0L8.66,8.33,2.6,9.21A.72.72,0,0,0,2,9.69a.69.69,0,0,0,.18.71L6.6,14.66l-1,6a.71.71,0,0,0,.28.69.73.73,0,0,0,.74.05L12,18.58l5.42,2.84a.72.72,0,0,0,.74-.05.71.71,0,0,0,.28-.69l-1-6,4.39-4.26A.69.69,0,0,0,22,9.69Z"/></svg>`;
             const buildArticle = (article: HTMLElement) => {
               const initial = (payload.reviewer_name ?? '購入者').charAt(0).toUpperCase();
+              const COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#8b5cf6','#ec4899','#6366f1','#10b981'];
+              const avatarBg = (() => { let h=0; for(const c of (payload.reviewer_name??'購入者')) h=c.charCodeAt(0)+((h<<5)-h); return COLORS[Math.abs(h)%COLORS.length]; })();
               article.dataset.reviewId = savedId;
               article.dataset.rating = String(payload.rating);
               article.dataset.title = payload.title ?? '';
@@ -865,7 +879,7 @@ const jsonLdString = JSON.stringify(jsonLd);
                 <div class="flex items-start gap-3">
                   ${payload.reviewer_avatar_url
                     ? `<img src="${payload.reviewer_avatar_url}" alt="" class="h-10 w-10 rounded-full object-cover shrink-0" />`
-                    : `<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-200 text-sm font-medium text-stone-600">${initial}</div>`}
+                    : `<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style="background-color:${avatarBg}">${initial}</div>`}
                   <div class="flex-1">
                     <div class="flex items-center justify-between">
                       <div class="flex gap-0.5">${Array.from({length:5}).map((_,i)=>starSvg(i<payload.rating)).join('')}</div>
