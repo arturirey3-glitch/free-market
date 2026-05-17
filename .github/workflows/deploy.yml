@@ -17,11 +17,19 @@ jobs:
 
       - run: npm install --no-audit --no-fund
 
+      - name: Set Cloudflare Pages secrets (before deploy)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 024a2968eda48c6eaea6d761c59eaa72
+        run: |
+          echo "${{ secrets.DISCORD_WEBHOOK_URL }}" | npx wrangler pages secret put DISCORD_WEBHOOK_URL --project-name=free-market
+
       - run: npm run build
         env:
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           SITE_URL: https://free-market.pages.dev
 
       - uses: cloudflare/wrangler-action@v3
@@ -29,24 +37,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 024a2968eda48c6eaea6d761c59eaa72
           command: pages deploy dist --project-name=free-market --commit-message="deploy"
-
-      - name: Set Cloudflare Pages environment variables
-        run: |
-          curl -s -X PATCH "https://api.cloudflare.com/client/v4/accounts/024a2968eda48c6eaea6d761c59eaa72/pages/projects/free-market" \
-            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "deployment_configs": {
-                "production": {
-                  "env_vars": {
-                    "DISCORD_WEBHOOK_URL": {
-                      "value": "${{ secrets.DISCORD_WEBHOOK_URL }}",
-                      "type": "plain_text"
-                    }
-                  }
-                }
-              }
-            }' | python3 -c "import sys,json; d=json.load(sys.stdin); print('OK' if d.get('success') else d.get('errors'))"
 
       - name: Ping Google sitemap
         run: |
