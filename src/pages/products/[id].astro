@@ -294,29 +294,37 @@ const jsonLdString = JSON.stringify(jsonLd);
 
         <h1 class="mb-4 text-[1.0625rem] font-semibold leading-snug">{product.title}</h1>
 
-        <!-- Price + Like -->
-        <div class="flex items-center gap-3">
-          <div class="flex items-baseline gap-2 flex-1">
-            <span class="text-[1.75rem] font-semibold leading-none">{formatJPY(product.price)}</span>
-            <span class="text-sm text-[var(--text-secondary)]">税込</span>
-            {product.shipping_payer && (
-              <span class="text-sm text-[var(--text-secondary)]">
-                {product.shipping_payer.includes('出品者') ? '送料込み' : '着払い'}
-              </span>
-            )}
-            {product.is_subscription && (
-              <span class="rounded bg-[var(--primary-light)] px-2 py-0.5 text-xs font-bold text-[var(--primary)]">月額</span>
-            )}
-          </div>
-          <!-- Like button (desktop) -->
+        <!-- Price -->
+        <div class="flex items-baseline gap-2">
+          <span class="text-[1.75rem] font-semibold leading-none">{formatJPY(product.price)}</span>
+          <span class="text-sm text-[var(--text-secondary)]">税込</span>
+          {product.shipping_payer && (
+            <span class="text-sm text-[var(--text-secondary)]">
+              {product.shipping_payer.includes('出品者') ? '送料込み' : '着払い'}
+            </span>
+          )}
+          {product.is_subscription && (
+            <span class="rounded bg-[var(--primary-light)] px-2 py-0.5 text-xs font-bold text-[var(--primary)]">月額</span>
+          )}
+        </div>
+
+        <!-- Mercari-style action buttons -->
+        <div class="mt-3 flex gap-2">
           <button id="like-btn-desktop"
-            class="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border border-[var(--border-light)] text-[var(--text-secondary)] hover:border-red-300 hover:text-red-500 transition group shrink-0"
+            class="flex items-center gap-1.5 rounded-lg border border-stone-200 px-4 h-[40px] text-sm text-stone-500 hover:border-red-300 hover:text-red-400 transition-colors justify-center min-w-[68px]"
             aria-label="いいね"
           >
-            <svg id="like-icon-desktop" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition">
+            <svg id="like-icon-desktop" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
-            <span id="like-count-desktop" class="text-[11px] font-semibold leading-none">{product.likes_count ?? 0}</span>
+            <span id="like-count-desktop" class="text-sm font-semibold">{product.likes_count ?? 0}</span>
+          </button>
+          <button
+            onclick="document.getElementById('product-comments')?.scrollIntoView({behavior:'smooth'})"
+            class="flex items-center gap-1.5 rounded-lg border border-stone-200 px-4 h-[40px] text-sm text-stone-500 hover:border-stone-400 hover:text-stone-700 transition-colors"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            コメント
           </button>
         </div>
 
@@ -1227,20 +1235,20 @@ commentForm?.addEventListener('submit', async (e) => {
     {isSoldOut ? (
       <div class="flex items-center gap-2 shrink-0">
         <button id="like-btn-mobile"
-          class="inline-flex flex-col items-center justify-center rounded-xl border border-[var(--border-light)] h-[48px] w-[52px] text-[var(--text-secondary)] hover:border-red-300 hover:text-red-500 transition shrink-0"
+          class="inline-flex items-center gap-1 rounded-lg border border-stone-200 h-[40px] px-3 text-sm text-stone-500 hover:border-red-300 hover:text-red-400 transition-colors shrink-0"
           aria-label="いいね"
         >
-          <svg id="like-icon-mobile" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition">
+          <svg id="like-icon-mobile" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
-          <span id="like-count-mobile" class="text-[9px] mt-0.5 font-semibold">{product.likes_count ?? 0}</span>
+          <span id="like-count-mobile" class="text-sm font-semibold">{product.likes_count ?? 0}</span>
         </button>
         <button
           onclick="document.getElementById('product-comments')?.scrollIntoView({behavior:'smooth'})"
-          class="inline-flex flex-col items-center justify-center rounded-xl border border-[var(--border-light)] h-[48px] w-[52px] text-[var(--text-secondary)] hover:bg-stone-50 transition shrink-0"
+          class="inline-flex items-center gap-1 rounded-lg border border-stone-200 h-[40px] px-3 text-sm text-stone-500 hover:border-stone-400 transition-colors shrink-0"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span class="text-[9px] mt-0.5">コメント</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="text-sm">コメント</span>
         </button>
         <button disabled class="shrink-0 rounded-full bg-[var(--border)] text-[var(--text-secondary)] h-[48px] px-8 text-sm font-semibold cursor-not-allowed">
           SOLD OUT
@@ -1249,20 +1257,20 @@ commentForm?.addEventListener('submit', async (e) => {
     ) : (
       <div class="flex items-center gap-2 shrink-0">
         <button id="like-btn-mobile"
-          class="inline-flex flex-col items-center justify-center rounded-xl border border-[var(--border-light)] h-[48px] w-[52px] text-[var(--text-secondary)] hover:border-red-300 hover:text-red-500 transition shrink-0"
+          class="inline-flex items-center gap-1 rounded-lg border border-stone-200 h-[40px] px-3 text-sm text-stone-500 hover:border-red-300 hover:text-red-400 transition-colors shrink-0"
           aria-label="いいね"
         >
-          <svg id="like-icon-mobile" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition">
+          <svg id="like-icon-mobile" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
-          <span id="like-count-mobile" class="text-[9px] mt-0.5 font-semibold">{product.likes_count ?? 0}</span>
+          <span id="like-count-mobile" class="text-sm font-semibold">{product.likes_count ?? 0}</span>
         </button>
         <button
           onclick="document.getElementById('product-comments')?.scrollIntoView({behavior:'smooth'})"
-          class="inline-flex flex-col items-center justify-center rounded-xl border border-[var(--border-light)] h-[48px] w-[52px] text-[var(--text-secondary)] hover:bg-stone-50 transition shrink-0"
+          class="inline-flex items-center gap-1 rounded-lg border border-stone-200 h-[40px] px-3 text-sm text-stone-500 hover:border-stone-400 transition-colors shrink-0"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span class="text-[9px] mt-0.5">コメント</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="text-sm">コメント</span>
         </button>
         <button
           class="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--primary)] text-white h-[48px] px-7 text-sm font-semibold tracking-wide transition-colors hover:bg-[var(--primary-hover)] active:scale-[0.98]"
