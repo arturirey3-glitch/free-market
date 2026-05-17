@@ -1105,6 +1105,19 @@ const productId = (document.getElementById('comment-product-id') as HTMLInputEle
 const productTitle = (document.getElementById('comment-product-title') as HTMLInputElement)?.value;
 const productUrl = window.location.href;
 
+// ログイン中ユーザーの表示名を取得（匿名対策）
+let _loggedInName: string | null = null;
+(async () => {
+  try {
+    const { supabase: sb } = await import('../../lib/supabaseClient');
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const { data: prof } = await sb.from('profiles').select('display_name').eq('id', session.user.id).single();
+      _loggedInName = prof?.display_name?.trim() || null;
+    }
+  } catch {}
+})();
+
 const AVATAR_COLORS_C = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#8b5cf6','#ec4899','#6366f1','#10b981'];
 function getColorC(name: string) {
   let h = 0;
@@ -1129,7 +1142,7 @@ function buildCommentEl(c: any): HTMLElement {
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-1.5 flex-wrap">
-            ${c.is_admin ? adminBadge : '<span class="text-xs text-stone-500">匿名ユーザー</span>'}
+            ${c.is_admin ? adminBadge : `<span class="text-xs font-medium text-stone-600">${(c.name && c.name !== '匿名' ? c.name : '匿名ユーザー').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`}
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <span class="text-[10px] text-stone-400">${dateStr}</span>
@@ -1183,6 +1196,8 @@ async function loadComments() {
   list.innerHTML = '';
   const comments: any[] = json.comments ?? [];
   if (countEl) countEl.textContent = comments.length > 0 ? `（${comments.length}件）` : '';
+  const mobileCountEl = document.getElementById('comment-count-mobile');
+  if (mobileCountEl) mobileCountEl.textContent = comments.length > 0 ? String(comments.length) : '';
   comments.forEach(c => list.appendChild(buildCommentEl(c)));
   if (_adminToken) showCommentDeleteButtons(_adminToken);
   checkReplyNotify(comments);
@@ -1202,12 +1217,15 @@ function checkReplyNotify(comments: any[]) {
     const dismissed = localStorage.getItem(SEEN_KEY + '_dismissed');
     if (dismissed) return;
 
+    // タイムスタンプをミリ秒に変換（SafariのISO形式差異を吸収）
+    const toMs = (iso: string) => new Date(iso).getTime();
+
     // 自分のコメント投稿後に管理者コメントが1件以上あれば通知
-    const hasAdminReply = comments.some(c => c.is_admin && c.created_at > myRecord.at);
+    const hasAdminReply = comments.some(c => c.is_admin && toMs(c.created_at) > toMs(myRecord.at));
     if (!hasAdminReply) return;
 
     // lastSeen以降に管理者返信があるか
-    const hasNew = comments.some(c => c.is_admin && c.created_at > lastSeen);
+    const hasNew = comments.some(c => c.is_admin && toMs(c.created_at) > toMs(lastSeen));
     if (!hasNew) return;
 
     const banner = document.getElementById('reply-notify-banner');
@@ -1251,7 +1269,7 @@ commentForm?.addEventListener('submit', async (e) => {
     const res = await fetch('/api/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, message }),
+      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, message, name: _loggedInName || undefined }),
     });
     if (res.ok) {
       commentSuccess?.classList.remove('hidden');
@@ -1269,6 +1287,7 @@ commentForm?.addEventListener('submit', async (e) => {
         // 通知バナーを非表示に（自分のコメント直後なので）
         document.getElementById('reply-notify-banner')?.classList.add('hidden');
         localStorage.setItem(`notif_seen_${productId}`, now);
+        localStorage.removeItem(`notif_seen_${productId}_dismissed`); // 再コメント時は通知リセット
       } catch {}
 
       await loadComments();
@@ -1319,10 +1338,11 @@ commentForm?.addEventListener('submit', async (e) => {
     <!-- Comment icon -->
     <button
       onclick="document.getElementById('product-comments')?.scrollIntoView({behavior:'smooth'})"
-      class="inline-flex items-center justify-center h-9 w-9 rounded-full border border-stone-200 text-stone-500 hover:text-stone-700 hover:border-stone-300 transition-colors shrink-0"
+      class="inline-flex items-center justify-center gap-1 h-9 min-w-[2.25rem] px-2 rounded-full border border-stone-200 text-stone-500 hover:text-stone-700 hover:border-stone-300 transition-colors shrink-0"
       aria-label="コメント"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span id="comment-count-mobile" class="text-xs font-bold leading-none"></span>
     </button>
     <!-- Buy button -->
     {isSoldOut ? (
