@@ -556,7 +556,7 @@ const jsonLdString = JSON.stringify(jsonLd);
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </span>
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-semibold text-green-800">出品者から返信があります</p>
+          <p id="reply-notify-title" class="text-sm font-semibold text-green-800">出品者から返信があります</p>
           <p class="text-xs text-green-600 mt-0.5">↓ 下のコメント欄をご確認ください</p>
         </div>
         <button id="reply-notify-close" class="text-green-400 hover:text-green-600 shrink-0" aria-label="閉じる">
@@ -1125,14 +1125,16 @@ const productUrl = window.location.href;
 // ログイン中ユーザーの表示名・トークンを取得（匿名対策・管理者判定）
 let _loggedInName: string | null = null;
 let _accessToken: string | null = null;
+let _isAdmin = false;
 (async () => {
   try {
     const { supabase: sb } = await import('../../lib/supabaseClient');
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       _accessToken = session.access_token;
-      const { data: prof } = await sb.from('profiles').select('display_name').eq('id', session.user.id).single();
+      const { data: prof } = await sb.from('profiles').select('display_name, is_admin').eq('id', session.user.id).single();
       _loggedInName = prof?.display_name?.trim() || null;
+      _isAdmin = prof?.is_admin ?? false;
       // ログイン済みなら名前欄に自動セット
       if (_loggedInName && nameInput && !nameInput.value) {
         nameInput.value = _loggedInName;
@@ -1316,32 +1318,42 @@ async function loadComments() {
   checkReplyNotify(comments);
 }
 
-// ── 未ログインユーザー向け返信通知 ──
+// ── 返信通知バナー ──
 function checkReplyNotify(comments: any[]) {
   if (!productId) return;
+  // 出品者（管理者）は自分の返信を通知しない
+  if (_isAdmin) return;
   try {
     const MY_KEY = 'my_commented_products';
     const SEEN_KEY = `notif_seen_${productId}`;
     const myList = JSON.parse(localStorage.getItem(MY_KEY) || '[]') as {id:string, at:string}[];
     const myRecord = myList.find(p => p.id === productId);
-    if (!myRecord) return; // このページにコメント投稿歴なし
+    if (!myRecord) return;
 
     const lastSeen = localStorage.getItem(SEEN_KEY) ?? myRecord.at;
     const dismissed = localStorage.getItem(SEEN_KEY + '_dismissed');
     if (dismissed) return;
 
-    // タイムスタンプをミリ秒に変換（SafariのISO形式差異を吸収）
     const toMs = (iso: string) => new Date(iso).getTime();
 
-    // 自分のコメント投稿後に管理者コメントが1件以上あれば通知
-    const hasAdminReply = comments.some(c => c.is_admin && toMs(c.created_at) > toMs(myRecord.at));
-    if (!hasAdminReply) return;
+    // 自分のコメント投稿後に管理者返信があるか
+    const adminReplies = comments.filter(c => c.is_admin && toMs(c.created_at) > toMs(myRecord.at));
+    if (adminReplies.length === 0) return;
 
-    // lastSeen以降に管理者返信があるか
-    const hasNew = comments.some(c => c.is_admin && toMs(c.created_at) > toMs(lastSeen));
+    // lastSeen以降に新しい返信があるか
+    const hasNew = adminReplies.some(c => toMs(c.created_at) > toMs(lastSeen));
     if (!hasNew) return;
 
+    // 最新の返信者名を取得
+    const latestReply = adminReplies.sort((a, b) => toMs(b.created_at) - toMs(a.created_at))[0];
+    const replierName = latestReply?.name && latestReply.name !== '匿名'
+      ? latestReply.name
+      : '出品者';
+
+    // バナーのテキストを更新
     const banner = document.getElementById('reply-notify-banner');
+    const bannerTitle = document.getElementById('reply-notify-title');
+    if (bannerTitle) bannerTitle.textContent = `${replierName}から返信があります`;
     if (banner) banner.classList.remove('hidden');
 
     const closeBtn = document.getElementById('reply-notify-close');
