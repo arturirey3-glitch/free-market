@@ -522,6 +522,55 @@ const jsonLdString = JSON.stringify(jsonLd);
       )}
     </section>
 
+    <!-- ── 商品へのコメント ── -->
+    <section id="product-comments" class="mt-10 border-t border-[var(--border-light)] pt-6">
+      <h2 class="mb-4 text-base font-semibold flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        商品へのコメント
+        <span id="comment-count" class="font-normal text-[var(--text-secondary)] text-sm"></span>
+      </h2>
+
+      <!-- 既存コメント一覧 -->
+      <div id="comment-list" class="space-y-3 mb-6"></div>
+
+      <!-- コメント投稿フォーム -->
+      <div class="rounded-2xl border border-[var(--border-light)] bg-white p-5 shadow-sm">
+        <div id="comment-success" class="hidden mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
+          ✅ コメントを送信しました。確認後にお返事いたします。
+        </div>
+        <div id="comment-error" class="hidden mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+          ❌ 送信に失敗しました。時間をおいて再度お試しください。
+        </div>
+        <form id="comment-form" class="space-y-3">
+          <input type="hidden" id="comment-product-id" value={product.id} />
+          <input type="hidden" id="comment-product-title" value={product.title} />
+          <div>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">お名前 <span class="text-red-500">*</span></label>
+            <input type="text" id="comment-name" required maxlength="50"
+              placeholder="例：山田 太郎"
+              class="w-full rounded-xl border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-stone-600 mb-1">コメント <span class="text-red-500">*</span></label>
+            <textarea id="comment-message" required rows="4" maxlength="500"
+              placeholder="商品についての質問・コメントをご記入ください。"
+              class="w-full rounded-xl border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition resize-none"
+            ></textarea>
+            <p class="mt-1 text-[10px] text-stone-400 text-right"><span id="comment-char-count">0</span> / 500</p>
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" id="comment-submit-btn"
+              class="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white h-[44px] px-8 text-sm font-semibold hover:bg-[var(--primary-hover)] transition disabled:opacity-50"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              コメントを送る
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
     <!-- Admin sections (shown only to admins via JS) -->
     <div id="admin-sections" class="hidden mt-10 space-y-6">
       <!-- Review token generation -->
@@ -951,6 +1000,109 @@ const jsonLdString = JSON.stringify(jsonLd);
     }
   </script>
 
+<script>
+// ── 商品コメント ──
+const productId = (document.getElementById('comment-product-id') as HTMLInputElement)?.value;
+const productTitle = (document.getElementById('comment-product-title') as HTMLInputElement)?.value;
+const productUrl = window.location.href;
+
+const AVATAR_COLORS_C = ['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#3b82f6','#8b5cf6','#ec4899','#6366f1','#10b981'];
+function getColorC(name: string) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return AVATAR_COLORS_C[Math.abs(h) % AVATAR_COLORS_C.length];
+}
+function fmtDate(iso: string) {
+  return iso.slice(0,10).replace(/-/g,'/');
+}
+
+function buildCommentEl(c: any): HTMLElement {
+  const div = document.createElement('div');
+  const initial = (c.name ?? 'ゲスト').charAt(0).toUpperCase();
+  const color = c.is_admin ? '#07b53b' : getColorC(c.name ?? 'ゲスト');
+  const adminBadge = c.is_admin ? '<span class="ml-1 rounded-full bg-[var(--primary)] px-2 py-0.5 text-[9px] text-white font-bold">出品者</span>' : '';
+  div.className = 'rounded-xl border border-[var(--border-light)] p-4 bg-white';
+  div.innerHTML = `
+    <div class="flex items-start gap-3">
+      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style="background-color:${color}">${initial}</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1 flex-wrap">
+            <span class="text-sm font-semibold text-stone-900">${c.name ?? 'ゲスト'}</span>
+            ${adminBadge}
+          </div>
+          <span class="text-[10px] text-stone-400 shrink-0">${fmtDate(c.created_at ?? '')}</span>
+        </div>
+        <p class="mt-1.5 text-sm text-stone-700 whitespace-pre-wrap leading-relaxed">${c.message.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
+      </div>
+    </div>`;
+  return div;
+}
+
+async function loadComments() {
+  if (!productId) return;
+  const res = await fetch(`/api/comments?product_id=${productId}`).catch(() => null);
+  if (!res?.ok) return;
+  const json = await res.json();
+  const list = document.getElementById('comment-list');
+  const countEl = document.getElementById('comment-count');
+  if (!list) return;
+  list.innerHTML = '';
+  const comments: any[] = json.comments ?? [];
+  if (countEl) countEl.textContent = comments.length > 0 ? `（${comments.length}件）` : '';
+  comments.forEach(c => list.appendChild(buildCommentEl(c)));
+}
+
+loadComments();
+
+// Char count
+const msgEl = document.getElementById('comment-message') as HTMLTextAreaElement | null;
+const charEl = document.getElementById('comment-char-count');
+msgEl?.addEventListener('input', () => {
+  if (charEl) charEl.textContent = String(msgEl.value.length);
+});
+
+// Form submit
+const commentForm = document.getElementById('comment-form') as HTMLFormElement | null;
+const commentSubmit = document.getElementById('comment-submit-btn') as HTMLButtonElement | null;
+const commentSuccess = document.getElementById('comment-success');
+const commentError = document.getElementById('comment-error');
+
+commentForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!commentSubmit) return;
+  const name = (document.getElementById('comment-name') as HTMLInputElement).value.trim();
+  const message = (document.getElementById('comment-message') as HTMLTextAreaElement).value.trim();
+  if (!name || !message) return;
+
+  commentSubmit.disabled = true;
+  commentSubmit.textContent = '送信中...';
+  commentSuccess?.classList.add('hidden');
+  commentError?.classList.add('hidden');
+
+  try {
+    const res = await fetch('/api/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, name, message }),
+    });
+    if (res.ok) {
+      commentSuccess?.classList.remove('hidden');
+      commentForm.reset();
+      if (charEl) charEl.textContent = '0';
+      await loadComments();
+    } else {
+      commentError?.classList.remove('hidden');
+    }
+  } catch {
+    commentError?.classList.remove('hidden');
+  } finally {
+    commentSubmit.disabled = false;
+    commentSubmit.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> コメントを送る`;
+  }
+});
+</script>
+
 <!-- スマホの固定バー分のスペーサー -->
 <div class="h-24 md:hidden"></div>
 
@@ -974,11 +1126,27 @@ const jsonLdString = JSON.stringify(jsonLd);
     </div>
     <!-- Buttons -->
     {isSoldOut ? (
-      <button disabled class="shrink-0 rounded-full bg-[var(--border)] text-[var(--text-secondary)] h-[48px] px-8 text-sm font-semibold cursor-not-allowed">
-        SOLD OUT
-      </button>
+      <div class="flex items-center gap-2 shrink-0">
+        <button
+          onclick="document.getElementById('product-comments')?.scrollIntoView({behavior:'smooth'})"
+          class="inline-flex flex-col items-center justify-center rounded-xl border border-[var(--border-light)] h-[48px] w-[52px] text-[var(--text-secondary)] hover:bg-stone-50 transition shrink-0"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="text-[9px] mt-0.5">コメント</span>
+        </button>
+        <button disabled class="shrink-0 rounded-full bg-[var(--border)] text-[var(--text-secondary)] h-[48px] px-8 text-sm font-semibold cursor-not-allowed">
+          SOLD OUT
+        </button>
+      </div>
     ) : (
       <div class="flex items-center gap-2 shrink-0">
+        <button
+          onclick="document.getElementById('product-comments')?.scrollIntoView({behavior:'smooth'})"
+          class="inline-flex flex-col items-center justify-center rounded-xl border border-[var(--border-light)] h-[48px] w-[52px] text-[var(--text-secondary)] hover:bg-stone-50 transition shrink-0"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="text-[9px] mt-0.5">コメント</span>
+        </button>
         <button
           class="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--primary)] text-white h-[48px] px-7 text-sm font-semibold tracking-wide transition-colors hover:bg-[var(--primary-hover)] active:scale-[0.98]"
           data-checkout
