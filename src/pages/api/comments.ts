@@ -30,7 +30,7 @@ export const GET: APIRoute = async ({ url }) => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { product_id, product_title, product_url, name, message } = body;
+    const { product_id, product_title, product_url, name, message, access_token } = body;
     const displayName = name?.trim() || '匿名';
 
     if (!product_id || !message?.trim()) {
@@ -39,6 +39,18 @@ export const POST: APIRoute = async ({ request }) => {
 
     const supabase = createSupabaseServer();
 
+    // ログイン済みユーザーの場合、管理者判定と user_id 取得
+    let isAdmin = false;
+    let userId: string | null = null;
+    if (access_token) {
+      const { data: { user } } = await supabase.auth.getUser(access_token);
+      if (user) {
+        userId = user.id;
+        const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+        isAdmin = profile?.is_admin ?? false;
+      }
+    }
+
     // Save comment to Supabase
     const { data, error } = await supabase
       .from('product_comments')
@@ -46,7 +58,8 @@ export const POST: APIRoute = async ({ request }) => {
         product_id,
         name: displayName.slice(0, 50),
         message: message.trim().slice(0, 500),
-        is_admin: false,
+        is_admin: isAdmin,
+        ...(userId ? { user_id: userId } : {}),
       })
       .select()
       .single();

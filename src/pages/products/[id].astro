@@ -1105,13 +1105,15 @@ const productId = (document.getElementById('comment-product-id') as HTMLInputEle
 const productTitle = (document.getElementById('comment-product-title') as HTMLInputElement)?.value;
 const productUrl = window.location.href;
 
-// ログイン中ユーザーの表示名を取得（匿名対策）
+// ログイン中ユーザーの表示名・トークンを取得（匿名対策・管理者判定）
 let _loggedInName: string | null = null;
+let _accessToken: string | null = null;
 (async () => {
   try {
     const { supabase: sb } = await import('../../lib/supabaseClient');
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
+      _accessToken = session.access_token;
       const { data: prof } = await sb.from('profiles').select('display_name').eq('id', session.user.id).single();
       _loggedInName = prof?.display_name?.trim() || null;
     }
@@ -1146,6 +1148,7 @@ function buildCommentEl(c: any): HTMLElement {
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <span class="text-[10px] text-stone-400">${dateStr}</span>
+            ${!c.is_admin ? '<button type="button" data-comment-reply class="hidden text-[10px] text-[var(--primary)] hover:underline transition">返信</button>' : ''}
             <button type="button" data-comment-delete class="hidden text-[10px] text-red-400 hover:text-red-600 transition">削除</button>
           </div>
         </div>
@@ -1157,13 +1160,55 @@ function buildCommentEl(c: any): HTMLElement {
 
 let _adminToken: string | null = null;
 
+function showAdminReplyForm(commentEl: HTMLElement, token: string) {
+  const existing = commentEl.querySelector('[data-admin-reply-form]');
+  if (existing) { existing.remove(); return; }
+  const form = document.createElement('div');
+  form.dataset.adminReplyForm = '';
+  form.className = 'mt-3 border-t border-stone-100 pt-3';
+  form.innerHTML = `
+    <textarea placeholder="返信を入力..." rows="2"
+      class="w-full rounded-xl border border-[var(--border)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)] resize-none"></textarea>
+    <div class="mt-2 flex gap-2">
+      <button type="button" data-reply-submit class="rounded-full bg-[var(--primary)] px-4 py-1.5 text-xs font-semibold text-white">返信する</button>
+      <button type="button" data-reply-cancel class="rounded-full border border-stone-200 px-4 py-1.5 text-xs">キャンセル</button>
+    </div>`;
+  commentEl.appendChild(form);
+  (form.querySelector('textarea') as HTMLTextAreaElement)?.focus();
+
+  form.querySelector('[data-reply-submit]')?.addEventListener('click', async () => {
+    const textarea = form.querySelector('textarea') as HTMLTextAreaElement;
+    const message = textarea.value.trim();
+    if (!message) return;
+    const submitBtn = form.querySelector('[data-reply-submit]') as HTMLButtonElement;
+    submitBtn.disabled = true; submitBtn.textContent = '送信中...';
+    const res = await fetch('/api/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, message, access_token: token }),
+    });
+    if (res.ok) { form.remove(); await loadComments(); }
+    else { submitBtn.disabled = false; submitBtn.textContent = '返信する'; }
+  });
+  form.querySelector('[data-reply-cancel]')?.addEventListener('click', () => form.remove());
+}
+
 function showCommentDeleteButtons(token: string) {
   _adminToken = token;
   document.querySelectorAll<HTMLElement>('#comment-list [data-comment-id]').forEach(el => {
+    // 返信ボタン
+    const replyBtn = el.querySelector<HTMLButtonElement>('[data-comment-reply]');
+    if (replyBtn) {
+      replyBtn.classList.remove('hidden');
+      const newReply = replyBtn.cloneNode(true) as HTMLButtonElement;
+      newReply.classList.remove('hidden');
+      replyBtn.replaceWith(newReply);
+      newReply.addEventListener('click', () => showAdminReplyForm(el, token));
+    }
+    // 削除ボタン
     const btn = el.querySelector<HTMLButtonElement>('[data-comment-delete]');
     if (!btn) return;
     btn.classList.remove('hidden');
-    // Remove previous listener
     const newBtn = btn.cloneNode(true) as HTMLButtonElement;
     newBtn.classList.remove('hidden');
     btn.replaceWith(newBtn);
@@ -1269,7 +1314,7 @@ commentForm?.addEventListener('submit', async (e) => {
     const res = await fetch('/api/comments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, message, name: _loggedInName || undefined }),
+      body: JSON.stringify({ product_id: productId, product_title: productTitle, product_url: productUrl, message, name: _loggedInName || undefined, access_token: _accessToken || undefined }),
     });
     if (res.ok) {
       commentSuccess?.classList.remove('hidden');

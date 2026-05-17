@@ -83,6 +83,28 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
           <nav class="flex items-center gap-3 text-sm font-medium">
             <a href="/products" class="hidden md:block hover:text-[var(--primary)]">商品一覧</a>
             <a href="/dashboard" class="hidden md:block hover:text-[var(--primary)]">マイページ</a>
+            <!-- Customer: notification bell -->
+            <div id="customer-notif-wrap" class="relative hidden">
+              <button id="customer-notif-bell" type="button"
+                class="relative flex items-center justify-center w-9 h-9 rounded-full text-[var(--text-secondary)] hover:bg-stone-100 hover:text-[var(--text-primary)] transition"
+                aria-label="通知"
+              >
+                <svg width="22" height="22" class="fill-current" fill-rule="evenodd" viewBox="0 0 24 24"><path d="M20.35,16h0L17.9,14a.28.28,0,0,1-.11-.23V9.25A5.76,5.76,0,0,0,14.2,3.94a2.22,2.22,0,0,0-4.4,0A5.76,5.76,0,0,0,6.21,9.25V13.8A.28.28,0,0,1,6.1,14L3.65,16A1.7,1.7,0,0,0,4.7,19H8.32a3.76,3.76,0,0,0,7.36,0H19.3a1.7,1.7,0,0,0,1.05-3ZM12,20.6A2.35,2.35,0,0,1,9.76,19h4.48A2.35,2.35,0,0,1,12,20.6Zm7.58-3.19a.28.28,0,0,1-.28.2H4.7a.28.28,0,0,1-.28-.2.27.27,0,0,1,.1-.33L7,15.13a1.68,1.68,0,0,0,.64-1.33V9.25a4.39,4.39,0,0,1,8.78,0V13.8A1.68,1.68,0,0,0,17,15.13l2.45,1.95A.27.27,0,0,1,19.58,17.41Z"/></svg>
+                <span id="customer-notif-badge" class="hidden absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>
+              </button>
+              <!-- Dropdown -->
+              <div id="customer-notif-dropdown"
+                class="hidden absolute right-0 top-11 w-80 bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.14)] border border-[var(--border-light)] z-50 overflow-hidden"
+              >
+                <div class="flex items-center justify-between px-4 py-3 border-b border-[var(--border-light)]">
+                  <span class="text-sm font-semibold text-stone-800">返信通知</span>
+                  <button id="customer-notif-mark-read" class="text-xs text-[var(--primary)] hover:underline">すべて既読</button>
+                </div>
+                <div id="customer-notif-list" class="max-h-[420px] overflow-y-auto divide-y divide-[var(--border-light)]">
+                  <div class="flex items-center justify-center py-10 text-sm text-stone-400">読み込み中...</div>
+                </div>
+              </div>
+            </div>
             <!-- Admin: notification bell -->
             <div id="admin-notif-wrap" class="relative hidden">
               <button id="admin-notif-bell" type="button"
@@ -260,6 +282,89 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
 
         // 初期バッジチェック
         loadNotifications();
+      } else {
+        // ── カスタマー通知ベル（非管理者ログイン済みユーザー）──
+        const customerWrap = document.getElementById('customer-notif-wrap');
+        const customerBell = document.getElementById('customer-notif-bell');
+        const customerDropdown = document.getElementById('customer-notif-dropdown');
+        const customerList = document.getElementById('customer-notif-list');
+        const customerBadge = document.getElementById('customer-notif-badge');
+        const customerMarkRead = document.getElementById('customer-notif-mark-read');
+        const C_LAST_READ = 'customer_notif_last_read';
+        let cIsOpen = false;
+
+        customerWrap?.classList.replace('hidden', 'flex');
+
+        const fmtDateC = (iso: string) => {
+          const d = new Date(iso);
+          const now = new Date();
+          const diff = Math.floor((now.getTime() - d.getTime()) / 1000);
+          if (diff < 60) return 'たった今';
+          if (diff < 3600) return `${Math.floor(diff / 60)}分前`;
+          if (diff < 86400) return `${Math.floor(diff / 3600)}時間前`;
+          return `${Math.floor(diff / 86400)}日前`;
+        };
+
+        const loadCustomerNotifications = async () => {
+          if (!customerList) return;
+          try {
+            const res = await fetch('/api/notifications/customer', {
+              headers: { 'x-access-token': data.session!.access_token },
+            });
+            const json = await res.json();
+            const items: any[] = json.notifications ?? [];
+            const lastRead = localStorage.getItem(C_LAST_READ) ?? '1970-01-01';
+            const unread = items.filter(n => n.created_at > lastRead).length;
+            if (customerBadge) customerBadge.classList.toggle('hidden', unread === 0);
+
+            if (items.length === 0) {
+              customerList.innerHTML = `<div class="flex flex-col items-center justify-center py-10 text-sm text-stone-400 gap-2">
+                <svg width="28" height="28" fill-rule="evenodd" viewBox="0 0 24 24" class="opacity-30 fill-current"><path d="M20.35,16h0L17.9,14a.28.28,0,0,1-.11-.23V9.25A5.76,5.76,0,0,0,14.2,3.94a2.22,2.22,0,0,0-4.4,0A5.76,5.76,0,0,0,6.21,9.25V13.8A.28.28,0,0,1,6.1,14L3.65,16A1.7,1.7,0,0,0,4.7,19H8.32a3.76,3.76,0,0,0,7.36,0H19.3a1.7,1.7,0,0,0,1.05-3ZM12,20.6A2.35,2.35,0,0,1,9.76,19h4.48A2.35,2.35,0,0,1,12,20.6Zm7.58-3.19a.28.28,0,0,1-.28.2H4.7a.28.28,0,0,1-.28-.2.27.27,0,0,1,.1-.33L7,15.13a1.68,1.68,0,0,0,.64-1.33V9.25a4.39,4.39,0,0,1,8.78,0V13.8A1.68,1.68,0,0,0,17,15.13l2.45,1.95A.27.27,0,0,1,19.58,17.41Z"/></svg>
+                返信通知はありません
+              </div>`;
+              return;
+            }
+
+            customerList.innerHTML = items.map(n => {
+              const isUnread = n.created_at > lastRead;
+              const shortId = n.product_id?.slice(0, 8) ?? '';
+              const msg = n.message.length > 60 ? n.message.slice(0, 60) + '…' : n.message;
+              return `<a href="/products/${shortId}" class="flex items-start gap-3 px-4 py-3 hover:bg-stone-50 transition-colors ${isUnread ? 'bg-green-50/60' : ''}">
+                ${isUnread ? '<span class="mt-1.5 w-2 h-2 rounded-full bg-[var(--primary)] shrink-0"></span>' : '<span class="mt-1.5 w-2 h-2 shrink-0"></span>'}
+                <div class="flex-1 min-w-0">
+                  <p class="text-[11px] text-stone-400 truncate">${n.product_title}</p>
+                  <p class="text-sm text-stone-700 leading-snug mt-0.5">${msg.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
+                </div>
+                <span class="text-[10px] text-stone-400 shrink-0 mt-0.5">${fmtDateC(n.created_at)}</span>
+              </a>`;
+            }).join('');
+          } catch {}
+        };
+
+        customerBell?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (cIsOpen) {
+            cIsOpen = false; customerDropdown?.classList.add('hidden');
+          } else {
+            cIsOpen = true; customerDropdown?.classList.remove('hidden');
+            loadCustomerNotifications();
+          }
+        });
+
+        customerMarkRead?.addEventListener('click', () => {
+          localStorage.setItem(C_LAST_READ, new Date().toISOString());
+          if (customerBadge) customerBadge.classList.add('hidden');
+          customerList?.querySelectorAll('a').forEach(el => el.classList.remove('bg-green-50/60'));
+        });
+
+        document.addEventListener('click', (e) => {
+          if (cIsOpen && !customerWrap?.contains(e.target as Node)) {
+            cIsOpen = false; customerDropdown?.classList.add('hidden');
+          }
+        });
+
+        // 初期バッジチェック
+        loadCustomerNotifications();
       }
     }
 
