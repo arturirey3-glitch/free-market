@@ -6,7 +6,7 @@ export const prerender = false;
 
 Astro.response.headers.set('Cache-Control', 'no-store');
 
-const INITIAL_LIMIT = 24;
+const INITIAL_LIMIT = 48;
 
 let products: any[] = [];
 let pickupProducts: any[] = [];
@@ -142,7 +142,7 @@ const btn = document.getElementById('load-more-btn') as HTMLButtonElement | null
 const grid = document.getElementById('products-grid');
 const wrapper = document.getElementById('load-more-wrapper');
 
-const LIMIT = 24;
+const LIMIT = 48;
 
 function formatJPY(price: number) {
   return '￥' + price.toLocaleString('ja-JP');
