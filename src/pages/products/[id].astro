@@ -788,6 +788,24 @@ const jsonLdString = JSON.stringify(jsonLd);
       }
     });
 
+    // --- Lightbox スワイプ操作（スマホ対応）---
+    let lbTouchStartX = 0;
+    let lbTouchStartY = 0;
+    lightbox.addEventListener('touchstart', (e) => {
+      lbTouchStartX = e.touches[0].clientX;
+      lbTouchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    lightbox.addEventListener('touchend', (e) => {
+      if (lightbox.classList.contains('hidden')) return;
+      const dx = e.changedTouches[0].clientX - lbTouchStartX;
+      const dy = e.changedTouches[0].clientY - lbTouchStartY;
+      // 横方向の移動が縦より大きく、40px以上でスワイプ判定
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+        if (dx < 0) lbGoTo(lbCurrent + 1); // 左スワイプ → 次
+        else        lbGoTo(lbCurrent - 1); // 右スワイプ → 前
+      }
+    }, { passive: true });
+
     // --- Description expand ---
     const descBody = document.getElementById('desc-body') as HTMLElement | null;
     const readMore = document.getElementById('read-more');
