@@ -369,7 +369,7 @@ const jsonLdString = JSON.stringify(jsonLd);
         <!-- オーナー用編集ボタン（デスクトップ）→ JSで表示切替 -->
         <input type="hidden" id="product-owner-id" value={product.owner_id} />
         <a id="owner-edit-btn-desktop"
-          href={`/dashboard/products/${product.id}/edit`}
+          href={`/dashboard/products/${product.id}`}
           class="hidden mt-5 w-full items-center justify-center gap-2 rounded-full border-2 border-[var(--primary)] text-[var(--primary)] h-[44px] px-3 text-sm font-semibold tracking-wide transition-colors hover:bg-[var(--primary)] hover:text-white"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -1639,7 +1639,7 @@ commentForm?.addEventListener('submit', async (e) => {
       )}
       <!-- オーナー用編集ボタン（モバイル）→ JSで表示切替 -->
       <a id="owner-edit-btn-mobile"
-        href={`/dashboard/products/${product.id}/edit`}
+        href={`/dashboard/products/${product.id}`}
         class="hidden items-center justify-center gap-1.5 rounded-full border-2 border-[var(--primary)] text-[var(--primary)] h-[44px] px-5 text-sm font-semibold tracking-wide transition-colors hover:bg-[var(--primary)] hover:text-white"
       >
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
