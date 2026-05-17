@@ -137,4 +137,9 @@ html {
   @media (min-width: 1024px) {
     .grid-products { grid-template-columns: repeat(5, 1fr); }
   }
+
+  /* フッターをスマホの固定バーの下に隠れないようにする */
+  .pb-safe {
+    padding-bottom: max(2rem, env(safe-area-inset-bottom, 0px));
+  }
 }

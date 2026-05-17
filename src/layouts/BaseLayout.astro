@@ -110,13 +110,13 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
       </main>
 
       <!-- Footer -->
-      <footer class="border-t border-[var(--border-light)] bg-[var(--bg-secondary)] py-8">
+      <footer class="border-t border-[var(--border-light)] bg-[var(--bg-secondary)] py-8 pb-safe">
         <div class="mx-auto max-w-[1440px] px-4 text-xs text-[var(--text-secondary)]">
-          <ul class="flex flex-wrap gap-4 mb-4">
-            <li><a href="/about" class="hover:text-[var(--text-primary)]">ショップについて</a></li>
-            <li><a href="/privacy" class="hover:text-[var(--text-primary)]">プライバシーポリシー</a></li>
-            <li><a href="/law" class="hover:text-[var(--text-primary)]">特定商取引法に基づく表記</a></li>
-            <li><a href="/contact" class="hover:text-[var(--text-primary)]">お問い合わせ</a></li>
+          <ul class="grid grid-cols-2 gap-x-6 gap-y-3 mb-5 sm:flex sm:flex-wrap sm:gap-6 sm:gap-y-2">
+            <li><a href="/about" class="hover:text-[var(--text-primary)] py-1 block">ショップについて</a></li>
+            <li><a href="/privacy" class="hover:text-[var(--text-primary)] py-1 block">プライバシーポリシー</a></li>
+            <li><a href="/law" class="hover:text-[var(--text-primary)] py-1 block">特定商取引法に基づく表記</a></li>
+            <li><a href="/contact" class="hover:text-[var(--text-primary)] py-1 block font-semibold text-[var(--text-primary)]">お問い合わせ</a></li>
           </ul>
           <p>&copy; 2026 <a href="https://www.felikko.com" class="hover:text-[var(--text-primary)]">felikko</a></p>
         </div>

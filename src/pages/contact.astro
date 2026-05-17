@@ -5,7 +5,7 @@ export const prerender = false;
 ---
 <BaseLayout title="お問い合わせ | felikko" description="felikkoへのお問い合わせ。商品・ご注文に関するご質問はこちら。">
 
-  <div class="bg-[var(--bg-secondary)] min-h-[calc(100vh-128px)]">
+  <div class="bg-[var(--bg-secondary)] min-h-screen">
     <div class="mx-auto max-w-[640px] px-4 py-10">
 
       <!-- タイトル -->
@@ -59,8 +59,8 @@ export const prerender = false;
 
         <form id="contact-form" class="space-y-4">
 
-          <!-- 名前・電話（横並び） -->
-          <div class="grid grid-cols-2 gap-3">
+          <!-- 名前・電話（sm以上で横並び） -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label for="name" class="block text-xs font-semibold text-stone-600 mb-1">
                 お名前 <span class="text-red-500">*</span>
