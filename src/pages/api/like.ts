@@ -5,13 +5,14 @@ export const prerender = false;
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const { product_id } = await request.json();
+    const { product_id, action } = await request.json();
     if (!product_id) {
       return new Response(JSON.stringify({ error: 'product_id required' }), { status: 400 });
     }
 
     const supabase = createSupabaseServer();
-    const { data, error } = await supabase.rpc('increment_product_likes', { pid: product_id });
+    const rpcName = action === 'unlike' ? 'decrement_product_likes' : 'increment_product_likes';
+    const { data, error } = await supabase.rpc(rpcName, { pid: product_id });
 
     if (error) throw error;
 

@@ -1035,12 +1035,12 @@ const jsonLdString = JSON.stringify(jsonLd);
       if (!btn || !icon) return;
       if (liked) {
         icon.innerHTML = FILLED_SVG;
-        btn.classList.add('text-red-500', 'border-red-300');
-        btn.classList.remove('text-[var(--text-secondary)]');
+        btn.classList.add('text-red-500', 'border-red-400');
+        btn.classList.remove('text-stone-500', 'text-[var(--text-secondary)]', 'border-stone-200', 'border-red-300');
       } else {
         icon.innerHTML = EMPTY_SVG;
-        btn.classList.remove('text-red-500', 'border-red-300');
-        btn.classList.add('text-[var(--text-secondary)]');
+        btn.classList.remove('text-red-500', 'border-red-400');
+        btn.classList.add('text-stone-500', 'border-stone-200');
       }
     });
   }
@@ -1048,15 +1048,18 @@ const jsonLdString = JSON.stringify(jsonLd);
   applyLikedState(isLiked);
 
   async function handleLike() {
-    if (localStorage.getItem(STORAGE_KEY) === '1') return; // 既にいいね済み
-    localStorage.setItem(STORAGE_KEY, '1');
-    applyLikedState(true);
+    const currentlyLiked = localStorage.getItem(STORAGE_KEY) === '1';
+    const newLiked = !currentlyLiked;
+
+    // 先に UI を更新（楽観的更新）
+    localStorage.setItem(STORAGE_KEY, newLiked ? '1' : '0');
+    applyLikedState(newLiked);
 
     try {
       const res = await fetch('/api/like', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: pid }),
+        body: JSON.stringify({ product_id: pid, action: newLiked ? 'like' : 'unlike' }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -1067,8 +1070,16 @@ const jsonLdString = JSON.stringify(jsonLd);
           if (cd) cd.textContent = String(count);
           if (cm) cm.textContent = String(count);
         }
+      } else {
+        // 失敗したらロールバック
+        localStorage.setItem(STORAGE_KEY, currentlyLiked ? '1' : '0');
+        applyLikedState(currentlyLiked);
       }
-    } catch {}
+    } catch {
+      // 失敗したらロールバック
+      localStorage.setItem(STORAGE_KEY, currentlyLiked ? '1' : '0');
+      applyLikedState(currentlyLiked);
+    }
   }
 
   document.getElementById('like-btn-desktop')?.addEventListener('click', handleLike);
