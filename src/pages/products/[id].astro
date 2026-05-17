@@ -855,8 +855,11 @@ const jsonLdString = JSON.stringify(jsonLd);
 
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-      const { data: myProfile } = await supabase.from('profiles').select('is_admin').eq('id', session.user.id).single();
+      const { data: myProfile } = await supabase.from('profiles').select('is_admin, avatar_url, display_name').eq('id', session.user.id).single();
       if (myProfile?.is_admin) {
+        // 管理者アバターをグローバルに保存（コメント表示用）
+        (window as any).__adminAvatar = myProfile.avatar_url || null;
+        (window as any).__adminName = myProfile.display_name || '出品者';
         const adminSections = document.getElementById('admin-sections');
         adminSections?.classList.remove('hidden');
 
@@ -1155,21 +1158,28 @@ function buildCommentEl(c: any): HTMLElement {
   const dateStr = fmtDate(c.created_at ?? '');
   div.className = 'rounded-xl border border-[var(--border-light)] p-4 bg-white';
 
-  // 返信元コメントの引用表示
-  const parentHtml = c.parent ? (() => {
-    const pName = c.parent.is_admin ? '出品者' : (c.parent.name && c.parent.name !== '匿名' ? c.parent.name : '匿名ユーザー');
-    const pMsg = (c.parent.message ?? '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const preview = pMsg.length > 40 ? pMsg.slice(0, 40) + '…' : pMsg;
-    return `<div class="mb-2 rounded-lg bg-stone-50 border-l-2 border-[var(--primary)] px-3 py-1.5 text-xs text-stone-500">
-      <span class="font-semibold text-stone-600">${pName}</span>：${preview}
-    </div>`;
-  })() : '';
+  const parentHtml = ''; // スレッド表示に変更したため引用は不要
+
+  // アバター生成
+  const avatarHtml = (() => {
+    if (c.is_admin) {
+      const avatarUrl = (window as any).__adminAvatar;
+      if (avatarUrl) {
+        return `<div class="h-9 w-9 shrink-0 overflow-hidden rounded-full border-2 border-[var(--primary)]"><img src="${avatarUrl}" alt="出品者" class="h-full w-full object-cover"/></div>`;
+      }
+      return `<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-white text-xs font-bold border-2 border-[var(--primary)]">出</div>`;
+    }
+    const displayName = c.name && c.name !== '匿名' ? c.name : '';
+    if (displayName) {
+      const color = getColorC(displayName);
+      return `<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white text-sm font-bold" style="background:${color}">${Array.from(displayName)[0].toUpperCase()}</div>`;
+    }
+    return `<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-400"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>`;
+  })();
 
   div.innerHTML = `
     <div class="flex items-start gap-3">
-      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-400">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-      </div>
+      ${avatarHtml}
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-2">
           <div class="flex items-center gap-1.5 flex-wrap">
@@ -1271,10 +1281,31 @@ async function loadComments() {
   if (!list) return;
   list.innerHTML = '';
   const comments: any[] = json.comments ?? [];
-  if (countEl) countEl.textContent = comments.length > 0 ? `（${comments.length}件）` : '';
+  // お客様コメント数（管理者返信は除く）
+  const customerCount = comments.filter(c => !c.is_admin).length;
+  if (countEl) countEl.textContent = customerCount > 0 ? `（${customerCount}件）` : '';
   const mobileCountEl = document.getElementById('comment-count-mobile');
-  if (mobileCountEl) mobileCountEl.textContent = comments.length > 0 ? String(comments.length) : '';
-  comments.forEach(c => list.appendChild(buildCommentEl(c)));
+  if (mobileCountEl) mobileCountEl.textContent = customerCount > 0 ? String(customerCount) : '';
+
+  // スレッド形式で表示：親コメントの直下に返信をネスト
+  const topLevel = comments.filter(c => !c.in_reply_to);
+  const repliesMap: Record<string, any[]> = {};
+  comments.filter(c => c.in_reply_to).forEach(c => {
+    if (!repliesMap[c.in_reply_to]) repliesMap[c.in_reply_to] = [];
+    repliesMap[c.in_reply_to].push(c);
+  });
+
+  topLevel.forEach(c => {
+    list.appendChild(buildCommentEl(c));
+    // 返信をインデントして直下に表示
+    (repliesMap[c.id] ?? []).forEach(reply => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'ml-6 pl-3 border-l-2 border-[var(--primary)] border-opacity-30 mt-2';
+      wrapper.appendChild(buildCommentEl(reply));
+      list.appendChild(wrapper);
+    });
+  });
+
   if (_adminToken) showCommentDeleteButtons(_adminToken);
   checkReplyNotify(comments);
 }
