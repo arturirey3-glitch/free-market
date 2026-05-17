@@ -550,6 +550,20 @@ const jsonLdString = JSON.stringify(jsonLd);
         <span id="comment-count" class="font-normal text-[var(--text-secondary)] text-sm"></span>
       </h2>
 
+      <!-- 出品者返信通知バナー（未ログインユーザー向け） -->
+      <div id="reply-notify-banner" class="hidden mb-4 flex items-center gap-3 rounded-xl bg-green-50 border border-green-200 px-4 py-3">
+        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-green-800">出品者から返信があります</p>
+          <p class="text-xs text-green-600 mt-0.5">↓ 下のコメント欄をご確認ください</p>
+        </div>
+        <button id="reply-notify-close" class="text-green-400 hover:text-green-600 shrink-0" aria-label="閉じる">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
       <!-- 既存コメント一覧 -->
       <div id="comment-list" class="space-y-3 mb-6"></div>
 
@@ -1171,6 +1185,40 @@ async function loadComments() {
   if (countEl) countEl.textContent = comments.length > 0 ? `（${comments.length}件）` : '';
   comments.forEach(c => list.appendChild(buildCommentEl(c)));
   if (_adminToken) showCommentDeleteButtons(_adminToken);
+  checkReplyNotify(comments);
+}
+
+// ── 未ログインユーザー向け返信通知 ──
+function checkReplyNotify(comments: any[]) {
+  if (!productId) return;
+  try {
+    const MY_KEY = 'my_commented_products';
+    const SEEN_KEY = `notif_seen_${productId}`;
+    const myList = JSON.parse(localStorage.getItem(MY_KEY) || '[]') as {id:string, at:string}[];
+    const myRecord = myList.find(p => p.id === productId);
+    if (!myRecord) return; // このページにコメント投稿歴なし
+
+    const lastSeen = localStorage.getItem(SEEN_KEY) ?? myRecord.at;
+    const dismissed = localStorage.getItem(SEEN_KEY + '_dismissed');
+    if (dismissed) return;
+
+    // 自分のコメント投稿後に管理者コメントが1件以上あれば通知
+    const hasAdminReply = comments.some(c => c.is_admin && c.created_at > myRecord.at);
+    if (!hasAdminReply) return;
+
+    // lastSeen以降に管理者返信があるか
+    const hasNew = comments.some(c => c.is_admin && c.created_at > lastSeen);
+    if (!hasNew) return;
+
+    const banner = document.getElementById('reply-notify-banner');
+    if (banner) banner.classList.remove('hidden');
+
+    const closeBtn = document.getElementById('reply-notify-close');
+    closeBtn?.addEventListener('click', () => {
+      banner?.classList.add('hidden');
+      localStorage.setItem(SEEN_KEY + '_dismissed', '1');
+    }, { once: true });
+  } catch {}
 }
 
 loadComments();
@@ -1209,6 +1257,20 @@ commentForm?.addEventListener('submit', async (e) => {
       commentSuccess?.classList.remove('hidden');
       commentForm.reset();
       if (charEl) charEl.textContent = '0';
+
+      // コメントした商品・時刻をlocalStorageに記録（返信通知用）
+      try {
+        const MY_KEY = 'my_commented_products';
+        const list = JSON.parse(localStorage.getItem(MY_KEY) || '[]') as {id:string,at:string}[];
+        const existing = list.find(p => p.id === productId);
+        const now = new Date().toISOString();
+        if (existing) { existing.at = now; } else { list.push({ id: productId, at: now }); }
+        localStorage.setItem(MY_KEY, JSON.stringify(list.slice(-50))); // 最大50件
+        // 通知バナーを非表示に（自分のコメント直後なので）
+        document.getElementById('reply-notify-banner')?.classList.add('hidden');
+        localStorage.setItem(`notif_seen_${productId}`, now);
+      } catch {}
+
       await loadComments();
     } else {
       commentError?.classList.remove('hidden');
@@ -1220,6 +1282,7 @@ commentForm?.addEventListener('submit', async (e) => {
     commentSubmit.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> コメントを送る`;
   }
 });
+
 </script>
 
 <!-- スマホの固定バー分のスペーサー -->
