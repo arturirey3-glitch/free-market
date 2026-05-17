@@ -1447,6 +1447,15 @@ function updateAvatar(name: string) {
   }
 }
 nameInput?.addEventListener('input', () => updateAvatar(nameInput.value));
+
+// スマホでコメント入力中は購入バーを非表示
+const mobilePurchaseBar = document.getElementById('mobile-purchase-bar');
+function hidePurchaseBar() { mobilePurchaseBar?.classList.add('hidden'); }
+function showPurchaseBar() { mobilePurchaseBar?.classList.remove('hidden'); }
+[nameInput, msgEl].forEach(el => {
+  el?.addEventListener('focus', hidePurchaseBar);
+  el?.addEventListener('blur', showPurchaseBar);
+});;
 // ログイン済みの場合は名前をプリセット
 if (_loggedInName && nameInput) {
   nameInput.value = _loggedInName;
@@ -1515,7 +1524,7 @@ commentForm?.addEventListener('submit', async (e) => {
 <div class="h-24 md:hidden"></div>
 
 <!-- Mobile Sticky Buy Bar -->
-<div class="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white border-t border-[var(--border-light)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] px-3" style="padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px))">
+<div id="mobile-purchase-bar" class="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white border-t border-[var(--border-light)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] px-3" style="padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px))">
   <div class="flex items-center gap-2">
     <!-- Left: price + shipping + rating -->
     <div class="flex-1 min-w-0">
