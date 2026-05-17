@@ -543,14 +543,15 @@ const jsonLdString = JSON.stringify(jsonLd);
     </section>
 
     <!-- ── 商品へのコメント ── -->
-    <section id="product-comments" class="mt-10">
-      <h2 class="mb-3 text-base font-semibold flex items-center gap-2 px-1">
-        コメント
+    <section id="product-comments" class="mt-10 border-t border-[var(--border-light)] pt-6">
+      <h2 class="mb-4 text-base font-semibold flex items-center gap-2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        商品へのコメント
         <span id="comment-count" class="font-normal text-[var(--text-secondary)] text-sm"></span>
       </h2>
 
       <!-- 出品者返信通知バナー（未ログインユーザー向け） -->
-      <div id="reply-notify-banner" class="hidden mb-3 flex items-center gap-3 rounded-xl bg-green-50 border border-green-200 px-4 py-3">
+      <div id="reply-notify-banner" class="hidden mb-4 flex items-center gap-3 rounded-xl bg-green-50 border border-green-200 px-4 py-3">
         <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </span>
@@ -564,54 +565,49 @@ const jsonLdString = JSON.stringify(jsonLd);
       </div>
 
       <!-- 既存コメント一覧 -->
-      <div id="comment-list" class="mb-4 rounded-xl border border-[var(--border-light)] overflow-hidden divide-y divide-[var(--border-light)]"></div>
+      <div id="comment-list" class="space-y-3 mb-6"></div>
 
       <!-- コメント投稿フォーム -->
-      <div class="rounded-xl border border-[var(--border-light)] bg-white overflow-hidden">
-        <!-- フォームヘッダー -->
-        <div class="px-4 py-3 bg-[var(--bg-secondary)] border-b border-[var(--border-light)]">
-          <p class="text-xs font-medium text-[var(--text-secondary)]">コメントを入力</p>
+      <div class="rounded-2xl border border-[var(--border-light)] bg-white p-5 shadow-sm">
+        <div id="comment-success" class="hidden mb-4 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
+          ✅ コメントを送信しました。確認後にお返事いたします。
         </div>
-        <div class="p-4">
-          <div id="comment-success" class="hidden mb-3 rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
-            ✅ コメントを送信しました。確認後にお返事いたします。
-          </div>
-          <div id="comment-error" class="hidden mb-3 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
-            ❌ 送信に失敗しました。時間をおいて再度お試しください。
-          </div>
-          <form id="comment-form" class="space-y-3">
-            <input type="hidden" id="comment-product-id" value={product.id} />
-            <input type="hidden" id="comment-product-title" value={product.title} />
-            <input type="hidden" id="owner-avatar-url" value={profile?.avatar_url ?? ''} />
-            <!-- お名前入力 -->
-            <div class="flex items-center gap-3">
-              <div id="comment-avatar-preview"
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-200 text-stone-400 text-base font-bold transition-all"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-              </div>
-              <div class="flex-1">
-                <input id="comment-name" type="text" maxlength="30" placeholder="お名前（任意）"
-                  class="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition bg-[var(--bg-secondary)]"
-                />
-              </div>
-            </div>
-            <div>
-              <textarea id="comment-message" required rows="4" maxlength="500"
-                placeholder="商品についての質問・コメントをご記入ください。"
-                class="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition resize-none bg-[var(--bg-secondary)]"
-              ></textarea>
-              <p class="mt-1 text-[10px] text-stone-400 text-right"><span id="comment-char-count">0</span> / 500</p>
-            </div>
-            <div class="flex justify-end">
-              <button type="submit" id="comment-submit-btn"
-                class="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white h-[40px] px-7 text-sm font-semibold hover:bg-[var(--primary-hover)] transition disabled:opacity-50"
-              >
-                送信する
-              </button>
-            </div>
-          </form>
+        <div id="comment-error" class="hidden mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-600">
+          ❌ 送信に失敗しました。時間をおいて再度お試しください。
         </div>
+        <form id="comment-form" class="space-y-3">
+          <input type="hidden" id="comment-product-id" value={product.id} />
+          <input type="hidden" id="comment-product-title" value={product.title} />
+          <input type="hidden" id="owner-avatar-url" value={profile?.avatar_url ?? ''} />
+          <!-- お名前入力 -->
+          <div class="flex items-center gap-3">
+            <div id="comment-avatar-preview"
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-400 text-base font-bold transition-all"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            </div>
+            <div class="flex-1">
+              <input id="comment-name" type="text" maxlength="30" placeholder="お名前（任意）"
+                class="w-full rounded-xl border border-[var(--border)] px-3 py-2 text-sm outline-none focus:border-[var(--primary)] transition"
+              />
+            </div>
+          </div>
+          <div>
+            <textarea id="comment-message" required rows="4" maxlength="500"
+              placeholder="商品についての質問・コメントをご記入ください。"
+              class="w-full rounded-xl border border-[var(--border)] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition resize-none"
+            ></textarea>
+            <p class="mt-1 text-[10px] text-stone-400 text-right"><span id="comment-char-count">0</span> / 500</p>
+          </div>
+          <div class="flex justify-end">
+            <button type="submit" id="comment-submit-btn"
+              class="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] text-white h-[44px] px-8 text-sm font-semibold hover:bg-[var(--primary-hover)] transition disabled:opacity-50"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              コメントを送る
+            </button>
+          </div>
+        </form>
       </div>
     </section>
 
@@ -1153,58 +1149,54 @@ function getColorC(name: string) {
   return AVATAR_COLORS_C[Math.abs(h) % AVATAR_COLORS_C.length];
 }
 function fmtDate(iso: string) {
-  return iso.slice(0,10).replace(/-/g,'/');
+  // 日付＋時間（例: 2026/05/17 14:32）
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso.slice(0,10).replace(/-/g,'/');
+  const date = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+  const time = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  return `${date} ${time}`;
 }
 
 function buildCommentEl(c: any): HTMLElement {
   const div = document.createElement('div');
   div.dataset.commentId = c.id;
   div.id = `comment-${c.id}`;
+  const adminBadge = c.is_admin ? '<span class="rounded-full bg-[var(--primary)] px-2 py-0.5 text-[9px] text-white font-bold">出品者</span>' : '';
   const dateStr = fmtDate(c.created_at ?? '');
-
-  // 管理者コメントはグリーン背景帯、お客様は白
-  if (c.is_admin) {
-    div.className = 'px-4 py-4 bg-[#f0faf4]';
-  } else {
-    div.className = 'px-4 py-4 bg-white';
-  }
+  div.className = 'rounded-xl border border-[var(--border-light)] p-4 bg-white';
 
   // アバター生成（owner-avatar-urlはサーバー側から直接取得 → タイミング問題なし）
   const ownerAvatarUrl = (document.getElementById('owner-avatar-url') as HTMLInputElement)?.value || '';
   const avatarHtml = (() => {
     if (c.is_admin) {
       if (ownerAvatarUrl) {
-        return `<div class="h-10 w-10 shrink-0 overflow-hidden rounded-full"><img src="${ownerAvatarUrl}" alt="出品者" class="h-full w-full object-cover"/></div>`;
+        return `<div class="h-9 w-9 shrink-0 overflow-hidden rounded-full border-2 border-[var(--primary)]"><img src="${ownerAvatarUrl}" alt="出品者" class="h-full w-full object-cover"/></div>`;
       }
-      return `<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-white text-sm font-bold">出</div>`;
+      return `<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-white text-xs font-bold">出</div>`;
     }
     const displayName = c.name && c.name !== '匿名' ? c.name : '';
     if (displayName) {
       const color = getColorC(displayName);
-      return `<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white text-sm font-bold" style="background:${color}">${Array.from(displayName)[0].toUpperCase()}</div>`;
+      return `<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white text-sm font-bold" style="background:${color}">${Array.from(displayName)[0].toUpperCase()}</div>`;
     }
-    return `<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-200 text-stone-400"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>`;
+    return `<div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-stone-100 text-stone-400"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></div>`;
   })();
-
-  const nameHtml = c.is_admin
-    ? `<span class="text-sm font-semibold text-[var(--primary)]">出品者</span>`
-    : `<span class="text-sm font-medium text-stone-800">${(c.name && c.name !== '匿名' ? c.name : '匿名ユーザー').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`;
 
   div.innerHTML = `
     <div class="flex items-start gap-3">
       ${avatarHtml}
       <div class="flex-1 min-w-0">
-        <div class="flex items-center justify-between gap-2 mb-1">
-          <div class="flex items-center gap-2 flex-wrap">
-            ${nameHtml}
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            ${c.is_admin ? adminBadge : `<span class="text-xs font-medium text-stone-600">${(c.name && c.name !== '匿名' ? c.name : '匿名ユーザー').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`}
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <span class="text-xs text-stone-400">${dateStr}</span>
-            ${!c.is_admin ? '<button type="button" data-comment-reply class="hidden text-xs text-[var(--primary)] hover:underline transition font-medium">返信</button>' : ''}
-            <button type="button" data-comment-delete class="hidden text-xs text-red-400 hover:text-red-600 transition">削除</button>
+            <span class="text-[10px] text-stone-400">${dateStr}</span>
+            ${!c.is_admin ? '<button type="button" data-comment-reply class="hidden text-[10px] text-[var(--primary)] hover:underline transition">返信</button>' : ''}
+            <button type="button" data-comment-delete class="hidden text-[10px] text-red-400 hover:text-red-600 transition">削除</button>
           </div>
         </div>
-        <p class="text-sm text-stone-700 whitespace-pre-wrap leading-[1.7]">${c.message.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
+        <p class="mt-1.5 text-sm text-stone-700 whitespace-pre-wrap leading-relaxed">${c.message.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
       </div>
     </div>`;
   return div;
@@ -1311,9 +1303,12 @@ async function loadComments() {
 
   topLevel.forEach(c => {
     list.appendChild(buildCommentEl(c));
-    // 返信を直下にネスト（メルカリスタイル：インデントなし、背景色で区別）
+    // 返信をインデントして直下に表示
     (repliesMap[c.id] ?? []).forEach(reply => {
-      list.appendChild(buildCommentEl(reply));
+      const wrapper = document.createElement('div');
+      wrapper.className = 'ml-6 pl-3 border-l-2 border-[var(--primary)] border-opacity-30 mt-2';
+      wrapper.appendChild(buildCommentEl(reply));
+      list.appendChild(wrapper);
     });
   });
 
