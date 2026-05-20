@@ -344,12 +344,15 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
       btn.classList.toggle('bg-[var(--primary)]', isActive);
       btn.classList.toggle('text-white', isActive);
     });
+    const physicalInputs = fieldsPhysical.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input, select, textarea');
     if (type === 'digital') {
       fieldsPhysical.classList.add('hidden');
+      physicalInputs.forEach(el => { el.disabled = true; });
       fieldCatchCopy.classList.remove('hidden');
       fieldFaq.classList.remove('hidden');
     } else {
       fieldsPhysical.classList.remove('hidden');
+      physicalInputs.forEach(el => { el.disabled = false; });
       fieldCatchCopy.classList.add('hidden');
       fieldFaq.classList.add('hidden');
     }
