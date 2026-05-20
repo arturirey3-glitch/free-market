@@ -281,9 +281,9 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
         body: JSON.stringify({
           product: {
             id: product.id,
-            title: formData.get('title'),
-            price: Number(formData.get('price')),
-            shipping_payer: formData.get('shipping_payer') ?? '',
+            title: fd.get('title'),
+            price: Number(fd.get('price')),
+            shipping_payer: fd.get('shipping_payer') ?? '',
           },
           imageUrls: uploadedImageUrls.slice(0, 4),
         }),
