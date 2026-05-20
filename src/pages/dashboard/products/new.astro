@@ -9,6 +9,22 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
     <h1 class="text-lg font-bold mb-6">新規出品</h1>
     <form class="space-y-5" id="product-form">
 
+      <!-- 商品タイプ切替 -->
+      <div>
+        <label class="text-xs text-[var(--text-secondary)]">出品タイプ</label>
+        <div class="mt-1 flex rounded-lg border border-[var(--border)] overflow-hidden">
+          <button type="button" id="type-physical" data-type="physical"
+            class="flex-1 py-2.5 text-sm font-medium transition type-btn type-btn-active">
+            📦 物販商品
+          </button>
+          <button type="button" id="type-digital" data-type="digital"
+            class="flex-1 py-2.5 text-sm font-medium transition type-btn">
+            💻 デジタル・スキル
+          </button>
+        </div>
+        <input type="hidden" name="product_type" id="product-type-input" value="physical" />
+      </div>
+
       <!-- 商品画像（最上部） -->
       <div>
         <label class="text-xs text-[var(--text-secondary)]">商品画像 <span class="text-[10px] text-[var(--text-placeholder)]">（最大20枚）</span></label>
@@ -33,13 +49,10 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
         <input type="text" name="title" required maxlength="65" class="input-field mt-1" placeholder="商品名（65文字以内）" />
       </div>
 
-      <!-- 商品の状態 -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">商品の状態 <span class="text-[var(--danger)]">*</span></label>
-        <select name="condition" required class="input-field mt-1">
-          <option value="">選択してください</option>
-          {CONDITIONS.map((c) => <option value={c}>{c}</option>)}
-        </select>
+      <!-- キャッチコピー（デジタルのみ） -->
+      <div id="field-catch-copy" class="hidden">
+        <label class="text-xs text-[var(--text-secondary)]">キャッチコピー <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+        <input type="text" name="catch_copy" maxlength="100" class="input-field mt-1" placeholder="例: 寝ている間に値下げ！！" />
       </div>
 
       <!-- カテゴリ（自由入力） -->
@@ -64,54 +77,67 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
         <textarea name="description" rows="6" required class="input-field mt-1" placeholder="サイズ・状態・購入時期など、できるだけ詳しく記載してください。"></textarea>
       </div>
 
-      <!-- ブランド -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">ブランド <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
-        <input type="text" name="brand" class="input-field mt-1" placeholder="例: Nike、無印良品" />
-      </div>
+      <div id="fields-physical" class="space-y-5">
 
-      <!-- 配送料の負担 -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">配送料の負担 <span class="text-[var(--danger)]">*</span></label>
-        <select name="shipping_payer" required class="input-field mt-1">
-          {SHIPPING_PAYERS.map((p) => <option value={p}>{p}</option>)}
-        </select>
-      </div>
+        <!-- 商品の状態 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">商品の状態 <span class="text-[var(--danger)]">*</span></label>
+          <select name="condition" required class="input-field mt-1">
+            <option value="">選択してください</option>
+            {CONDITIONS.map((c) => <option value={c}>{c}</option>)}
+          </select>
+        </div>
 
-      <!-- 配送方法（自由入力） -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">配送方法 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
-        <input type="text" name="shipping_method" class="input-field mt-1" placeholder="例: ヤマト宅急便、ゆうパックなど" />
-      </div>
+        <!-- ブランド -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">ブランド <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+          <input type="text" name="brand" class="input-field mt-1" placeholder="例: Nike、無印良品" />
+        </div>
 
-      <!-- 発送元の地域 -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">発送元の地域</label>
-        <select name="shipping_from" class="input-field mt-1">
-          <option value="">選択してください</option>
-          {PREFECTURES.map((p) => <option value={p}>{p}</option>)}
-        </select>
-      </div>
+        <!-- 配送料の負担 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">配送料の負担 <span class="text-[var(--danger)]">*</span></label>
+          <select name="shipping_payer" required class="input-field mt-1">
+            {SHIPPING_PAYERS.map((p) => <option value={p}>{p}</option>)}
+          </select>
+        </div>
 
-      <!-- 発送までの日数 -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">発送までの日数</label>
-        <select name="shipping_duration" class="input-field mt-1">
-          <option value="">選択してください</option>
-          {SHIPPING_DURATIONS.map((d) => <option value={d}>{d}</option>)}
-        </select>
+        <!-- 配送方法（自由入力） -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">配送方法 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+          <input type="text" name="shipping_method" class="input-field mt-1" placeholder="例: ヤマト宅急便、ゆうパックなど" />
+        </div>
+
+        <!-- 発送元の地域 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">発送元の地域</label>
+          <select name="shipping_from" class="input-field mt-1">
+            <option value="">選択してください</option>
+            {PREFECTURES.map((p) => <option value={p}>{p}</option>)}
+          </select>
+        </div>
+
+        <!-- 発送までの日数 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">発送までの日数</label>
+          <select name="shipping_duration" class="input-field mt-1">
+            <option value="">選択してください</option>
+            {SHIPPING_DURATIONS.map((d) => <option value={d}>{d}</option>)}
+          </select>
+        </div>
+
+        <!-- 在庫数 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">在庫数 <span class="text-[10px] text-[var(--text-placeholder)]">（空欄=無制限）</span></label>
+          <input type="number" name="stock" min="0" class="input-field mt-1" placeholder="例: 1" />
+        </div>
+
       </div>
 
       <!-- 価格 -->
       <div>
         <label class="text-xs text-[var(--text-secondary)]">販売価格（税込） <span class="text-[var(--danger)]">*</span></label>
         <input type="number" name="price" min="300" required class="input-field mt-1" placeholder="¥300以上" />
-      </div>
-
-      <!-- 在庫数 -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">在庫数 <span class="text-[10px] text-[var(--text-placeholder)]">（空欄=無制限）</span></label>
-        <input type="number" name="stock" min="0" class="input-field mt-1" placeholder="例: 1" />
       </div>
 
       <!-- サブスク -->
@@ -126,6 +152,12 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
       <div>
         <label class="text-xs text-[var(--text-secondary)]">購入にあたっての注意 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
         <textarea name="purchase_notes" rows="3" class="input-field mt-1" placeholder="発送タイミングや注意事項など"></textarea>
+      </div>
+
+      <!-- よくある質問（デジタルのみ） -->
+      <div id="field-faq" class="hidden">
+        <label class="text-xs text-[var(--text-secondary)]">よくある質問 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+        <textarea name="faq" rows="4" class="input-field mt-1" placeholder="Q. 仕様変更があった場合は対応してもらえますか？&#10;A. 対応可能です。"></textarea>
       </div>
 
       <div class="flex gap-2 pt-2">
@@ -240,6 +272,9 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
       shipping_from: fd.get('shipping_from') || null,
       brand: fd.get('brand') || null,
       stock: fd.get('stock') !== '' && fd.get('stock') !== null ? Number(fd.get('stock')) : null,
+      product_type: (fd.get('product_type') as string) || 'physical',
+      catch_copy: fd.get('catch_copy') as string || null,
+      faq: fd.get('faq') as string || null,
     }).select().single();
 
     if (error) {
@@ -293,5 +328,37 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
     window.showToast?.('success', '保存しました', submitStatus === 'published' ? '商品を出品しました！' : '下書きに保存しました。');
     setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
   });
+
+  // 出品タイプ切替
+  const typeButtons = document.querySelectorAll<HTMLButtonElement>('.type-btn');
+  const typeInput = document.getElementById('product-type-input') as HTMLInputElement;
+  const fieldsPhysical = document.getElementById('fields-physical')!;
+  const fieldCatchCopy = document.getElementById('field-catch-copy')!;
+  const fieldFaq = document.getElementById('field-faq')!;
+
+  function setType(type: string) {
+    typeInput.value = type;
+    typeButtons.forEach(btn => {
+      const isActive = btn.dataset.type === type;
+      btn.classList.toggle('type-btn-active', isActive);
+      btn.classList.toggle('bg-[var(--primary)]', isActive);
+      btn.classList.toggle('text-white', isActive);
+    });
+    if (type === 'digital') {
+      fieldsPhysical.classList.add('hidden');
+      fieldCatchCopy.classList.remove('hidden');
+      fieldFaq.classList.remove('hidden');
+    } else {
+      fieldsPhysical.classList.remove('hidden');
+      fieldCatchCopy.classList.add('hidden');
+      fieldFaq.classList.add('hidden');
+    }
+  }
+
+  typeButtons.forEach(btn => {
+    btn.addEventListener('click', () => setType(btn.dataset.type!));
+  });
+  // 初期スタイル
+  setType('physical');
   </script>
 </BaseLayout>

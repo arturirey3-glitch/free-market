@@ -257,28 +257,57 @@ const jsonLdString = JSON.stringify(jsonLd);
           )}
         </div>
 
-        <!-- Shipping info (desktop) -->
+        <!-- Info section (desktop) -->
         <div class="hidden border-[var(--border-light)] md:block">
-          {product.shipping_duration && (
-            <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
-              <dt class="text-sm text-[var(--text-secondary)]">発送目安</dt>
-              <dd class="text-sm">{product.shipping_duration}</dd>
-            </dl>
-          )}
-          {(product.shipping_method || product.shipping_payer || product.shipping_from) && (
-            <details class="border-b border-[var(--border-light)]">
-              <summary class="flex h-[54px] cursor-pointer items-center justify-between text-sm">
-                <span>送料・配送方法</span>
-                <svg width="13" height="7" viewBox="0 0 13 7" fill="none" class="chevron-icon transition-transform duration-200">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
-                </svg>
-              </summary>
-              <div class="space-y-1 pb-4 pt-1 text-sm text-[var(--text-secondary)]">
-                {product.shipping_from && <p>発送元地域：{product.shipping_from}</p>}
-                {product.shipping_payer && <p>送料：{product.shipping_payer}</p>}
-                {product.shipping_method && <p>配送方法：{product.shipping_method}</p>}
-              </div>
-            </details>
+          {product.product_type === 'digital' ? (
+            <>
+              {product.purchase_notes && (
+                <details class="border-b border-[var(--border-light)]" open>
+                  <summary class="flex h-[54px] cursor-pointer items-center justify-between text-sm">
+                    <span>購入にあたってのお願い</span>
+                    <svg width="13" height="7" viewBox="0 0 13 7" fill="none" class="chevron-icon transition-transform duration-200">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
+                    </svg>
+                  </summary>
+                  <div class="whitespace-pre-wrap pb-4 pt-1 text-sm text-[var(--text-secondary)]">{product.purchase_notes}</div>
+                </details>
+              )}
+              {product.faq && (
+                <details class="border-b border-[var(--border-light)]">
+                  <summary class="flex h-[54px] cursor-pointer items-center justify-between text-sm">
+                    <span>よくある質問</span>
+                    <svg width="13" height="7" viewBox="0 0 13 7" fill="none" class="chevron-icon transition-transform duration-200">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
+                    </svg>
+                  </summary>
+                  <div class="whitespace-pre-wrap pb-4 pt-1 text-sm text-[var(--text-secondary)]">{product.faq}</div>
+                </details>
+              )}
+            </>
+          ) : (
+            <>
+              {product.shipping_duration && (
+                <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
+                  <dt class="text-sm text-[var(--text-secondary)]">発送目安</dt>
+                  <dd class="text-sm">{product.shipping_duration}</dd>
+                </dl>
+              )}
+              {(product.shipping_method || product.shipping_payer || product.shipping_from) && (
+                <details class="border-b border-[var(--border-light)]">
+                  <summary class="flex h-[54px] cursor-pointer items-center justify-between text-sm">
+                    <span>送料・配送方法</span>
+                    <svg width="13" height="7" viewBox="0 0 13 7" fill="none" class="chevron-icon transition-transform duration-200">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
+                    </svg>
+                  </summary>
+                  <div class="space-y-1 pb-4 pt-1 text-sm text-[var(--text-secondary)]">
+                    {product.shipping_from && <p>発送元地域：{product.shipping_from}</p>}
+                    {product.shipping_payer && <p>送料：{product.shipping_payer}</p>}
+                    {product.shipping_method && <p>配送方法：{product.shipping_method}</p>}
+                  </div>
+                </details>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -293,6 +322,10 @@ const jsonLdString = JSON.stringify(jsonLd);
         )}
 
         <h1 class="mb-4 text-[1.0625rem] font-semibold leading-snug">{product.title}</h1>
+
+        {product.catch_copy && (
+          <p class="mb-3 -mt-2 text-sm text-[var(--text-secondary)]">{product.catch_copy}</p>
+        )}
 
         <!-- Price -->
         <div class="flex items-baseline gap-2">
@@ -392,28 +425,57 @@ const jsonLdString = JSON.stringify(jsonLd);
           )}
         </div>
 
-        <!-- Shipping info (mobile) -->
+        <!-- Info section (mobile) -->
         <div class="border-[var(--border-light)] md:hidden">
-          {product.shipping_duration && (
-            <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
-              <dt class="text-sm text-[var(--text-secondary)]">発送目安</dt>
-              <dd class="text-sm">{product.shipping_duration}</dd>
-            </dl>
-          )}
-          {(product.shipping_method || product.shipping_payer || product.shipping_from) && (
-            <details class="border-b border-[var(--border-light)]">
-              <summary class="flex h-[54px] cursor-pointer items-center justify-between text-sm">
-                <span>送料・配送方法</span>
-                <svg width="13" height="7" viewBox="0 0 13 7" fill="none" class="chevron-icon transition-transform duration-200">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
-                </svg>
-              </summary>
-              <div class="space-y-1 pb-4 pt-1 text-sm text-[var(--text-secondary)]">
-                {product.shipping_from && <p>発送元地域：{product.shipping_from}</p>}
-                {product.shipping_payer && <p>送料：{product.shipping_payer}</p>}
-                {product.shipping_method && <p>配送方法：{product.shipping_method}</p>}
-              </div>
-            </details>
+          {product.product_type === 'digital' ? (
+            <>
+              {product.purchase_notes && (
+                <details class="border-b border-[var(--border-light)]" open>
+                  <summary class="flex h-[54px] cursor-pointer items-center justify-between text-sm">
+                    <span>購入にあたってのお願い</span>
+                    <svg width="13" height="7" viewBox="0 0 13 7" fill="none" class="chevron-icon transition-transform duration-200">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
+                    </svg>
+                  </summary>
+                  <div class="whitespace-pre-wrap pb-4 pt-1 text-sm text-[var(--text-secondary)]">{product.purchase_notes}</div>
+                </details>
+              )}
+              {product.faq && (
+                <details class="border-b border-[var(--border-light)]">
+                  <summary class="flex h-[54px] cursor-pointer items-center justify-between text-sm">
+                    <span>よくある質問</span>
+                    <svg width="13" height="7" viewBox="0 0 13 7" fill="none" class="chevron-icon transition-transform duration-200">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
+                    </svg>
+                  </summary>
+                  <div class="whitespace-pre-wrap pb-4 pt-1 text-sm text-[var(--text-secondary)]">{product.faq}</div>
+                </details>
+              )}
+            </>
+          ) : (
+            <>
+              {product.shipping_duration && (
+                <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
+                  <dt class="text-sm text-[var(--text-secondary)]">発送目安</dt>
+                  <dd class="text-sm">{product.shipping_duration}</dd>
+                </dl>
+              )}
+              {(product.shipping_method || product.shipping_payer || product.shipping_from) && (
+                <details class="border-b border-[var(--border-light)]">
+                  <summary class="flex h-[54px] cursor-pointer items-center justify-between text-sm">
+                    <span>送料・配送方法</span>
+                    <svg width="13" height="7" viewBox="0 0 13 7" fill="none" class="chevron-icon transition-transform duration-200">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M6.14645 5.86849C6.34171 6.0612 6.65829 6.0612 6.85355 5.86849L12.1464 0.644539C12.3417 0.45182 12.6583 0.45182 12.8536 0.644539C13.0488 0.837258 13.0488 1.14972 12.8536 1.34243L7.56066 6.56638C6.97487 7.14454 6.02513 7.14454 5.43934 6.56638L0.146446 1.34243C-0.0488158 1.14972 -0.0488158 0.837257 0.146446 0.644538C0.341709 0.451819 0.658291 0.451819 0.853554 0.644538L6.14645 5.86849Z" fill="#81818B"/>
+                    </svg>
+                  </summary>
+                  <div class="space-y-1 pb-4 pt-1 text-sm text-[var(--text-secondary)]">
+                    {product.shipping_from && <p>発送元地域：{product.shipping_from}</p>}
+                    {product.shipping_payer && <p>送料：{product.shipping_payer}</p>}
+                    {product.shipping_method && <p>配送方法：{product.shipping_method}</p>}
+                  </div>
+                </details>
+              )}
+            </>
           )}
         </div>
 
@@ -477,7 +539,7 @@ const jsonLdString = JSON.stringify(jsonLd);
           </div>
         </div>
 
-        {product.purchase_notes && (
+        {product.purchase_notes && product.product_type !== 'digital' && (
           <div class="mt-8 border-t border-[var(--border-light)] pt-5">
             <h2 class="mb-3 text-sm font-semibold">購入にあたって</h2>
             <div class="whitespace-pre-wrap text-sm leading-relaxed text-[var(--text-secondary)]">{product.purchase_notes}</div>
