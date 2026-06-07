@@ -42,15 +42,16 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const token = generateToken();
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
     const { data, error } = await supabase.from('review_tokens').insert({
-      product_id: productId, token, email: email || null
+      product_id: productId, token, email: email || null, expires_at: expiresAt
     }).select().single();
 
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), { status: 500, headers });
     }
 
-    const siteUrl = import.meta.env.SITE_URL || 'https://free-market.pages.dev';
+    const siteUrl = import.meta.env.SITE_URL || 'https://www.felikko.com';
     const shortId = productId.slice(0, 8);
     const reviewUrl = `${siteUrl}/products/${shortId}/review?token=${token}`;
 
