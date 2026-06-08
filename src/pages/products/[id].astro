@@ -554,6 +554,7 @@ const jsonLdString = JSON.stringify(jsonLd);
         レビュー{reviews.length > 0 && <span class="font-normal text-[var(--text-secondary)]">（{reviews.length}件）</span>}
       </h2>
       {reviews.length > 0 ? (
+        <>
         <div class="space-y-4" id="review-list">
           {reviews.map((review: any, idx: number) => {
             const initial = (review.reviewer_name ?? '購入者').charAt(0).toUpperCase();
@@ -617,6 +618,7 @@ const jsonLdString = JSON.stringify(jsonLd);
             </button>
           </div>
         )}
+        </>
       ) : (
         <p class="text-sm text-[var(--text-secondary)]">まだレビューはありません</p>
       )}
@@ -784,17 +786,17 @@ const jsonLdString = JSON.stringify(jsonLd);
       const BATCH = 10;
       const btn = document.querySelector<HTMLButtonElement>('[data-review-show-more]');
       if (!btn) return;
-      const total = Number(btn.dataset.totalReviews ?? 0);
+      const reviewTotal = Number(btn.dataset.totalReviews ?? 0);
       let shown = INITIAL;
 
       btn.addEventListener('click', () => {
-        const next = Math.min(shown + BATCH, total);
+        const next = Math.min(shown + BATCH, reviewTotal);
         document.querySelectorAll<HTMLElement>('[data-review-index]').forEach(el => {
           const idx = Number(el.dataset.reviewIndex);
           if (idx >= shown && idx < next) el.classList.remove('hidden');
         });
         shown = next;
-        const remaining = total - shown;
+        const remaining = reviewTotal - shown;
         if (remaining <= 0) {
           btn.closest('[data-review-show-more-container]')?.remove();
         } else {
