@@ -555,12 +555,13 @@ const jsonLdString = JSON.stringify(jsonLd);
       </h2>
       {reviews.length > 0 ? (
         <div class="space-y-4" id="review-list">
-          {reviews.map((review: any) => {
+          {reviews.map((review: any, idx: number) => {
             const initial = (review.reviewer_name ?? '購入者').charAt(0).toUpperCase();
             const avatarColor = getAvatarColor(review.reviewer_name ?? '購入者');
             return (
-              <article class="rounded-xl border border-[var(--border-light)] p-4"
+              <article class={`rounded-xl border border-[var(--border-light)] p-4${idx >= 5 ? ' hidden' : ''}`}
                 data-review-item
+                data-review-index={idx}
                 data-review-id={review.id}
                 data-rating={review.rating}
                 data-title={review.title ?? ''}
@@ -606,6 +607,16 @@ const jsonLdString = JSON.stringify(jsonLd);
             );
           })}
         </div>
+        {reviews.length > 5 && (
+          <div class="mt-4 text-center" data-review-show-more-container>
+            <button type="button"
+              class="rounded-full border border-stone-200 bg-white px-6 py-2.5 text-sm font-medium text-stone-700 hover:bg-stone-50 transition-colors"
+              data-review-show-more
+              data-total-reviews={reviews.length}>
+              もっと見る（残り{reviews.length - 5}件）
+            </button>
+          </div>
+        )}
       ) : (
         <p class="text-sm text-[var(--text-secondary)]">まだレビューはありません</p>
       )}
@@ -767,6 +778,31 @@ const jsonLdString = JSON.stringify(jsonLd);
   </div>
 
   <script>
+    // --- もっと見る（レビュー） ---
+    (() => {
+      const INITIAL = 5;
+      const BATCH = 10;
+      const btn = document.querySelector<HTMLButtonElement>('[data-review-show-more]');
+      if (!btn) return;
+      const total = Number(btn.dataset.totalReviews ?? 0);
+      let shown = INITIAL;
+
+      btn.addEventListener('click', () => {
+        const next = Math.min(shown + BATCH, total);
+        document.querySelectorAll<HTMLElement>('[data-review-index]').forEach(el => {
+          const idx = Number(el.dataset.reviewIndex);
+          if (idx >= shown && idx < next) el.classList.remove('hidden');
+        });
+        shown = next;
+        const remaining = total - shown;
+        if (remaining <= 0) {
+          btn.closest('[data-review-show-more-container]')?.remove();
+        } else {
+          btn.textContent = `もっと見る（残り${remaining}件）`;
+        }
+      });
+    })();
+
     // --- Gallery ---
     const gallery = document.getElementById('gallery') as HTMLElement | null;
     const btnPrev = document.getElementById('btn-prev');
