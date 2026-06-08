@@ -33,19 +33,13 @@ const { id } = Astro.params;
         <p class="mt-1 text-[10px] text-[var(--text-placeholder)]">1枚目がサムネイルになります。</p>
       </div>
 
+      <!-- product_type hidden -->
+      <input type="hidden" name="product_type" id="product-type-input" value="physical" />
+
       <!-- 商品名 -->
       <div>
         <label class="text-xs text-[var(--text-secondary)]">商品名 <span class="text-[var(--danger)]">*</span></label>
         <input type="text" name="title" required maxlength="65" class="input-field mt-1" placeholder="商品名（65文字以内）" />
-      </div>
-
-      <!-- 商品の状態 -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">商品の状態 <span class="text-[var(--danger)]">*</span></label>
-        <select name="condition" required class="input-field mt-1">
-          <option value="">選択してください</option>
-          {CONDITIONS.map((c) => <option value={c}>{c}</option>)}
-        </select>
       </div>
 
       <!-- カテゴリ -->
@@ -64,42 +58,63 @@ const { id } = Astro.params;
         <textarea name="description" rows="6" required class="input-field mt-1" placeholder="サイズ・状態・購入時期など"></textarea>
       </div>
 
-      <!-- ブランド -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">ブランド <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
-        <input type="text" name="brand" class="input-field mt-1" placeholder="例: Nike、無印良品" />
+      <!-- お届け日数（デジタルのみ） -->
+      <div id="field-delivery-time" class="hidden">
+        <label class="text-xs text-[var(--text-secondary)]">お届け日数 <span class="text-[var(--danger)]">*</span></label>
+        <input type="number" name="delivery_time" id="delivery-time-input" min="1" max="99" value="1"
+          class="input-field mt-1" placeholder="例: 1" />
       </div>
 
-      <!-- 配送料の負担 -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">配送料の負担 <span class="text-[var(--danger)]">*</span></label>
-        <select name="shipping_payer" required class="input-field mt-1">
-          {SHIPPING_PAYERS.map((p) => <option value={p}>{p}</option>)}
-        </select>
-      </div>
+      <!-- 物販専用フィールド -->
+      <div id="fields-physical" class="space-y-5">
 
-      <!-- 配送方法 -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">配送方法 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
-        <input type="text" name="shipping_method" class="input-field mt-1" placeholder="例: ヤマト宅急便、クリックポストなど" />
-      </div>
+        <!-- 商品の状態 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">商品の状態 <span class="text-[var(--danger)]">*</span></label>
+          <select name="condition" required class="input-field mt-1">
+            <option value="">選択してください</option>
+            {CONDITIONS.map((c) => <option value={c}>{c}</option>)}
+          </select>
+        </div>
 
-      <!-- 発送元の地域 -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">発送元の地域</label>
-        <select name="shipping_from" class="input-field mt-1">
-          <option value="">選択してください</option>
-          {PREFECTURES.map((p) => <option value={p}>{p}</option>)}
-        </select>
-      </div>
+        <!-- ブランド -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">ブランド <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+          <input type="text" name="brand" class="input-field mt-1" placeholder="例: Nike、無印良品" />
+        </div>
 
-      <!-- 発送までの日数 -->
-      <div>
-        <label class="text-xs text-[var(--text-secondary)]">発送までの日数</label>
-        <select name="shipping_duration" class="input-field mt-1">
-          <option value="">選択してください</option>
-          {SHIPPING_DURATIONS.map((d) => <option value={d}>{d}</option>)}
-        </select>
+        <!-- 配送料の負担 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">配送料の負担 <span class="text-[var(--danger)]">*</span></label>
+          <select name="shipping_payer" required class="input-field mt-1">
+            {SHIPPING_PAYERS.map((p) => <option value={p}>{p}</option>)}
+          </select>
+        </div>
+
+        <!-- 配送方法 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">配送方法 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
+          <input type="text" name="shipping_method" class="input-field mt-1" placeholder="例: ヤマト宅急便、クリックポストなど" />
+        </div>
+
+        <!-- 発送元の地域 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">発送元の地域</label>
+          <select name="shipping_from" class="input-field mt-1">
+            <option value="">選択してください</option>
+            {PREFECTURES.map((p) => <option value={p}>{p}</option>)}
+          </select>
+        </div>
+
+        <!-- 発送までの日数 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">発送までの日数</label>
+          <select name="shipping_duration" class="input-field mt-1">
+            <option value="">選択してください</option>
+            {SHIPPING_DURATIONS.map((d) => <option value={d}>{d}</option>)}
+          </select>
+        </div>
+
       </div>
 
       <!-- 価格 -->
@@ -200,6 +215,29 @@ const { id } = Astro.params;
     set('shipping_duration', product.shipping_duration);
     set('purchase_notes', product.purchase_notes);
     set('is_subscription', product.is_subscription);
+    set('delivery_time', product.delivery_time ?? 1);
+    set('product_type', product.product_type ?? 'physical');
+
+    // product_typeに応じてフィールド表示切替
+    const fieldsPhysical = document.getElementById('fields-physical')!;
+    const fieldDeliveryTime = document.getElementById('field-delivery-time')!;
+    const deliveryTimeInput = document.getElementById('delivery-time-input') as HTMLInputElement;
+    const physicalInputs = fieldsPhysical.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea');
+
+    function applyType(type: string) {
+      if (type === 'digital') {
+        fieldsPhysical.classList.add('hidden');
+        physicalInputs.forEach(el => { el.disabled = true; });
+        fieldDeliveryTime.classList.remove('hidden');
+        deliveryTimeInput.disabled = false;
+      } else {
+        fieldsPhysical.classList.remove('hidden');
+        physicalInputs.forEach(el => { el.disabled = false; });
+        fieldDeliveryTime.classList.add('hidden');
+        deliveryTimeInput.disabled = true;
+      }
+    }
+    applyType(product.product_type ?? 'physical');
 
     // 既存画像表示
     const existingImagesEl = document.getElementById('existing-images')!;
@@ -386,17 +424,19 @@ const { id } = Astro.params;
       const thumbnailUrl = remainingImages[0]?.image_url || newUrls[0] || null;
 
       // 商品レコード更新
+      const isDigital = fd.get('product_type') === 'digital';
       const { error: updateError } = await supabase.from('products').update({
         title:            fd.get('title'),
         description:      fd.get('description'),
         price:            Number(fd.get('price')),
         category:         fd.get('category') || null,
-        condition:        fd.get('condition') || null,
-        brand:            fd.get('brand') || null,
-        shipping_payer:   fd.get('shipping_payer') || null,
-        shipping_method:  fd.get('shipping_method') || null,
-        shipping_from:    fd.get('shipping_from') || null,
-        shipping_duration: fd.get('shipping_duration') || null,
+        condition:        isDigital ? null : (fd.get('condition') || null),
+        brand:            isDigital ? null : (fd.get('brand') || null),
+        shipping_payer:   isDigital ? null : (fd.get('shipping_payer') || null),
+        shipping_method:  isDigital ? null : (fd.get('shipping_method') || null),
+        shipping_from:    isDigital ? null : (fd.get('shipping_from') || null),
+        shipping_duration: isDigital ? null : (fd.get('shipping_duration') || null),
+        delivery_time:    isDigital ? (Number(fd.get('delivery_time')) || 1) : null,
         purchase_notes:   fd.get('purchase_notes') || null,
         is_subscription:  fd.get('is_subscription') === 'true',
         thumbnail_url:    thumbnailUrl,

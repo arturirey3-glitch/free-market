@@ -243,12 +243,17 @@ const jsonLdString = JSON.stringify(jsonLd);
 
         <!-- Spec table (desktop only) -->
         <div class="mt-5 hidden border-t border-[var(--border-light)] md:block">
-          {product.condition && product.product_type !== 'digital' && (
+          {product.product_type === 'digital' ? (
+            <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
+              <dt class="shrink-0 text-sm text-[var(--text-secondary)]">お届け日数</dt>
+              <dd class="text-sm">{product.delivery_time ?? 1}日</dd>
+            </dl>
+          ) : product.condition ? (
             <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
               <dt class="shrink-0 text-sm text-[var(--text-secondary)]">商品の状態</dt>
               <dd class="text-sm">{product.condition}</dd>
             </dl>
-          )}
+          ) : null}
           {product.brand && (
             <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
               <dt class="shrink-0 text-sm text-[var(--text-secondary)]">ブランド</dt>
@@ -411,12 +416,17 @@ const jsonLdString = JSON.stringify(jsonLd);
 
         <!-- Spec table (mobile only) -->
         <div class="mt-6 border-t border-[var(--border-light)] md:hidden">
-          {product.condition && product.product_type !== 'digital' && (
+          {product.product_type === 'digital' ? (
+            <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
+              <dt class="shrink-0 text-sm text-[var(--text-secondary)]">お届け日数</dt>
+              <dd class="text-sm">{product.delivery_time ?? 1}日</dd>
+            </dl>
+          ) : product.condition ? (
             <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
               <dt class="shrink-0 text-sm text-[var(--text-secondary)]">商品の状態</dt>
               <dd class="text-sm">{product.condition}</dd>
             </dl>
-          )}
+          ) : null}
           {product.brand && (
             <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
               <dt class="shrink-0 text-sm text-[var(--text-secondary)]">ブランド</dt>
