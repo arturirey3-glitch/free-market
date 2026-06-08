@@ -134,6 +134,16 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
 
       </div>
 
+      <!-- デジタル商品専用フィールド -->
+      <div id="fields-digital" class="hidden space-y-5">
+        <!-- お届け日数 -->
+        <div>
+          <label class="text-xs text-[var(--text-secondary)]">お届け日数 <span class="text-[var(--danger)]">*</span></label>
+          <input type="number" name="delivery_time" id="delivery-time-input" min="1" max="99" value="1"
+            class="input-field mt-1" placeholder="例: 1" />
+        </div>
+      </div>
+
       <!-- 価格 -->
       <div>
         <label class="text-xs text-[var(--text-secondary)]">販売価格（税込） <span class="text-[var(--danger)]">*</span></label>
@@ -262,7 +272,7 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
       category: fd.get('category') || null,
       price: Number(fd.get('price')),
       is_subscription: fd.get('is_subscription') === 'true',
-      delivery_time: null,
+      delivery_time: (fd.get('product_type') === 'digital' && fd.get('delivery_time')) ? Number(fd.get('delivery_time')) : null,
       purchase_notes: fd.get('purchase_notes') || null,
       status: submitStatus,
       condition: fd.get('condition') || null,
@@ -333,8 +343,10 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
   const typeButtons = document.querySelectorAll<HTMLButtonElement>('.type-btn');
   const typeInput = document.getElementById('product-type-input') as HTMLInputElement;
   const fieldsPhysical = document.getElementById('fields-physical')!;
+  const fieldsDigital = document.getElementById('fields-digital')!;
   const fieldCatchCopy = document.getElementById('field-catch-copy')!;
   const fieldFaq = document.getElementById('field-faq')!;
+  const deliveryTimeInput = document.getElementById('delivery-time-input') as HTMLInputElement;
 
   function setType(type: string) {
     typeInput.value = type;
@@ -348,11 +360,15 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
     if (type === 'digital') {
       fieldsPhysical.classList.add('hidden');
       physicalInputs.forEach(el => { el.disabled = true; });
+      fieldsDigital.classList.remove('hidden');
+      deliveryTimeInput.disabled = false;
       fieldCatchCopy.classList.remove('hidden');
       fieldFaq.classList.remove('hidden');
     } else {
       fieldsPhysical.classList.remove('hidden');
       physicalInputs.forEach(el => { el.disabled = false; });
+      fieldsDigital.classList.add('hidden');
+      deliveryTimeInput.disabled = true;
       fieldCatchCopy.classList.add('hidden');
       fieldFaq.classList.add('hidden');
     }
