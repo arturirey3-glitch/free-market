@@ -54,6 +54,33 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
       </>
     )}
     {jsonLd && <Fragment set:html={`<script type="application/ld+json">${jsonLd}</script>`} />}
+    <!-- 事業者情報（Organization）: ビジネスアイデンティティの透明性 -->
+    <Fragment set:html={`<script type="application/ld+json">${JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'OnlineStore',
+      name: 'felikko',
+      alternateName: 'felikko 運営事務局',
+      url: siteUrl,
+      logo: `${siteUrl}/favicon-192x192.png`,
+      image: `${siteUrl}/favicon-192x192.png`,
+      email: 'support@felikko.com',
+      telephone: '+81-70-8304-5376',
+      address: {
+        '@type': 'PostalAddress',
+        postalCode: '350-1305',
+        addressRegion: '埼玉県',
+        addressLocality: '狭山市',
+        streetAddress: '入間川3-4-3-202',
+        addressCountry: 'JP',
+      },
+      contactPoint: {
+        '@type': 'ContactPoint',
+        telephone: '+81-70-8304-5376',
+        email: 'support@felikko.com',
+        contactType: 'customer service',
+        availableLanguage: ['Japanese'],
+      },
+    })}</script>`} />
     <slot name="head" />
   </head>
   <body>
@@ -174,6 +201,11 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
             <li><a href="/law" class="hover:text-[var(--text-primary)] py-1 block">特定商取引法に基づく表記</a></li>
             <li><a href="/contact" class="hover:text-[var(--text-primary)] py-1 block">お問い合わせ</a></li>
           </ul>
+          <div class="mb-3 leading-relaxed text-[var(--text-secondary)]">
+            <p class="font-semibold text-[var(--text-primary)]">felikko 運営事務局</p>
+            <p>〒350-1305 埼玉県狭山市入間川3-4-3-202</p>
+            <p>お問い合わせ：<a href="mailto:support@felikko.com" class="hover:text-[var(--text-primary)] underline">support@felikko.com</a>（受付 10:00〜18:00 年中無休）</p>
+          </div>
           <p>&copy; 2026 <a href="https://www.felikko.com" class="hover:text-[var(--text-primary)]">felikko</a></p>
         </div>
       </footer>
