@@ -79,12 +79,17 @@ function parseHashtags(text: string): string {
 }
 const descriptionHtml = product.description ? parseHashtags(product.description) : '';
 
-const ogDescription = product.description
-  ? product.description.replace(/[#＃]\S+/g, '').replace(/\s+/g, ' ').trim().slice(0, 120)
-  : '';
-const ogImage = product.thumbnail_url ?? allImages[0] ?? '';
 const siteOrigin = 'https://www.felikko.com';
 const ogUrl = `${siteOrigin}/products/${product.id.slice(0, 8)}`;
+const ogBaseDescription = product.description
+  ? product.description.replace(/[#＃]\S+/g, '').replace(/\s+/g, ' ').trim()
+  : '';
+const ogPriceLabel = product.price ? `価格：${formatJPY(product.price)}｜` : '';
+const ogDescription = `${ogPriceLabel}${ogBaseDescription}`.slice(0, 120);
+const productOgpImages: Record<string, string> = {
+  e30d1416: `${siteOrigin}/og/furima-price-tool.png`,
+};
+const ogImage = productOgpImages[product.id.slice(0, 8)] ?? product.thumbnail_url ?? allImages[0] ?? '';
 
 // JSON-LD 構造化データ
 const availability = isSoldOut
