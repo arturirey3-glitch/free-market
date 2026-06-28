@@ -84,7 +84,7 @@ const ogUrl = `${siteOrigin}/products/${product.id.slice(0, 8)}`;
 const ogBaseDescription = product.description
   ? product.description.replace(/[#＃]\S+/g, '').replace(/\s+/g, ' ').trim()
   : '';
-const ogPriceLabel = product.price ? `価格：${formatJPY(product.price)}｜` : '';
+const ogPriceLabel = product.price ? `${formatJPY(product.price)}｜felikko.comで購入する｜` : '';
 const ogDescription = `${ogPriceLabel}${ogBaseDescription}`.slice(0, 120);
 const productOgpImages: Record<string, string> = {
   e30d1416: `${siteOrigin}/og/furima-price-tool.png`,
@@ -180,6 +180,15 @@ const jsonLdString = JSON.stringify(jsonLd);
   ogType="product"
   jsonLd={jsonLdString}
 >
+  <Fragment slot="head">
+    <meta property="product:price:amount" content={String(product.price)} />
+    <meta property="product:price:currency" content="JPY" />
+    <meta property="product:availability" content={isSoldOut ? 'out of stock' : 'in stock'} />
+    <meta property="og:price:amount" content={String(product.price)} />
+    <meta property="og:price:currency" content="JPY" />
+    <meta name="twitter:label1" content="価格" />
+    <meta name="twitter:data1" content={formatJPY(product.price)} />
+  </Fragment>
   <div class="mx-auto max-w-[960px] px-4 py-4 pb-[88px] md:pb-4">
 
     <!-- Breadcrumb -->
@@ -339,7 +348,7 @@ const jsonLdString = JSON.stringify(jsonLd);
 
         <!-- Price -->
         <div class="flex items-baseline gap-2">
-          <span class="text-[1.75rem] font-semibold leading-none">{formatJPY(product.price)}</span>
+          <span class="text-[2.125rem] font-bold leading-none tracking-tight">{formatJPY(product.price)}</span>
           <span class="text-sm text-[var(--text-secondary)]">税込</span>
           {product.shipping_payer && product.product_type !== 'digital' && (
             <span class="text-sm text-[var(--text-secondary)]">
@@ -404,7 +413,7 @@ const jsonLdString = JSON.stringify(jsonLd);
                 <circle cx="16.376" cy="19.674" r="1.688" fill="#fff"/>
                 <path d="M4.574 4.474a.9.9 0 0 1 .9-.9h13.904c.271 0 .528.123.699.334.17.211.237.488.18.754l-1.406 6.596c-.078.368-.376.648-.747.702l-.428.063c-.272.04-.663.1-1.133.17-1.858.277-4.438.682-6.538 1.014l-.07.013c-.253.05-.522.116-.687.161-.053.016-.075.024-.075.024l-.004.002c-.268.123-.443.383-.443.683 0 .41.342.754.758.754H18.015a.9.9 0 1 1 0 1.8H7.33c-1.407 0-2.558-1.146-2.558-2.554 0-1.035.614-1.914 1.487-2.317.203-.095.475-.162.62-.196l.343-.077C7.638 11.726 10.298 11.317 12.79 10.94l.943-.14 1.044-4.926H5.474a.9.9 0 0 1-.9-.9Z" fill="#fff"/>
               </svg>
-              {product.is_subscription ? '申し込む' : '購入手続きへ'}
+              {product.is_subscription ? '申し込む' : 'felikko.comで購入する'}
             </button>
             </>
           )}
@@ -1721,7 +1730,7 @@ lineCopyBtn?.addEventListener('click', () => {
   <div class="flex items-center gap-2">
     <!-- Left: price + shipping + rating -->
     <div class="flex-1 min-w-0">
-      <div class="text-[1.15rem] font-bold leading-none tracking-tight">{formatJPY(product.price)}</div>
+      <div class="text-[1.3rem] font-bold leading-none tracking-tight">{formatJPY(product.price)}</div>
       <div class="mt-1 flex items-center gap-1 text-[10px] text-stone-500 flex-wrap leading-none">
         {product.product_type !== 'digital' && (
           <span>{product.shipping_payer?.includes('出品者') ? '送料込み' : product.shipping_payer ? '着払い' : ''}</span>
@@ -1774,7 +1783,7 @@ lineCopyBtn?.addEventListener('click', () => {
         </button>
       ) : (
         <button
-          class="inline-flex items-center justify-center gap-1.5 rounded-full bg-[var(--primary)] text-white h-[44px] px-5 text-sm font-semibold tracking-wide transition-colors hover:bg-[var(--primary-hover)] active:scale-[0.98]"
+          class="inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full bg-[var(--primary)] text-white h-[44px] px-3 text-[12px] font-semibold tracking-wide transition-colors hover:bg-[var(--primary-hover)] active:scale-[0.98] sm:px-5 sm:text-sm"
           data-checkout
           data-product-id={product.id}
           data-title={product.title}
@@ -1790,7 +1799,7 @@ lineCopyBtn?.addEventListener('click', () => {
             <circle cx="16.376" cy="19.674" r="1.688" fill="#fff"/>
             <path d="M4.574 4.474a.9.9 0 0 1 .9-.9h13.904c.271 0 .528.123.699.334.17.211.237.488.18.754l-1.406 6.596c-.078.368-.376.648-.747.702l-.428.063c-.272.04-.663.1-1.133.17-1.858.277-4.438.682-6.538 1.014l-.07.013c-.253.05-.522.116-.687.161-.053.016-.075.024-.075.024l-.004.002c-.268.123-.443.383-.443.683 0 .41.342.754.758.754H18.015a.9.9 0 1 1 0 1.8H7.33c-1.407 0-2.558-1.146-2.558-2.554 0-1.035.614-1.914 1.487-2.317.203-.095.475-.162.62-.196l.343-.077C7.638 11.726 10.298 11.317 12.79 10.94l.943-.14 1.044-4.926H5.474a.9.9 0 0 1-.9-.9Z" fill="#fff"/>
           </svg>
-          {product.is_subscription ? '申し込む' : '購入手続きへ'}
+          {product.is_subscription ? '申し込む' : 'felikko.comで購入する'}
         </button>
       )}
       <!-- オーナー用編集ボタン（モバイル）→ JSで表示切替 -->
