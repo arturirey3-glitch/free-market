@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatJPY } from '../../lib/format';
+import { createSupabaseServer } from '../../lib/supabaseServer';
+
+export const prerender = false;
+
+Astro.response.headers.set('Cache-Control', 'no-store');
+
+const { id } = Astro.params;
+const siteOrigin = 'https://www.felikko.com';
+let product: any = null;
+
+try {
+  const supabase = createSupabaseServer();
+  const fields = 'id,title,description,price,thumbnail_url,stock,status,is_subscription,product_images(image_url,sort_order)';
+
+  if (id && id.length === 8) {
+    const { data } = await supabase.from('products').select(fields).eq('status', 'published');
+    product = data?.find((p: any) => p.id.startsWith(id)) ?? null;
+  } else if (id) {
+    const { data } = await supabase.from('products').select(fields).eq('id', id).eq('status', 'published').single();
+    product = data;
+  }
+} catch {}
+
+if (!product) return Astro.redirect('/products');
+
+const shortId = product.id.slice(0, 8);
+const productUrl = `${siteOrigin}/products/${shortId}`;
+const shareUrl = `${siteOrigin}/share/${shortId}`;
+const priceLabel = formatJPY(product.price);
+const title = `${priceLabel}｜felikko.comで購入する｜${product.title}`;
+const baseDescription = product.description
+  ? product.description.replace(/[#＃]\S+/g, '').replace(/\s+/g, ' ').trim()
+  : '';
+const description = `価格：${priceLabel}｜${product.is_subscription ? '申し込み受付中' : '購入手続きへ'}｜${baseDescription}`.slice(0, 120);
+const productOgpImages: Record<string, string> = {
+  e30d1416: `${siteOrigin}/og/furima-price-tool.png?v=20260628-2`,
+};
+const ogImage = productOgpImages[shortId] ?? product.thumbnail_url ?? '';
+const availability = product.stock === 0 ? 'out of stock' : 'in stock';
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.title,
+  description,
+  image: ogImage || undefined,
+  url: productUrl,
+  offers: {
+    '@type': 'Offer',
+    priceCurrency: 'JPY',
+    price: product.price,
+    availability: product.stock === 0 ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+    url: productUrl,
+  },
+});
+---
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage={ogImage}
+  ogUrl={shareUrl}
+  ogType="product"
+  jsonLd={jsonLd}
+>
+  <Fragment slot="head">
+    <meta property="product:price:amount" content={String(product.price)} />
+    <meta property="product:price:currency" content="JPY" />
+    <meta property="product:availability" content={availability} />
+    <meta property="og:price:amount" content={String(product.price)} />
+    <meta property="og:price:currency" content="JPY" />
+    <meta name="twitter:label1" content="価格" />
+    <meta name="twitter:data1" content={priceLabel} />
+    <meta http-equiv="refresh" content={`0;url=${productUrl}`} />
+  </Fragment>
+  <main class="mx-auto flex min-h-[70vh] max-w-[720px] flex-col items-center justify-center px-5 text-center">
+    <p class="text-sm font-semibold text-[var(--text-secondary)]">felikko</p>
+    <h1 class="mt-3 text-2xl font-bold leading-snug text-[var(--text-primary)]">{product.title}</h1>
+    <p class="mt-4 text-4xl font-bold tracking-tight text-[var(--text-primary)]">{priceLabel}</p>
+    <a href={productUrl} class="mt-7 inline-flex h-12 items-center justify-center rounded-full bg-[var(--primary)] px-8 text-sm font-bold text-white hover:bg-[var(--primary-hover)]">
+      felikko.comで購入する
+    </a>
+  </main>
+</BaseLayout>
