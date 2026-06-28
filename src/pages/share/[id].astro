@@ -30,13 +30,13 @@ const shortId = product.id.slice(0, 8);
 const productUrl = `${siteOrigin}/products/${shortId}`;
 const shareUrl = `${siteOrigin}/share/${shortId}`;
 const priceLabel = formatJPY(product.price);
-const title = `${priceLabel}｜felikko.comで購入する｜${product.title}`;
+const title = `${product.title} | felikko`;
 const baseDescription = product.description
   ? product.description.replace(/[#＃]\S+/g, '').replace(/\s+/g, ' ').trim()
   : '';
-const description = `価格：${priceLabel}｜${product.is_subscription ? '申し込み受付中' : '購入手続きへ'}｜${baseDescription}`.slice(0, 120);
+const description = baseDescription.slice(0, 120);
 const productOgpImages: Record<string, string> = {
-  e30d1416: `${siteOrigin}/og/furima-price-tool.png?v=20260628-2`,
+  e30d1416: `${siteOrigin}/og/furima-price-tool-square.png?v=20260628-3`,
 };
 const ogImage = productOgpImages[shortId] ?? product.thumbnail_url ?? '';
 const availability = product.stock === 0 ? 'out of stock' : 'in stock';
@@ -60,6 +60,8 @@ const jsonLd = JSON.stringify({
   title={title}
   description={description}
   ogImage={ogImage}
+  ogImageWidth={1254}
+  ogImageHeight={1254}
   ogUrl={shareUrl}
   ogType="product"
   jsonLd={jsonLd}

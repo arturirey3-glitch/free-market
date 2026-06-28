@@ -5,12 +5,14 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   ogUrl?: string;
   ogType?: string;
   jsonLd?: string;
 }
 
-const { title = 'felikko | スタバ・マリメッコ雑貨のフリマ通販', description = 'felikkoはスタバグッズ・マリメッコ・北欧インテリア雑貨を中心としたフリマ通販サイト。即購入OK・送料込みで安心お買い物。', ogImage, ogUrl, ogType = 'website', jsonLd } = Astro.props;
+const { title = 'felikko | スタバ・マリメッコ雑貨のフリマ通販', description = 'felikkoはスタバグッズ・マリメッコ・北欧インテリア雑貨を中心としたフリマ通販サイト。即購入OK・送料込みで安心お買い物。', ogImage, ogImageWidth = 1200, ogImageHeight = 630, ogUrl, ogType = 'website', jsonLd } = Astro.props;
 const siteUrl = 'https://www.felikko.com';
 const canonicalUrl = ogUrl || siteUrl + Astro.url.pathname;
 const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
@@ -35,8 +37,8 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
     <meta property="og:url" content={canonicalUrl} />
     {description && <meta property="og:description" content={description} />}
     {ogImage && <meta property="og:image" content={ogImage} />}
-    {ogImage && <meta property="og:image:width" content="1200" />}
-    {ogImage && <meta property="og:image:height" content="630" />}
+    {ogImage && <meta property="og:image:width" content={String(ogImageWidth)} />}
+    {ogImage && <meta property="og:image:height" content={String(ogImageHeight)} />}
     <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
     <meta name="twitter:title" content={title} />
     {description && <meta name="twitter:description" content={description} />}

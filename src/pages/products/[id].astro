@@ -84,8 +84,7 @@ const ogUrl = `${siteOrigin}/products/${product.id.slice(0, 8)}`;
 const ogBaseDescription = product.description
   ? product.description.replace(/[#＃]\S+/g, '').replace(/\s+/g, ' ').trim()
   : '';
-const ogPriceLabel = product.price ? `${formatJPY(product.price)}｜felikko.comで購入する｜` : '';
-const ogDescription = `${ogPriceLabel}${ogBaseDescription}`.slice(0, 120);
+const ogDescription = ogBaseDescription.slice(0, 120);
 const productOgpImages: Record<string, string> = {
   e30d1416: `${siteOrigin}/og/furima-price-tool.png`,
 };
