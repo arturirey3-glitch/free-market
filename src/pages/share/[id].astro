@@ -37,6 +37,7 @@ const baseDescription = product.description
 const description = baseDescription.slice(0, 120);
 const productOgpImages: Record<string, string> = {
   e30d1416: `${siteOrigin}/og/furima-price-tool-square.png?v=20260628-3`,
+  d2cc1737: `${siteOrigin}/og/furima-alert-tool-square.png?v=20260628-1`,
 };
 const ogImage = productOgpImages[shortId] ?? product.thumbnail_url ?? '';
 const availability = product.stock === 0 ? 'out of stock' : 'in stock';
