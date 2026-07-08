@@ -50,8 +50,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
         } : {})
       }],
       mode: isSubscription ? 'subscription' : 'payment',
+      locale: 'ja',
       phone_number_collection: { enabled: false },
       shipping_address_collection: { allowed_countries: ['JP'] },
+      // カゴ落ちリカバリー: 期限切れ後30日間セッションを復元可能に（入力途中から再開できる）
+      ...(!isSubscription ? {
+        after_expiration: { recovery: { enabled: true } },
+      } : {}),
       success_url: `${siteUrl}/products/${shortId}?checkout=success`,
       cancel_url: `${siteUrl}/products/${shortId}?checkout=cancel`,
       metadata: {
