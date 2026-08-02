@@ -21,10 +21,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const Stripe = (await import('stripe')).default;
   const stripe = new Stripe(stripeSecretKey);
 
-  let event: ReturnType<typeof stripe.webhooks.constructEvent> extends Promise<infer T> ? T : ReturnType<typeof stripe.webhooks.constructEvent>;
+  let event: any;
   try {
     if (webhookSecret) {
-      event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+      // Cloudflare Workers では同期版 constructEvent が使えないため Async 版を使用
+      event = await stripe.webhooks.constructEventAsync(body, sig, webhookSecret);
     } else {
       event = JSON.parse(body);
     }
