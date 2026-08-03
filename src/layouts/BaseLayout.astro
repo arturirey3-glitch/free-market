@@ -73,7 +73,7 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
         postalCode: '350-1305',
         addressRegion: '埼玉県',
         addressLocality: '狭山市',
-        streetAddress: '入間川3-4-3-202',
+        streetAddress: '入間川3丁目4-3 グランドレジデンス・狭山 202',
         addressCountry: 'JP',
       },
       contactPoint: {
@@ -82,6 +82,12 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
         email: 'support@felikko.com',
         contactType: 'customer service',
         availableLanguage: ['Japanese'],
+        hoursAvailable: {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+          opens: '10:00',
+          closes: '17:00',
+        },
       },
     })}</script>`} />
     <slot name="head" />
