@@ -110,7 +110,8 @@ const jsonLd: Record<string, any> = {
       description: ogDescription || undefined,
       image: allImages.length > 0 ? allImages : undefined,
       url: ogUrl,
-      ...(product.brand ? { brand: { '@type': 'Brand', name: product.brand } } : {}),
+      sku: product.id,
+      brand: { '@type': 'Brand', name: product.brand || 'ノーブランド品' },
       ...(product.condition ? { itemCondition: `https://schema.org/${
         product.condition.includes('新品') ? 'NewCondition' :
         product.condition.includes('未使用') ? 'LikeNewCondition' :
@@ -123,10 +124,34 @@ const jsonLd: Record<string, any> = {
         price: product.price,
         availability,
         url: ogUrl,
+        // 販売者は当ショップ運営事業者（特商法表記と一致させる）
         seller: {
-          '@type': 'Person',
-          name: profile?.display_name ?? 'felikko出品者',
+          '@type': 'Organization',
+          name: 'felikko',
+          url: siteOrigin,
         },
+        ...(product.product_type === 'digital' ? {} : {
+          shippingDetails: {
+            '@type': 'OfferShippingDetails',
+            shippingRate: { '@type': 'MonetaryAmount', value: 0, currency: 'JPY' },
+            shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'JP' },
+            deliveryTime: {
+              '@type': 'ShippingDeliveryTime',
+              handlingTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 3, unitCode: 'DAY' },
+              transitTime: { '@type': 'QuantitativeValue', minValue: 1, maxValue: 4, unitCode: 'DAY' },
+            },
+          },
+          hasMerchantReturnPolicy: {
+            '@type': 'MerchantReturnPolicy',
+            applicableCountry: 'JP',
+            // 不良品・誤送品のみ7日以内に返品可（お客様都合の返品は不可）
+            returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+            merchantReturnDays: 7,
+            returnMethod: 'https://schema.org/ReturnByMail',
+            returnFees: 'https://schema.org/FreeReturn',
+            merchantReturnLink: `${siteOrigin}/law/`,
+          },
+        }),
       },
       ...(reviews.length > 0 ? {
         aggregateRating: {

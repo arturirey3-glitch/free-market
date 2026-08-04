@@ -10,8 +10,11 @@ export const GET: APIRoute = async () => {
   const staticPages = [
     { url: '/', priority: '1.0', changefreq: 'daily' },
     { url: '/products', priority: '0.9', changefreq: 'daily' },
-    { url: '/privacy', priority: '0.3', changefreq: 'yearly' },
-    { url: '/law', priority: '0.3', changefreq: 'yearly' },
+    // 末尾スラッシュ必須（スラッシュなしは308リダイレクトになるため）
+    { url: '/about/', priority: '0.5', changefreq: 'monthly' },
+    { url: '/contact', priority: '0.4', changefreq: 'monthly' },
+    { url: '/privacy/', priority: '0.3', changefreq: 'yearly' },
+    { url: '/law/', priority: '0.3', changefreq: 'yearly' },
   ];
 
   // 公開中の商品を取得
