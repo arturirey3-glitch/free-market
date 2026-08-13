@@ -1,0 +1,364 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+const LINE_URL = 'https://lin.ee/t47Nzid';
+const desc = 'felikkoのオーダーメイド見積もり依頼。人気のクッションカバー・座布団カバー・トイレマット・マット・玄関マット・スマホケースを、写真・お好きな色・AIデザインで世界にひとつの1点に。相談・お見積もりは無料。';
+---
+<BaseLayout title="オーダーメイド 見積もり依頼 | felikko" description={desc}>
+  <div class="co-wrap">
+    <div class="co-card">
+
+      <!-- Hero -->
+      <div class="co-hero">
+        <div class="co-badges">
+          <span class="co-badge">1個からOK・写真OK・AIデザイン対応</span>
+          <span class="co-badge outline">相談・お見積もりは無料！</span>
+        </div>
+        <h1 class="co-h1">オーダーメイド 見積もり依頼</h1>
+        <p class="co-lead">あなたのデザインで、世界にひとつのアイテムをおつくりします。<br />写真・お好きな色・<b>AIで作成したデザイン</b>もそのままお送りください。</p>
+      </div>
+
+      <!-- Steps -->
+      <div class="co-steps">
+        <div class="co-step"><span class="co-step-n">1</span><span><b>フォームを送信</b><br /><small>作りたいものと画像を送るだけ</small></span></div>
+        <div class="co-step"><span class="co-step-n">2</span><span><b>お見積もり回答</b><br /><small>1〜2営業日以内にご連絡</small></span></div>
+        <div class="co-step"><span class="co-step-n">3</span><span><b>製作スタート</b><br /><small>内容確定後、おつくりします</small></span></div>
+      </div>
+
+      <!-- Gallery -->
+      <div class="co-gallery">
+        <div class="co-title-row"><span class="co-section-title">制作事例</span><small>タップすると商品ページが開きます</small></div>
+        <div class="co-chips co-gal-tabs" id="galTabs"></div>
+        <p class="co-gal-desc" id="galDesc"></p>
+        <div class="co-gal-scroll">
+          <button type="button" class="co-gal-arrow left" id="galPrev" aria-label="前へ">‹</button>
+          <div class="co-gal-grid" id="galGrid"></div>
+          <button type="button" class="co-gal-arrow right" id="galNext" aria-label="次へ">›</button>
+        </div>
+        <div class="co-gal-cta">
+          <button type="button" class="co-btn-pill" id="galOrder">このアイテムで見積もり依頼する</button>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="co-form">
+        <div class="co-title-row"><span class="co-section-title">ご依頼内容</span></div>
+
+        <div class="co-field" style="margin-top:16px">
+          <span class="co-label">1. 作りたいもの<span class="co-req">*</span></span>
+          <div class="co-chips" id="itemChips"></div>
+        </div>
+
+        <div class="co-field">
+          <label class="co-label" for="wish">2. 色・サイズ・加工などのご希望<span class="co-req">*</span></label>
+          <textarea id="wish" rows="6" placeholder="上の「作りたいもの」を選ぶと、記入例がここに入ります。自由に書き換えてください。"></textarea>
+          <p class="co-hint">自動で入る記入例を、ご希望に合わせて書き換えるだけでOKです</p>
+        </div>
+
+        <div class="co-grid2">
+          <div>
+            <label class="co-label" for="qty">3. 希望数量<span class="co-req">*</span></label>
+            <input id="qty" type="number" min="1" value="1" />
+            <p class="co-hint">1個からご注文いただけます</p>
+          </div>
+          <div>
+            <label class="co-label" for="due">4. 希望納期</label>
+            <input id="due" type="date" />
+            <p class="co-hint">未定の場合は空欄のままで大丈夫です</p>
+          </div>
+        </div>
+
+        <div class="co-field">
+          <span class="co-label">5. ご予算</span>
+          <div class="co-chips" id="budgetChips"></div>
+        </div>
+
+        <div class="co-field" style="margin-bottom:10px">
+          <span class="co-label">6. デザイン / 参考画像</span>
+          <label class="co-upload" for="designFiles">
+            <span class="co-plus">＋</span>
+            <span class="co-up-main">画像をアップロード（タップして選択）</span>
+            <span class="co-up-sub">写真・イラスト・<b>AIで作成した画像</b>もそのまま送れます（複数枚OK）</span>
+          </label>
+          <input id="designFiles" type="file" accept="image/*" multiple style="display:none" />
+          <div class="co-thumbs" id="thumbs"></div>
+          <p class="co-hint" style="line-height:1.7">※ デザイン・参考画像をご共有いただけますと、より正確なお見積もり・ご提案が可能です（合計8枚まで）。</p>
+        </div>
+
+        <div class="co-divider"></div>
+
+        <div class="co-title-row" style="margin-bottom:16px"><span class="co-section-title">ご連絡先</span><small>お見積もりの回答に使用します</small></div>
+        <div class="co-grid2">
+          <div>
+            <label class="co-label" for="name">お名前<span class="co-req">*</span></label>
+            <input id="name" type="text" placeholder="山田 花子" />
+          </div>
+          <div>
+            <label class="co-label" for="mail">メールアドレス<span class="co-req">*</span></label>
+            <input id="mail" type="email" placeholder="example@mail.com" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="co-footer">
+        <div class="co-msg co-success" id="success"><b>送信しました。</b>内容を確認のうえ、通常1〜2営業日以内にお見積もりをご連絡します。</div>
+        <div class="co-msg co-error" id="error"></div>
+        <button type="button" class="co-submit ok" id="submit">無料で見積もり依頼</button>
+        <p class="co-foot-note">「こんなの作れる？」という段階からでもお気軽にどうぞ。</p>
+        <a class="co-line-cta" href={LINE_URL} target="_blank" rel="noreferrer">LINEで相談する方はこちら</a>
+      </div>
+
+    </div>
+  </div>
+
+  <style is:global>
+    .co-wrap { display:flex; flex-direction:column; align-items:center; padding: clamp(12px,4vw,32px) clamp(8px,3vw,24px) 64px; background: var(--bg-secondary); }
+    .co-card { width:100%; max-width:760px; background:#fff; border-radius:14px; border:1px solid var(--border-light); box-shadow:0 12px 40px -12px rgba(15,23,42,.12); overflow:hidden; }
+    .co-hero, .co-steps, .co-gallery, .co-form, .co-footer { padding-left: clamp(16px,4vw,32px); padding-right: clamp(16px,4vw,32px); }
+    .co-hero { padding-top:32px; padding-bottom:24px; border-bottom:1px solid var(--border-light); background: linear-gradient(180deg, var(--primary-light) 0%, #fff 100%); }
+    .co-badges { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+    .co-badge { border-radius:999px; background:var(--primary); color:#fff; font-size:12px; font-weight:700; padding:4px 12px; }
+    .co-badge.outline { background:var(--primary-light); border:1px solid var(--primary); color:var(--primary-hover); padding:3px 12px; }
+    .co-h1 { margin:0 0 10px; font-size:26px; font-weight:700; }
+    .co-lead { margin:0; font-size:14px; line-height:1.8; color:var(--text-secondary); }
+    .co-lead b { color:var(--text-primary); }
+    .co-steps { display:flex; flex-wrap:wrap; gap:12px 8px; padding-top:20px; padding-bottom:20px; border-bottom:1px solid var(--border-light); background:var(--bg-secondary); }
+    .co-step { flex:1 1 180px; display:flex; align-items:flex-start; gap:10px; }
+    .co-step-n { flex:none; display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:999px; background:var(--primary); color:#fff; font-size:13px; font-weight:700; }
+    .co-step span { font-size:13px; line-height:1.5; }
+    .co-step small { color:var(--text-placeholder); font-size:12px; }
+    .co-section-title { position:relative; padding-left:12px; font-size:15px; font-weight:700; }
+    .co-section-title::before { content:""; position:absolute; left:0; top:3px; width:4px; height:15px; border-radius:2px; background:var(--primary); }
+    .co-title-row { display:flex; align-items:baseline; gap:10px; margin:0 0 6px; }
+    .co-title-row small { font-size:12px; color:var(--text-placeholder); }
+    .co-gallery { padding-top:28px; padding-bottom:4px; border-bottom:1px solid var(--border-light); }
+    .co-chips { display:flex; flex-wrap:wrap; gap:8px; }
+    .co-chip { font-family:inherit; font-size:13px; font-weight:600; padding:9px 16px; border-radius:999px; cursor:pointer; white-space:nowrap; border:1px solid var(--border); background:#fff; color:var(--text-secondary); transition:border-color .14s, color .14s, background .14s, box-shadow .14s; }
+    .co-chip:hover { border-color:var(--primary); color:var(--primary); }
+    .co-chip.on { border-color:var(--primary); background:var(--primary); color:#fff; box-shadow:0 3px 10px -3px rgba(7,181,59,.45); }
+    .co-chip.on:hover { color:#fff; }
+    .co-gal-tabs { margin:14px 0 18px; }
+    .co-gal-desc { margin:0 0 14px; font-size:13px; color:var(--text-secondary); line-height:1.7; }
+    .co-gal-scroll { position:relative; }
+    .co-gal-grid { display:flex; gap:12px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth; padding:2px 2px 6px; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    .co-gal-grid::-webkit-scrollbar { display:none; }
+    .co-gal-arrow { position:absolute; top:86px; transform:translateY(-50%); z-index:2; width:36px; height:36px; border-radius:999px; border:1px solid var(--border); background:#fff; color:var(--text-primary); font-size:20px; line-height:1; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 4px 14px -4px rgba(15,23,42,.3); transition:opacity .15s, border-color .15s, color .15s; }
+    .co-gal-arrow.left { left:-8px; }
+    .co-gal-arrow.right { right:-8px; }
+    .co-gal-arrow:hover { border-color:var(--primary); color:var(--primary); }
+    .co-gal-arrow[disabled] { opacity:0; pointer-events:none; }
+    .co-gal-item { flex:0 0 168px; scroll-snap-align:start; display:block; text-decoration:none; color:inherit; border:1px solid var(--border-light); border-radius:12px; background:#fff; overflow:hidden; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+    .co-gal-item:hover { transform:translateY(-3px); box-shadow:0 12px 24px -12px rgba(15,23,42,.22); border-color:var(--border); }
+    .co-gal-item .frame { position:relative; aspect-ratio:1/1; overflow:hidden; background:var(--bg-secondary); }
+    .co-gal-item img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease; }
+    .co-gal-item:hover img { transform:scale(1.05); }
+    .co-gal-item .meta { padding:9px 11px 11px; }
+    .co-gal-item .name { font-size:12px; font-weight:600; line-height:1.45; color:var(--text-primary); }
+    .co-gal-item .size { margin-top:3px; display:inline-block; font-size:10.5px; color:var(--text-secondary); background:var(--bg-secondary); border-radius:999px; padding:2px 8px; }
+    .co-gal-cta { display:flex; align-items:center; gap:10px; margin:18px 0 24px; }
+    .co-btn-pill { font-family:inherit; font-size:13px; font-weight:700; padding:11px 20px; border-radius:999px; border:none; background:var(--primary); color:#fff; cursor:pointer; box-shadow:0 4px 12px -3px rgba(7,181,59,.4); transition:background .14s, transform .12s; }
+    .co-btn-pill:hover { background:var(--primary-hover); transform:translateY(-1px); }
+    .co-btn-pill:active { transform:translateY(0); }
+    .co-form { padding-top:28px; padding-bottom:8px; }
+    .co-field { margin-bottom:22px; }
+    .co-label { display:block; font-size:14px; font-weight:600; margin-bottom:8px; }
+    .co-req { color:var(--danger); margin-left:4px; font-weight:700; }
+    .co-hint { margin:6px 0 0; font-size:12px; color:var(--text-placeholder); }
+    .co-card input[type=text], .co-card input[type=email], .co-card input[type=number], .co-card input[type=date], .co-card textarea {
+      width:100%; font-family:inherit; font-size:16px; color:var(--text-primary); padding:10px 12px; border:1px solid var(--border); border-radius:8px; outline-color:var(--primary); background:#fff; }
+    .co-card textarea { resize:vertical; line-height:1.7; }
+    .co-grid2 { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px; margin-bottom:22px; }
+    .co-upload { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:26px 16px; border:2px dashed var(--border); border-radius:10px; background:var(--bg-secondary); cursor:pointer; text-align:center; }
+    .co-upload:hover { border-color:var(--primary); background:var(--primary-light); }
+    .co-plus { font-size:28px; line-height:1; color:var(--primary); }
+    .co-up-main { font-size:14px; font-weight:600; }
+    .co-up-sub { font-size:12px; color:var(--text-placeholder); }
+    .co-thumbs { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    .co-thumb { position:relative; width:84px; }
+    .co-thumb .img { width:84px; height:84px; border-radius:8px; border:1px solid var(--border-light); background-size:cover; background-position:center; }
+    .co-thumb button { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:999px; border:none; background:var(--text-primary); color:#fff; font-size:11px; line-height:1; cursor:pointer; }
+    .co-divider { height:1px; background:var(--border-light); margin:24px 0; }
+    .co-footer { display:flex; flex-direction:column; align-items:center; gap:10px; padding-top:20px; padding-bottom:24px; border-top:1px solid var(--border-light); background:var(--bg-secondary); }
+    .co-msg { display:none; width:100%; border-radius:10px; padding:14px 16px; font-size:14px; line-height:1.7; }
+    .co-success { border:1px solid var(--primary); background:var(--primary-light); color:var(--primary-hover); }
+    .co-error { border:1px solid var(--danger); background:#fff5f5; color:var(--danger); }
+    .co-submit { align-self:center; width:100%; max-width:320px; font-family:inherit; font-size:15px; font-weight:700; padding:13px 16px; border-radius:10px; border:none; background:var(--border); color:#fff; cursor:not-allowed; }
+    .co-submit.ok { background:#fff; color:var(--primary); border:1.5px solid var(--primary); padding:12px 16px; cursor:pointer; box-shadow:0 6px 16px -4px rgba(7,181,59,.25); }
+    .co-submit.ok:hover { background:var(--primary-light); }
+    .co-submit.loading { opacity:.7; cursor:progress; }
+    .co-foot-note { margin:2px 0; text-align:center; font-size:12px; color:var(--text-placeholder); }
+    .co-line-cta { align-self:center; width:100%; max-width:320px; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:10px; background:#06C755; color:#fff !important; border:none; text-decoration:none; font-size:14px; font-weight:700; padding:13px 16px; box-shadow:0 6px 16px -4px rgba(6,199,85,.4); }
+    .co-line-cta:hover { background:#05b34c; }
+  </style>
+
+  <script is:inline>
+    const BASE = "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/";
+    const CATS = [
+      { label: "クッションカバー", desc: "推し・ペット・お子様の写真やお好きな柄で、45×45cmからおつくりします", items: [
+        { name: "クッションカバー ブラック", size: "45×45cm", img: "7f920abcfd2c4bd1b93c67c5de6f956c/0_45fe0941.jpg" },
+        { name: "クッションカバー グリーン", size: "45×45cm", img: "c5166c8a9e9944ad9d89717f879977f4/0_47558966.jpg" },
+        { name: "クッションカバー 水玉ピンク", size: "45×45cm", img: "f94151fb848a424aaefc6716979301b4/0_50cce179.jpg" },
+        { name: "クッションカバー パープル", size: "45×45cm", img: "6806645679c648bfb759f4177879213c/0_cc17b435.jpg" }
+      ]},
+      { label: "座布団カバー", desc: "55×59cmの座布団サイズに名前や文字のプリント・写真・和柄など自由にデザインできます", items: [
+        { name: "座布団カバー ブラック", size: "55×59cm", img: "74920a5428a848d3b3579bcd856860a9/0_13655c74.jpg" },
+        { name: "座布団カバー 桜ピンク", size: "55×59cm", img: "1d50c8b0810a4816bf4eb81ac9abfef5/0_f6b45edf.jpg" },
+        { name: "座布団カバー ピンク", size: "55×59cm", img: "63c508c53261404fa67cadf70511c2af/0_74474edb.jpg" },
+        { name: "座布団カバー 水玉ピンク", size: "55×59cm", img: "4076f07b17a3430595df7cdba1a55fca/0_faffe460.jpg" }
+      ]},
+      { label: "トイレマット", desc: "定番サイズ40×50cmのマット単品のほか、フタカバーとのセットもおつくりできます", items: [
+        { name: "トイレマット ブラック", size: "40×50cm", img: "edc63cec60824b9eb03ae98b3d7cd543/0_beb74d31.jpg" },
+        { name: "トイレカバー＆マット ピンク", size: "セット", img: "4db3b6815d414706943423f99845fbc2/0_8f5ac6e0.jpg" }
+      ]},
+      { label: "マット", desc: "レギュラー（40×60cm）とロング（40×120cm）の2サイズで、北欧柄や写真プリントも人気です", items: [
+        { name: "マット ブラック", size: "40×120cm", img: "4f80a5b8d0df4b1e8bef1e93c1a3441a/0_2a2825ff.jpg" },
+        { name: "マット ピンク", size: "40×120cm", img: "15fa9629b3c9448096c34fd66e557052/0_1b137a05.jpg" },
+        { name: "マット グリーン", size: "40×60cm", img: "2811af802ab74d7e967a50d3d7895963/0_036ba550.jpg" },
+        { name: "マット ステンドグラス", size: "40×60cm", img: "ca78469aa0ee42c18b7198b83b8a1b56/0_b306c726.jpg" }
+      ]},
+      { label: "玄関・キッチンマット", desc: "滑り止め・不織布裏地つきで、玄関やキッチンに映えるマットをおつくりします", items: [
+        { name: "玄関・キッチンマット ブルー", size: "40×120cm", img: "9646271ca7cd4c7ca1e30b8fc3f51a78/0_993acaa4.jpg" },
+        { name: "マット ミニオン柄", size: "レギュラー", img: "34711f8bb44449fd86723205acae2d2d/0_91958221.jpg" }
+      ]},
+      { label: "スマホケース", desc: "写真・イラスト・お好きなデザインをそのままプリントできる、iPhone各機種対応のケースです", items: [
+        { name: "スマホケース ミントグリーン", size: "iPhone16", img: "a0ded52b56fd40c59bd1d0b335b23758/0_1d67450b.jpg" },
+        { name: "スマホケース ホワイト", size: "iPhone16", img: "8e7256aca4014054837e85a3ca9f01b5/0_fde9ee5e.jpg" },
+        { name: "スマホケース スモークブルー", size: "iPhone15", img: "0a7c568966a74956b1f5c3aee7504582/0_e0e9c1a0.jpg" },
+        { name: "スマホケース くすみブルー", size: "SE/7/8", img: "80401f66991e4e03bb3f9f34762e8099/0_479daf27.jpg" }
+      ]}
+    ];
+    const ITEMS = [...CATS.map(c => c.label), "その他"];
+    const TEMPLATES = {
+      "クッションカバー": "サイズ：45×45cm\n色：グリーン\n柄：北欧風\nプリント面：片面のみ / 両面\n備考：詳しいデザインは添付画像に記載",
+      "座布団カバー": "サイズ：55×59cm\n色：桜ピンク\n柄：和柄\nお名前入れ：あり（例：「花子」）\n備考：詳しいデザインは添付画像に記載",
+      "トイレマット": "種類：マット単品 / フタカバーとのセット\nサイズ：40×50cm\n色：ブラック\n柄：花柄\n備考：詳しいデザインは添付画像に記載",
+      "マット": "サイズ：40×60cm（40×120cmのロングも可）\n色：グリーン\n柄：北欧風\n備考：詳しいデザインは添付画像に記載",
+      "玄関・キッチンマット": "サイズ：40×120cm\n色：ブルー\n柄：モロッカン柄\n備考：滑り止め希望。詳しいデザインは添付画像に記載",
+      "スマホケース": "機種：iPhone16\n色：ミントグリーン\nデザイン：添付の写真をそのままプリントしたい\n備考：他の機種も対応できますか。",
+      "その他": "作りたいもの：（例：トートバッグ）\nサイズ：\n色・柄：\n備考：詳しいデザインは添付画像に記載"
+    };
+    const BUDGETS = ["〜5,000円", "〜10,000円", "〜30,000円", "30,000円以上", "未定・相談したい"];
+
+    const state = { item: null, budget: null, galCat: 0, files: [] };
+    const $ = id => document.getElementById(id);
+    const isTemplate = v => !v.trim() || Object.values(TEMPLATES).includes(v);
+
+    function chips(el, labels, current, onPick) {
+      el.innerHTML = "";
+      labels.forEach(label => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "co-chip" + (label === current ? " on" : ""); b.textContent = label;
+        b.onclick = () => onPick(label);
+        el.appendChild(b);
+      });
+    }
+    function renderGallery() {
+      chips($("galTabs"), CATS.map(c => c.label), CATS[state.galCat].label, label => {
+        state.galCat = CATS.findIndex(c => c.label === label); renderGallery();
+      });
+      const cat = CATS[state.galCat];
+      $("galDesc").textContent = cat.desc;
+      $("galGrid").innerHTML = cat.items.map(it =>
+        '<a class="co-gal-item" href="/products/' + it.img.slice(0, 8) + '" target="_blank" rel="noopener"><div class="frame"><img src="' + BASE + it.img + '" alt="' + it.name + '" loading="lazy"></div><div class="meta"><div class="name">' + it.name + '</div><div class="size">' + it.size + '</div></div></a>'
+      ).join("");
+      const g = $("galGrid"); g.scrollLeft = 0; updateArrows();
+    }
+    function updateArrows() {
+      const g = $("galGrid"), p = $("galPrev"), n = $("galNext");
+      if (!g || !p || !n) return;
+      const max = g.scrollWidth - g.clientWidth;
+      const noScroll = max <= 6;
+      p.disabled = noScroll || g.scrollLeft <= 6;
+      n.disabled = noScroll || g.scrollLeft >= max - 6;
+    }
+    function renderItems() {
+      chips($("itemChips"), ITEMS, state.item, label => {
+        state.item = label;
+        if (isTemplate($("wish").value)) $("wish").value = TEMPLATES[label] || "";
+        renderItems();
+      });
+    }
+    function renderBudgets() {
+      chips($("budgetChips"), BUDGETS, state.budget, label => { state.budget = (state.budget === label ? null : label); renderBudgets(); });
+    }
+    function renderThumbs() {
+      const t = $("thumbs"); t.innerHTML = "";
+      state.files.forEach((f, i) => {
+        const d = document.createElement("div"); d.className = "co-thumb";
+        const img = document.createElement("div"); img.className = "img"; img.style.backgroundImage = "url(" + f.url + ")";
+        const x = document.createElement("button"); x.type = "button"; x.textContent = "✕"; x.setAttribute("aria-label", "削除");
+        x.onclick = () => { state.files.splice(i, 1); renderThumbs(); };
+        d.appendChild(img); d.appendChild(x); t.appendChild(d);
+      });
+    }
+    function missingFields() {
+      const m = [];
+      if (!state.item) m.push(["作りたいもの", "itemChips"]);
+      if (!$("wish").value.trim()) m.push(["色・サイズなどのご希望", "wish"]);
+      if (!(Number($("qty").value) >= 1)) m.push(["希望数量", "qty"]);
+      if (!$("name").value.trim()) m.push(["お名前", "name"]);
+      if (!/.+@.+\..+/.test($("mail").value)) m.push(["メールアドレス", "mail"]);
+      return m;
+    }
+    function fileToB64(file) {
+      return new Promise((resolve) => {
+        const r = new FileReader();
+        r.onload = () => { const s = String(r.result); const i = s.indexOf(","); resolve({ name: file.name, type: file.type, content: i >= 0 ? s.slice(i + 1) : s }); };
+        r.onerror = () => resolve(null);
+        r.readAsDataURL(file);
+      });
+    }
+
+    $("galPrev").onclick = () => $("galGrid").scrollBy({ left: -$("galGrid").clientWidth * 0.8, behavior: "smooth" });
+    $("galNext").onclick = () => $("galGrid").scrollBy({ left: $("galGrid").clientWidth * 0.8, behavior: "smooth" });
+    $("galGrid").addEventListener("scroll", updateArrows);
+    window.addEventListener("resize", updateArrows);
+
+    $("galOrder").onclick = () => {
+      state.item = CATS[state.galCat].label;
+      if (isTemplate($("wish").value)) $("wish").value = TEMPLATES[state.item] || "";
+      renderItems();
+      $("wish").scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+    $("designFiles").onchange = e => {
+      Array.from(e.target.files || []).slice(0, 8 - state.files.length).forEach(f => state.files.push({ file: f, name: f.name, url: URL.createObjectURL(f) }));
+      e.target.value = ""; renderThumbs();
+    };
+    ["wish", "qty", "name", "mail"].forEach(id => $(id).addEventListener("input", () => { $("error").style.display = "none"; }));
+
+    $("submit").onclick = async () => {
+      const btn = $("submit"); const err = $("error");
+      if (btn.classList.contains("loading")) return;
+      const miss = missingFields();
+      if (miss.length) {
+        err.textContent = "未入力の項目があります：" + miss.map(m => m[0]).join("、");
+        err.style.display = "block";
+        const first = document.getElementById(miss[0][1]);
+        first && first.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+      err.style.display = "none";
+      btn.classList.add("loading"); btn.textContent = "送信中…";
+      try {
+        const images = (await Promise.all(state.files.map(f => fileToB64(f.file)))).filter(Boolean);
+        const payload = {
+          item: state.item, wish: $("wish").value.trim(), qty: $("qty").value,
+          due: $("due").value, budget: state.budget, name: $("name").value.trim(), email: $("mail").value.trim(),
+          images,
+        };
+        const res = await fetch("/api/quote", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || "送信に失敗しました");
+        $("success").style.display = "block";
+        btn.textContent = "送信済み"; btn.classList.remove("loading");
+        $("success").scrollIntoView({ behavior: "smooth", block: "center" });
+      } catch (e) {
+        err.textContent = "送信に失敗しました。お手数ですがLINEからご連絡ください。（" + (e && e.message || "") + "）";
+        err.style.display = "block";
+        btn.classList.remove("loading"); btn.disabled = false; btn.textContent = "無料で見積もり依頼";
+      }
+    };
+
+    renderGallery(); renderItems(); renderBudgets();
+    requestAnimationFrame(updateArrows);
+  </script>
+</BaseLayout>
