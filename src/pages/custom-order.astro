@@ -153,8 +153,7 @@ const desc = 'felikkoのオーダーメイド見積もり依頼。人気のク�
     .co-gal-item img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .4s ease; }
     .co-gal-item:hover img { transform:scale(1.05); }
     .co-gal-item .meta { padding:9px 11px 11px; }
-    .co-gal-item .name { font-size:12px; font-weight:600; line-height:1.45; color:var(--text-primary); }
-    .co-gal-item .size { margin-top:3px; display:inline-block; font-size:10.5px; color:var(--text-secondary); background:var(--bg-secondary); border-radius:999px; padding:2px 8px; }
+    .co-gal-item .name { font-size:12px; font-weight:600; line-height:1.4; color:var(--text-primary); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.8em; }
     .co-gal-cta { display:flex; align-items:center; gap:10px; margin:18px 0 24px; }
     .co-btn-pill { font-family:inherit; font-size:13px; font-weight:700; padding:11px 20px; border-radius:999px; border:none; background:var(--primary); color:#fff; cursor:pointer; box-shadow:0 4px 12px -3px rgba(7,181,59,.4); transition:background .14s, transform .12s; }
     .co-btn-pill:hover { background:var(--primary-hover); transform:translateY(-1px); }
@@ -195,36 +194,71 @@ const desc = 'felikkoのオーダーメイド見積もり依頼。人気のク�
     const BASE = "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/";
     const CATS = [
       { label: "クッションカバー", desc: "推し・ペット・お子様の写真やお好きな柄で、45×45cmからおつくりします", items: [
-        { name: "クッションカバー ブラック", size: "45×45cm", img: "7f920abcfd2c4bd1b93c67c5de6f956c/0_45fe0941.jpg" },
-        { name: "クッションカバー グリーン", size: "45×45cm", img: "c5166c8a9e9944ad9d89717f879977f4/0_47558966.jpg" },
-        { name: "クッションカバー 水玉ピンク", size: "45×45cm", img: "f94151fb848a424aaefc6716979301b4/0_50cce179.jpg" },
-        { name: "クッションカバー パープル", size: "45×45cm", img: "6806645679c648bfb759f4177879213c/0_cc17b435.jpg" }
+        { id: "a9ad72cb", name: "スタバ クッションカバー ブラック 45x45cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/7f920abcfd2c4bd1b93c67c5de6f956c/0_45fe0941.jpg" },
+        { id: "d2837399", name: "スタバ クッションカバー グリーン 45x45cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/c5166c8a9e9944ad9d89717f879977f4/0_47558966.jpg" },
+        { id: "fdc5ad1b", name: "マリメッコ marimekko クッションカバー ピンク45x45cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/cb8e116322804b03bf687ec25b0272e5/0_4aed6288.jpg" },
+        { id: "a83d96d3", name: "マリメッコ marimekko クッションカバー 45x45cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/d9be2871fd824d98851b378c9c96f7ca/0_6e005f2e.jpg" },
+        { id: "57060eae", name: "PUUTARHURIN PARHAAT 柄 クッションカバー 45x45cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/b99ce5b9bfc24f0ebadabc0cbfcd27c8/0_e33d07cf.jpg" },
+        { id: "e905cc89", name: "スタバ クッションカバー ステンドグラス 45x45cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/9ff5d2c9763e4c6697e69b6b18cc83f4/0_7e3a86ed.jpg" },
+        { id: "a4d06e39", name: "Pieni Siirtolapuutarha クッションカバー 45x45cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/ca83f03680f64aca88740278f3ba6b34/0_6d186381.jpg" },
+        { id: "8add938b", name: "日本製 リネン100％ クッションカバー 45×45cm 北欧風クローバー柄", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/fca1a0ab3ccb42cd8a9b5962ebdee16f/0_9a40d4aa.jpg" },
+        { id: "41692535", name: "日本製 リネン100％ クッションカバー 45×45cm 北欧風クローバー柄｜", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/6de03883703a412981ec8ebf05bcd3c8/0_1fc61f45.jpg" }
       ]},
       { label: "座布団カバー", desc: "55×59cmの座布団サイズに名前や文字のプリント・写真・和柄など自由にデザインできます", items: [
-        { name: "座布団カバー ブラック", size: "55×59cm", img: "74920a5428a848d3b3579bcd856860a9/0_13655c74.jpg" },
-        { name: "座布団カバー 桜ピンク", size: "55×59cm", img: "1d50c8b0810a4816bf4eb81ac9abfef5/0_f6b45edf.jpg" },
-        { name: "座布団カバー ピンク", size: "55×59cm", img: "63c508c53261404fa67cadf70511c2af/0_74474edb.jpg" },
-        { name: "座布団カバー 水玉ピンク", size: "55×59cm", img: "4076f07b17a3430595df7cdba1a55fca/0_faffe460.jpg" }
+        { id: "27deeec1", name: "残り2点スタバ・クッション・座布団カバー水玉ピンク55×59 スタバ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/4076f07b17a3430595df7cdba1a55fca/0_faffe460.jpg" },
+        { id: "2ba87b5d", name: "スタバ クッション 座布団カバー ブラック55×59", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/74920a5428a848d3b3579bcd856860a9/0_13655c74.jpg" },
+        { id: "2aeca057", name: "スタバ クッション 座布団カバー 水玉ピンク55×59", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/f94151fb848a424aaefc6716979301b4/0_50cce179.jpg" },
+        { id: "12a39a5f", name: "スタバ クッション 座布団カバー パープル 55✖59", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/6806645679c648bfb759f4177879213c/0_cc17b435.jpg" },
+        { id: "1d7284ed", name: "スタバ・クッション・座布団カバー 桜 ピンク55✖59", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/1d50c8b0810a4816bf4eb81ac9abfef5/0_f6b45edf.jpg" },
+        { id: "af5a13a9", name: "マリメッコ marimekko 座布団カバー ピンク55x59cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/63c508c53261404fa67cadf70511c2af/0_74474edb.jpg" },
+        { id: "dd73a7db", name: "大人気スタバ・クッション・座布団カバーグリーン55✖59", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/c163d9e0a09c4a01ae5945ea97f8625a/0_cbf451eb.jpg" },
+        { id: "2226ad8a", name: "大人気スタバ・クッション・座布団カバーブラック55×59", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/12f3a9827a1e4c559af4dbbad6ac6c01/0_b3384a8f.jpg" },
+        { id: "f74bdd31", name: "marimekko Pieni Unikko 座布団カバー 55x59cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/c41c0c4ddbe04f2c97256773ea09c201/0_2d02a615.jpg" },
+        { id: "4c2bc673", name: "マリメッコ Puketti ブルー 座布団カバー 55x59cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/5c615685191143969223880d6c331566/0_7eca8eb6.jpg" },
+        { id: "daa3c3ee", name: "マリメッコ marimekko 座布団カバー ブルー 55x59cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/85328d71b1504907aa71566c3e2f2b2e/0_162207a6.jpg" },
+        { id: "d1da2c41", name: "マリメッコ marimekko 座布団カバー ブラック 55x59cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/cd581bc95ffb4db1a3ae92d1cbc950c0/0_d0a8dc06.jpg" }
       ]},
       { label: "トイレマット", desc: "定番サイズ40×50cmのマット単品のほか、フタカバーとのセットもおつくりできます", items: [
-        { name: "トイレマット ブラック", size: "40×50cm", img: "edc63cec60824b9eb03ae98b3d7cd543/0_beb74d31.jpg" },
-        { name: "トイレカバー＆マット ピンク", size: "セット", img: "4db3b6815d414706943423f99845fbc2/0_8f5ac6e0.jpg" }
+        { id: "734ac705", name: "スタバ・トイレカバー&マット ピンク 40cm×50cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/4db3b6815d414706943423f99845fbc2/0_8f5ac6e0.jpg" },
+        { id: "5af4e64c", name: "マリメッコ・トイレマット ブラック 40cm×50cm", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/edc63cec60824b9eb03ae98b3d7cd543/0_beb74d31.jpg" },
+        { id: "6fd6c97e", name: "マック・トイレカバー＆マット レッド", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/0bbfed4b0cef47bd8022e2f7b85b0eb0/0_396671a7.jpg" },
+        { id: "5761f720", name: "スタバ・トイレマット グリーン 40×50", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/c87193f333cc472599122818f8387696/0_3b0c397a.jpg" },
+        { id: "bc8cdd2f", name: "スタバ・トイレカバー&マット グリーン", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/dab07cc0ccbe4942a8b757dc404bf1df/0_71127001.jpg" },
+        { id: "7369c4f5", name: "スタバ・トイレカバー&マット ブラック", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/fde98da9ca1e40ccbcbe1e1bb1b4acdc/0_ee156b33.jpg" },
+        { id: "285c935d", name: "マリメッコ・トイレカバー&マット ベージュ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/261037a5bfc6439ba6dec686a4062207/0_9ea36104.jpg" },
+        { id: "43962e91", name: "スタバ・トイレカバー&マット パープル 40センチ×50センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/8025653c98ac45d2b2b1e980e3d26082/0_8184e21e.jpg" },
+        { id: "a1e0a45b", name: "マリメッコ・トイレカバー&マット ブラック", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/304832c54efd4fce976902cb235e362f/0_3300e8d3.jpg" },
+        { id: "5463457e", name: "マリメッコ・トイレカバー&マット グリーン/ブルー", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/f293015d8c49443caa566dfa4fea0933/0_1f401b46.jpg" },
+        { id: "588c2e20", name: "マリメッコ・トイレカバー&マット ピンク", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/30344bf918c64eaa8741504bcff88b7b/0_5e36859b.jpg" },
+        { id: "86ffd483", name: "マリメッコ プータルフリン トイレカバー&マット", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/13addce38e7c4b9e94e048e4eb9be628/0_a822661e.jpg" }
       ]},
-      { label: "マット", desc: "レギュラー（40×60cm）とロング（40×120cm）の2サイズで、北欧柄や写真プリントも人気です", items: [
-        { name: "マット ブラック", size: "40×120cm", img: "4f80a5b8d0df4b1e8bef1e93c1a3441a/0_2a2825ff.jpg" },
-        { name: "マット ピンク", size: "40×120cm", img: "15fa9629b3c9448096c34fd66e557052/0_1b137a05.jpg" },
-        { name: "マット グリーン", size: "40×60cm", img: "2811af802ab74d7e967a50d3d7895963/0_036ba550.jpg" },
-        { name: "マット ステンドグラス", size: "40×60cm", img: "ca78469aa0ee42c18b7198b83b8a1b56/0_b306c726.jpg" }
+      { label: "マット", desc: "40×60cm〜60×240cmまで、北欧柄や写真プリントで玄関・キッチン・リビングのマットをおつくりします", items: [
+        { id: "a7965dd4", name: "マリメッコ マット ブラック40センチ×120センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/4f80a5b8d0df4b1e8bef1e93c1a3441a/0_2a2825ff.jpg" },
+        { id: "8a4cc0e7", name: "MINIONS ミニオン ステンドグラス マット", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/34711f8bb44449fd86723205acae2d2d/0_91958221.jpg" },
+        { id: "039a1b87", name: "スタバ マット グリーン40センチ×60センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/2811af802ab74d7e967a50d3d7895963/0_036ba550.jpg" },
+        { id: "2e94330a", name: "スタバ・マット ステンドグラス40センチ×60センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/ca78469aa0ee42c18b7198b83b8a1b56/0_b306c726.jpg" },
+        { id: "a91053e8", name: "マリメッコ マット ピンク40センチ×120センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/15fa9629b3c9448096c34fd66e557052/0_1b137a05.jpg" },
+        { id: "4cc2ffbf", name: "マリメッコ マット ブルー 40センチ×120センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/9646271ca7cd4c7ca1e30b8fc3f51a78/0_993acaa4.jpg" },
+        { id: "73f905de", name: "マリメッコ・マット ベージュ40センチ×120センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/bb1c2df2656647559c9b4d53dd85ec54/0_d1db1615.jpg" },
+        { id: "210b61a3", name: "ミニオン マット ブラック40センチ×120センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/eb82a6c95dc74b51a0e180148ce7c588/0_9a7f954f.jpg" },
+        { id: "946e3e49", name: "MINIONS ミニオン ステンドグラス マット 40×60", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/a2d7c83713414dd1baa0e43a378b7395/0_3a2b3026.jpg" },
+        { id: "937134c5", name: "マック マット レッド 40センチ×120センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/f1a04732bda149c7bd38400fedae9fee/0_27918aeb.jpg" },
+        { id: "d32f96fe", name: "スタバ マット ブラック40センチ×60センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/cbf48be528634b8ea6bdb581977ed4f6/0_26ee4b54.jpg" },
+        { id: "b4ddc2c4", name: "スタバ・マット グリーン40センチ×60センチ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/215c319331784145ba7a6c231723b05f/0_6bab9117.jpg" }
       ]},
-      { label: "玄関・キッチンマット", desc: "滑り止め・不織布裏地つきで、玄関やキッチンに映えるマットをおつくりします", items: [
-        { name: "玄関・キッチンマット ブルー", size: "40×120cm", img: "9646271ca7cd4c7ca1e30b8fc3f51a78/0_993acaa4.jpg" },
-        { name: "マット ミニオン柄", size: "レギュラー", img: "34711f8bb44449fd86723205acae2d2d/0_91958221.jpg" }
-      ]},
-      { label: "スマホケース", desc: "写真・イラスト・お好きなデザインをそのままプリントできる、iPhone各機種対応のケースです", items: [
-        { name: "スマホケース ミントグリーン", size: "iPhone16", img: "a0ded52b56fd40c59bd1d0b335b23758/0_1d67450b.jpg" },
-        { name: "スマホケース ホワイト", size: "iPhone16", img: "8e7256aca4014054837e85a3ca9f01b5/0_fde9ee5e.jpg" },
-        { name: "スマホケース スモークブルー", size: "iPhone15", img: "0a7c568966a74956b1f5c3aee7504582/0_e0e9c1a0.jpg" },
-        { name: "スマホケース くすみブルー", size: "SE/7/8", img: "80401f66991e4e03bb3f9f34762e8099/0_479daf27.jpg" }
+      { label: "スマホケース", desc: "写真・イラスト・お好きなデザインをそのままプリント、iPhone各機種対応のケースです", items: [
+        { id: "f91a7986", name: "iFace アップル iPhoneSE3/SE2/7/8兼用 くすみブルー", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/80401f66991e4e03bb3f9f34762e8099/0_479daf27.jpg" },
+        { id: "3cffd653", name: "iFace アップル iPhone16 ミントグリーン", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/a0ded52b56fd40c59bd1d0b335b23758/0_1d67450b.jpg" },
+        { id: "a329588e", name: "iFace アップル iPhone16 ホワイト", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/8e7256aca4014054837e85a3ca9f01b5/0_fde9ee5e.jpg" },
+        { id: "c286afba", name: "iFace アップル iPhone15 スモークブルー", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/0a7c568966a74956b1f5c3aee7504582/0_e0e9c1a0.jpg" },
+        { id: "797773c1", name: "iFace アップル iPhone14 ピンク", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/22ec114ab2b74366ad5fed9283678505/0_c74bbeae.jpg" },
+        { id: "1531fc60", name: "iFace アップル iPhone16 ピンク", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/73eaff3e96044fc5bb577e5bac095d90/0_54566ae1.jpg" },
+        { id: "09a98cc4", name: "iFace アップル iPhone16 オレンジ", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/44a2d7d0dd594c6599ff28052ac3c18f/0_b7fdd664.jpg" },
+        { id: "4a0fb078", name: "iFace アップル iPhoneSE3/SE2/7/8兼用 ダークブルー", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/87843a88e39d4afeb5ae541726d9cb9e/0_bdda7a5d.jpg" },
+        { id: "e9c8becf", name: "iFace アップル iPhone7/8/SE2/SE3兼用 くすみイエロー iFace", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/9f367930e96b4878b42c026ffb4a393b/0_8f9ca85d.jpg" },
+        { id: "0de774d4", name: "iFace アップル iPhoneSE3/SE2/7/8兼用 ブラック", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/078fcf26c46b4295b098e13fe5d4c6a2/0_c58ab350.jpg" },
+        { id: "ea3f3f05", name: "iFace アップル iPhoneSE3/SE2/7/8兼用 ホワイト iFace", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/4c4b39b5ff03468e8dd037b131f9969e/0_e61f3ef8.jpg" },
+        { id: "ff574944", name: "iFace アップル iPhoneSE3/SE2/7/8兼用 レッド", img: "https://fuqehluhomxwbgpdegex.supabase.co/storage/v1/object/public/product-images/dca63057309a44eabe3c58bb29579c76/0_a406545c.jpg" }
       ]}
     ];
     const ITEMS = [...CATS.map(c => c.label), "その他"];
@@ -259,7 +293,7 @@ const desc = 'felikkoのオーダーメイド見積もり依頼。人気のク�
       const cat = CATS[state.galCat];
       $("galDesc").textContent = cat.desc;
       $("galGrid").innerHTML = cat.items.map(it =>
-        '<a class="co-gal-item" href="/products/' + it.img.slice(0, 8) + '" target="_blank" rel="noopener"><div class="frame"><img src="' + BASE + it.img + '" alt="' + it.name + '" loading="lazy"></div><div class="meta"><div class="name">' + it.name + '</div><div class="size">' + it.size + '</div></div></a>'
+        '<a class="co-gal-item" href="/products/' + it.id + '" target="_blank" rel="noopener"><div class="frame"><img src="' + it.img + '" alt="' + it.name.replace(/"/g, "&quot;") + '" loading="lazy"></div><div class="meta"><div class="name">' + it.name + '</div></div></a>'
       ).join("");
       const g = $("galGrid"); g.scrollLeft = 0; updateArrows();
     }
