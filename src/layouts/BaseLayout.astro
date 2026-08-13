@@ -195,6 +195,14 @@ const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
             </button>
           </form>
         </div>
+        <!-- Mobile: オーダーメイド 導線（md未満でナビが隠れるため） -->
+        <a
+          href="/custom-order"
+          class="md:hidden flex items-center justify-center gap-2 mx-4 mb-3 rounded-full border border-[var(--primary)] bg-[var(--primary-light)] px-4 py-2.5 text-sm font-bold text-[var(--primary)] hover:opacity-90"
+        >
+          オーダーメイドを見る
+          <span class="text-[11px] font-normal opacity-80">1個から・写真OK</span>
+        </a>
       </header>
 
       <!-- Main -->
