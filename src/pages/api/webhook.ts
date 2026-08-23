@@ -10,6 +10,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const webhookSecret = env.STRIPE_WEBHOOK_SECRET || import.meta.env.STRIPE_WEBHOOK_SECRET;
   const resendApiKey = env.RESEND_API_KEY || import.meta.env.RESEND_API_KEY;
   const fromEmail = env.FROM_EMAIL || import.meta.env.FROM_EMAIL || 'noreply@felikko.com';
+  const discordWebhookUrl = env.DISCORD_WEBHOOK_URL || import.meta.env.DISCORD_WEBHOOK_URL;
 
   if (!stripeSecretKey) {
     return new Response('STRIPE_SECRET_KEY missing', { status: 500 });
@@ -38,6 +39,29 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (!resendApiKey) return;
     const { Resend } = await import('resend');
     await new Resend(resendApiKey).emails.send({ from: fromEmail, to, subject, html });
+  };
+
+  // ─── Discord 通知ヘルパー (運営向け・失敗してもメール処理は続行) ───
+  const notifyDiscord = async (title: string, color: number, fields: any[]) => {
+    if (!discordWebhookUrl) return;
+    try {
+      await fetch(discordWebhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: 'felikko 購入通知',
+          embeds: [{
+            title,
+            color,
+            fields,
+            footer: { text: 'felikko ショップ' },
+            timestamp: new Date().toISOString(),
+          }],
+        }),
+      });
+    } catch (e) {
+      console.log('[webhook] discord notify failed:', e);
+    }
   };
 
   const emailLayout = (body: string) => `
@@ -98,6 +122,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     console.log('[webhook] checkout.session.completed payment_status:', session.payment_status, 'email:', buyerEmail);
 
+    await notifyDiscord(
+      session.payment_status === 'paid'
+        ? `💰 商品が購入されました：${productTitle}`
+        : `🏪 コンビニ支払い番号を発行：${productTitle}`,
+      session.payment_status === 'paid' ? 0x2e7d32 : 0xf59e0b,
+      [
+        { name: '👤 購入者', value: `${buyerName}（${buyerEmail ?? 'メール不明'}）`, inline: false },
+        { name: '💴 金額', value: amountFormatted, inline: true },
+        { name: '🏷 出品者', value: sellerName, inline: true },
+        { name: '🧾 注文ID', value: String(orderId || '-'), inline: false },
+      ]
+    );
+
     if (buyerEmail) {
       if (session.payment_status === 'paid') {
         // ── カード決済完了 → 購入完了メール ──
@@ -152,6 +189,17 @@ ${lineBlock}`));
 
     console.log('[webhook] async_payment_succeeded email:', buyerEmail);
 
+    await notifyDiscord(
+      `💰 コンビニ支払い完了：${productTitle}`,
+      0x2e7d32,
+      [
+        { name: '👤 購入者', value: `${buyerName}（${buyerEmail ?? 'メール不明'}）`, inline: false },
+        { name: '💴 金額', value: amountFormatted, inline: true },
+        { name: '🏷 出品者', value: sellerName, inline: true },
+        { name: '🧾 注文ID', value: String(orderId || '-'), inline: false },
+      ]
+    );
+
     if (buyerEmail) {
       await sendEmail(buyerEmail, '【felikko】お支払いが確認されました', emailLayout(`
 <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#1a1a1a;">お支払いを確認しました！</p>
@@ -173,6 +221,14 @@ ${lineBlock}`));
     const productTitle = meta.product_title ?? '商品';
 
     console.log('[webhook] async_payment_failed email:', buyerEmail);
+
+    await notifyDiscord(
+      `⚠️ コンビニ支払い期限切れ（キャンセル）：${productTitle}`,
+      0xef4444,
+      [
+        { name: '👤 購入者', value: `${buyerName}（${buyerEmail ?? 'メール不明'}）`, inline: false },
+      ]
+    );
 
     if (buyerEmail) {
       await sendEmail(buyerEmail, '【felikko】お支払い期限が切れました', emailLayout(`
