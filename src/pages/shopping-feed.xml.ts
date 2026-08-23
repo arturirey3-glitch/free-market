@@ -61,11 +61,13 @@ export const GET: APIRoute = async () => {
     const supabase = createSupabaseServer();
     const { data } = await supabase
       .from('products')
-      .select('id,title,description,price,category,thumbnail_url,shipping_payer,condition,updated_at')
+      .select('id,title,description,price,category,thumbnail_url,shipping_payer,condition,updated_at,product_type')
       .eq('status', 'published')
       .order('updated_at', { ascending: false })
       .limit(500);
-    products = data ?? [];
+    // Google ショッピングは物販専用のため、デジタル/サービス商品(役務)は除外する
+    // (merchant-feed.xml と同じ方針。混入すると「不実表示」判定の要因になる)
+    products = (data ?? []).filter((p: any) => p.product_type !== 'digital');
   } catch {
     products = [];
   }
