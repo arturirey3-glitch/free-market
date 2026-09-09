@@ -1,0 +1,10 @@
+{
+  "siteUrl": "sc-domain:felikko.com",
+  "targetOrigin": "https://www.felikko.com",
+  "country": null,
+  "device": null,
+  "searchType": "web",
+  "timeZone": "Asia/Tokyo",
+  "finalDataLagDays": 3,
+  "cooldownDays": 7
+}

@@ -4,3 +4,7 @@ dist/
 .env
 .wrangler/
 supabase/.temp/
+.seo-rank-watch.lock
+.seo-cycle.lock
+data/seo/*.tmp
+.seo-runtime/
