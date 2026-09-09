@@ -1,0 +1,13 @@
+[
+  {
+    "type": "analytics-tracking",
+    "deployedAt": "2026-09-09T16:57:31.698Z",
+    "commit": "644ce0fbe4901dd96cb1dcb48ed66f29c32693ab",
+    "deploymentId": "6267678d-c3f5-4f77-b155-ba18cc1eb2ad",
+    "propertyId": "534557326",
+    "measurementId": "G-E9G8S2K27S",
+    "done": "Restored GA4 tag output using the verified existing web stream. Connected service-account Data API reporting to daily SEO measurement.",
+    "verified": ["Production /, /products and /about return HTTP 200 with exactly one correct gtag loader", "Browser generates page_view for the correct measurement ID; test collection requests intercepted before transmission", "Service-account 28-day report request succeeded"],
+    "limitations": "No historical GA rows returned. Browser verification does not prove Google received the intercepted test event. This is a tracking repair, not a keyword ranking improvement."
+  }
+]

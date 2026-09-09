@@ -11,6 +11,7 @@ if(typeof a.config!=='string')throw new Error('--config must point to an externa
 const runner=JSON.parse(fs.readFileSync(a.config,'utf8')),repo=path.resolve(runner.repo);
 process.env.GSC_CREDENTIALS_FILE=runner.credentialsFile;
 process.env.GIT_TERMINAL_PROMPT='0';
+process.env.GCM_INTERACTIVE='never';
 const runtime=path.join(repo,'.seo-runtime');fs.mkdirSync(runtime,{recursive:true});
 const lockPath=path.join(repo,'.seo-cycle.lock');
 let lock;
@@ -53,6 +54,7 @@ try {
       }
     }
   });
+  report.status='measured';fs.writeFileSync(reportPath,JSON.stringify(report,null,2)+'\n');
   const dataFiles=['data/seo/watchwords.json','data/seo/rank-history.json','data/seo/improvement-log.json'];
   if(fs.existsSync(path.join(repo,'data/seo/analytics-history.json')))dataFiles.push('data/seo/analytics-history.json');
   git('add','--',...dataFiles);
