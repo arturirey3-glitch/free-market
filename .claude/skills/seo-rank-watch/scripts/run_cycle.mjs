@@ -3,6 +3,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {args,read,write,locked,appendHistory,localDate} from './store.mjs';
 import {measure} from './fetch_gsc_ranks.mjs';
+import {measureGA4,appendAnalytics} from './fetch_ga4_metrics.mjs';
 import {review,plan} from './seo_watch.mjs';
 
 const a=args(process.argv.slice(2));
@@ -42,8 +43,18 @@ try {
         [{keyword:x.keyword,targetPath:x.targetPath,before:old.rank,after:x.rank,change:old.rank-x.rank}]:[];
     });
     report.selection=plan(read(repo,'watchwords.json'),reviewed.logs,read(repo,'rank-history.json'),config);
+    if(config.ga4?.propertyId) {
+      try {
+        const analytics=await measureGA4(repo,{days:28});
+        appendAnalytics(repo,analytics);
+        report.analytics={status:'ok',...analytics};
+      } catch(e) {
+        report.analytics={status:'unavailable',message:e.message};
+      }
+    }
   });
   const dataFiles=['data/seo/watchwords.json','data/seo/rank-history.json','data/seo/improvement-log.json'];
+  if(fs.existsSync(path.join(repo,'data/seo/analytics-history.json')))dataFiles.push('data/seo/analytics-history.json');
   git('add','--',...dataFiles);
   if(git('diff','--cached','--name-only'))git('commit','-m',`SEO measurement ${runId} [skip ci]`);
   if(report.selection.candidate) {
@@ -52,6 +63,7 @@ try {
     const prompt=`Read .claude/skills/seo-rank-watch/SKILL.md and perform exactly one SEO improvement cycle for this repository.
 Run ID: ${runId}. Measurement and due reviews have already completed; use today's saved snapshots. For an untracked candidate lacking a seven-day baseline, register the keyword/path and fetch its exact seven-day baseline before any page edit or publication.
 The user authorized routine one-keyword SEO improvements and publishing through this site's existing Git workflow.
+GA4 analytics-history.json provides supporting usage context only; GSC remains the ranking source. Missing GA rows are not proof of zero sales; purchase events are not verified orders.
 Preserve the seven-day cooldown and append-only history. Investigate current top 1–3 pages with web search before choosing a useful factual change.
 Do not change noindex, canonical/URL routes or broad page structure; if required, report approval needed and stop.
 Do not use private credentials beyond the configured GSC access and existing Git authentication. Never print secrets or send email/Discord/social posts.

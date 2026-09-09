@@ -6,5 +6,6 @@
   "searchType": "web",
   "timeZone": "Asia/Tokyo",
   "finalDataLagDays": 3,
-  "cooldownDays": 7
+  "cooldownDays": 7,
+  "ga4": {"propertyId": "534557326"}
 }

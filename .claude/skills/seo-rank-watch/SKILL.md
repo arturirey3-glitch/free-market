@@ -14,6 +14,7 @@ The user's workflow is authoritative: one keyword per run, seven days observing,
 - `watchwords.json`: array of `{keyword,targetPath,priority}`. Priority: high / normal / low.
 - `rank-history.json`: append-only observation snapshots. Never edit or remove existing observations, including to correct an error; append a corrected observation instead.
 - `improvement-log.json`: keyword/page status active / observing / achieved, action history, review history, nextReviewDate.
+- `analytics-history.json`: append-only GA4 usage reports using the same external service account. GA4 supports analysis; it never replaces GSC rankings. Missing data or API failure is not zero sales. Purchase events are not verified orders. Only public product paths are retained.
 
 Do not seed fictitious rank data or force a keyword into an empty watchlist. GSC discovery can supply candidates. Never interpret null rank and zero impressions as proof of non-indexing.
 

@@ -9,7 +9,7 @@ async function googleJSON(url,options) {
   if(!response.ok)throw new Error(`Google API HTTP ${response.status}; check API enablement, token scope and property permission. No observation saved.`);
   return response.json();
 }
-export async function accessToken(env=process.env) {
+export async function accessToken(env=process.env,scope='https://www.googleapis.com/auth/webmasters.readonly') {
   if(env.GSC_ACCESS_TOKEN)return env.GSC_ACCESS_TOKEN;
   const file=env.GSC_CREDENTIALS_FILE||env.GOOGLE_APPLICATION_CREDENTIALS;
   if(!file)throw new Error('GSC credentials missing. Set GSC_CREDENTIALS_FILE to an external Google credential JSON. Search Console website registration alone is not API authorization.');
@@ -20,7 +20,7 @@ export async function accessToken(env=process.env) {
     const b64=x=>Buffer.from(JSON.stringify(x)).toString('base64url');
     const now=Math.floor(Date.now()/1000);
     const unsigned=b64({alg:'RS256',typ:'JWT'})+'.'+b64({iss:c.client_email,
-      scope:'https://www.googleapis.com/auth/webmasters.readonly',aud:'https://oauth2.googleapis.com/token',iat:now,exp:now+3600});
+      scope,aud:'https://oauth2.googleapis.com/token',iat:now,exp:now+3600});
     const sign=createSign('RSA-SHA256');sign.update(unsigned);sign.end();
     let signature;
     try { signature=sign.sign(c.private_key,'base64url'); } catch { throw new Error('Invalid service account private key'); }

@@ -15,7 +15,10 @@ interface Props {
 const { title = 'felikko | スタバ・マリメッコ雑貨のフリマ通販', description = 'felikkoはスタバグッズ・マリメッコ・北欧インテリア雑貨を中心としたフリマ通販サイト。即購入OK・送料込みで安心お買い物。', ogImage, ogImageWidth = 1200, ogImageHeight = 630, ogUrl, ogType = 'website', jsonLd } = Astro.props;
 const siteUrl = 'https://www.felikko.com';
 const canonicalUrl = ogUrl || siteUrl + Astro.url.pathname;
-const GA_ID = import.meta.env.GA_MEASUREMENT_ID || '';
+// Public measurement ID verified against the existing felikko GA4 web stream.
+// The fallback also covers prerendered pages when CI has no GA build variable.
+const gaMeasurementId = (Astro.locals as any).runtime?.env?.GA_MEASUREMENT_ID || import.meta.env.GA_MEASUREMENT_ID || 'G-E9G8S2K27S';
+const GA_ID = /^G-[A-Z0-9]+$/.test(gaMeasurementId) ? gaMeasurementId : '';
 ---
 <!doctype html>
 <html lang="ja">
