@@ -50,7 +50,7 @@ try {
     if(!runner.codexPath)throw new Error('Candidate found but no AI runner is configured');
     report.status='agent_running';fs.writeFileSync(reportPath,JSON.stringify(report,null,2));
     const prompt=`Read .claude/skills/seo-rank-watch/SKILL.md and perform exactly one SEO improvement cycle for this repository.
-Run ID: ${runId}. Measurement and due reviews have already completed; use today's saved snapshots without fetching again.
+Run ID: ${runId}. Measurement and due reviews have already completed; use today's saved snapshots. For an untracked candidate lacking a seven-day baseline, register the keyword/path and fetch its exact seven-day baseline before any page edit or publication.
 The user authorized routine one-keyword SEO improvements and publishing through this site's existing Git workflow.
 Preserve the seven-day cooldown and append-only history. Investigate current top 1–3 pages with web search before choosing a useful factual change.
 Do not change noindex, canonical/URL routes or broad page structure; if required, report approval needed and stop.
