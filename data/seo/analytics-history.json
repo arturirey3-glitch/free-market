@@ -14,5 +14,21 @@
     "publicPages": [],
     "channels": [],
     "note": "Purchase counts reflect recorded GA events, not verified Stripe orders. GA dates use property time zone; GSC uses Pacific time."
+  },
+  {
+    "source": "ga4",
+    "propertyId": "534557326",
+    "host": "www.felikko.com",
+    "days": 28,
+    "startDate": "2026-08-10",
+    "endDate": "2026-09-06",
+    "measuredAt": "2026-09-09T16:57:24.771Z",
+    "propertyTimeZone": "Asia/Tokyo",
+    "currencyCode": "JPY",
+    "subjectToThresholding": false,
+    "totals": null,
+    "publicPages": [],
+    "channels": [],
+    "note": "Purchase counts reflect recorded GA events, not verified Stripe orders. GA dates use property time zone; GSC uses Pacific time."
   }
 ]
