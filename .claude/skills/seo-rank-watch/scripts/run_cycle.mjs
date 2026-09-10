@@ -20,13 +20,21 @@ function git(...args) {
   if(result.status!==0)throw new Error('Git operation failed: '+args[0]+' (no raw credential-bearing output logged)');
   return result.stdout.trim();
 }
+async function run() {
 try {
   lock=fs.openSync(lockPath,'wx');
   if(git('status','--porcelain'))throw new Error('Working tree has pending changes; resolve before automated work');
   if(runner.syncRemote){git('fetch','origin');git('merge','--ff-only','origin/main');}
   const config=read(repo,'config.json');
   const runId=localDate(new Date(),config.timeZone),reportPath=path.join(runtime,runId+'.json');
-  if(fs.existsSync(reportPath)&&!a.force)throw new Error('This daily cycle already ran; inspect its report');
+  if(fs.existsSync(reportPath)&&!a.force) {
+    const previous=JSON.parse(fs.readFileSync(reportPath,'utf8'));
+    if(previous.completedAt&&['observing_only','agent_finished'].includes(previous.status)) {
+      console.log(JSON.stringify({runId,status:'already_completed',completedAt:previous.completedAt}));
+      return;
+    }
+    throw new Error('This daily cycle is incomplete; inspect its report before retrying');
+  }
   const report={runId,startedAt:new Date().toISOString(),status:'measuring'};
   await locked(repo,async()=>{
     const previous=read(repo,'rank-history.json').filter(x=>x.days===28&&x.source==='gsc'&&
@@ -93,3 +101,5 @@ End with a concise Japanese report covering measured changes, intent, actual edi
   fs.writeFileSync(path.join(runtime,'last-failure.json'),JSON.stringify(failure,null,2));
   console.error(e.message);process.exitCode=1;
 } finally {if(lock!==undefined){fs.closeSync(lock);fs.unlinkSync(lockPath);}}
+}
+await run();
