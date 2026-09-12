@@ -1,1 +1,45 @@
-[]
+[
+  {
+    "keyword": "スマホリング ブラック",
+    "targetPath": "/products/84123212",
+    "actions": [
+      {
+        "keyword": "スマホリング ブラック",
+        "targetPath": "/products/84123212",
+        "needs": "黒いスマホリングを探し、取り付け方やスタンドとして使えるかを確認して購入したい。",
+        "gap": "検索結果に見られるメーカーの商品ページは取付方式・スタンド機能を冒頭から示している。対象ページの冒頭と検索用説明は挨拶・セール表記・ハッシュタグが中心で、用途を把握しにくかった。検索結果順は概算でありGoogle順位とは扱わない。",
+        "done": "対象商品のみタイトル・meta descriptionを用途中心に変更し、既存の商品説明にある貼り付け式・スタンド用途・購入宣言不要・梱包を整理した案内と商品コメント欄へのリンクを追加。3商品に対応した候補語を監視登録。変更前7日GSCを測定。",
+        "method": "product-intro-and-usage-guide",
+        "sources": [
+          "https://www.elecom.co.jp/products/P-STRLBK.html",
+          "https://www.elecom.co.jp/products/P-STRWBK.html"
+        ],
+        "deployedAt": "2026-09-12T03:17:17.392946+00:00",
+        "deploymentEvidence": "Commit 02a39ff pushed to main; production https://www.felikko.com/products/84123212 verified HTTP 200, new title/meta/guide and comment anchor present; /products/2e94330a has no added guide. Timestamp is first successful production verification (conservative start of cooldown).",
+        "runId": "2026-09-12",
+        "date": "2026-09-12",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "スマホリング ブラック",
+          "targetPath": "/products/84123212",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-09-02",
+          "endDate": "2026-09-08"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-09-19T03:17:17.392Z"
+  }
+]
