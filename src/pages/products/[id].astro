@@ -84,7 +84,11 @@ const ogUrl = `${siteOrigin}/products/${product.id.slice(0, 8)}`;
 const ogBaseDescription = product.description
   ? product.description.replace(/[#＃]\S+/g, '').replace(/\s+/g, ' ').trim()
   : '';
-const ogDescription = ogBaseDescription.slice(0, 120);
+// One-page SEO experiment; other products retain their existing copy.
+const showBlackRingGuide = product.id === '84123212-9395-465c-8e64-21f4d5ba837b';
+const ogDescription = showBlackRingGuide
+  ? 'ブラックの貼り付け式スマホリング。指を通してスマートフォンを持つときの補助に、角度を変えて動画視聴用のスタンドにも使えます。取り付け方法・使い方・商品の状態を確認して購入できます。'
+  : ogBaseDescription.slice(0, 120);
 const productOgpImages: Record<string, string> = {
   e30d1416: `${siteOrigin}/og/furima-price-tool.png`,
   d2cc1737: `${siteOrigin}/og/furima-alert-tool-square.png?v=20260628-1`,
@@ -203,7 +207,7 @@ const jsonLdString = JSON.stringify(jsonLd);
 
 ---
 <BaseLayout
-  title={`${product.title} | felikko`}
+  title={showBlackRingGuide ? 'スマホリング ブラック｜貼り付け式・スタンド兼用 | felikko' : `${product.title} | felikko`}
   description={ogDescription}
   ogImage={ogImage}
   ogImageWidth={ogImageSize.width}
@@ -583,6 +587,27 @@ const jsonLdString = JSON.stringify(jsonLd);
 
         <!-- Description with expand -->
         <div class="relative mt-8 overflow-hidden text-sm leading-relaxed" id="desc-wrapper">
+          {showBlackRingGuide && (
+            <section aria-labelledby="black-ring-guide" class="mb-6 rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm leading-relaxed">
+              <h3 id="black-ring-guide" class="mb-3 font-bold text-[var(--text-primary)]">スマホリング ブラックの取り付け方・使い方</h3>
+              <p class="mb-4">ブラックの貼り付け式スマホリングです。指を通してスマートフォンを持つときの補助として、また動画を見るときのスタンドとして使えます。</p>
+              <dl class="space-y-3">
+                <div>
+                  <dt class="font-semibold">どうやって取り付けますか？</dt>
+                  <dd>シールのように貼り付けるタイプです。お使いのスマートフォンやケースに取り付けられるか不明な場合は、購入前に下の商品コメント欄からお問い合わせください。</dd>
+                </div>
+                <div>
+                  <dt class="font-semibold">スタンドとして使えますか？</dt>
+                  <dd>リングの角度を変えて、スマートフォンを置いて動画を見るときのスタンドとして使えます。</dd>
+                </div>
+                <div>
+                  <dt class="font-semibold">購入前のコメントは必要ですか？</dt>
+                  <dd>購入宣言のコメントは不要です。価格と在庫は購入欄の最新表示をご確認ください。商品はクッションシートで包んで発送します。</dd>
+                </div>
+              </dl>
+              <a href="#product-comments" class="mt-4 inline-block text-blue-600 underline">取り付けについて商品コメント欄で質問する</a>
+            </section>
+          )}
           <div id="desc-body" class="whitespace-pre-wrap" style="max-height:360px;overflow:hidden" set:html={descriptionHtml}></div>
           <div id="read-more" class="absolute bottom-0 left-0 right-0 cursor-pointer">
             <div class="h-[60px] bg-gradient-to-b from-transparent via-white/80 to-white"></div>

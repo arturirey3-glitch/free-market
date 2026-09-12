@@ -452,5 +452,121 @@
     "discoveryIsExhaustive": false,
     "observations": [],
     "discovery": []
+  },
+  {
+    "measuredAt": "2026-09-12T03:14:24.401Z",
+    "source": "gsc",
+    "days": 28,
+    "startDate": "2026-08-12",
+    "endDate": "2026-09-08",
+    "scope": {
+      "siteUrl": "sc-domain:felikko.com",
+      "targetOrigin": "https://www.felikko.com",
+      "country": null,
+      "device": null,
+      "type": "web"
+    },
+    "finalized": true,
+    "availableDates": [
+      "2026-08-13",
+      "2026-08-28",
+      "2026-08-29",
+      "2026-09-01",
+      "2026-09-05",
+      "2026-09-06"
+    ],
+    "totals": {
+      "keyword": null,
+      "targetPath": null,
+      "rank": 5.647058823529412,
+      "impressions": 17,
+      "clicks": 3,
+      "ctr": 0.17647058823529413
+    },
+    "discoveryCapped": false,
+    "discoveryIsExhaustive": false,
+    "observations": [
+      {
+        "keyword": "スマホリング ブラック",
+        "targetPath": "/products/84123212",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "玄関マット 40×60",
+        "targetPath": "/products/2e94330a",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット フタカバー セット",
+        "targetPath": "/products/86ffd483",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      }
+    ],
+    "discovery": []
+  },
+  {
+    "measuredAt": "2026-09-12T03:14:26.177Z",
+    "source": "gsc",
+    "days": 7,
+    "startDate": "2026-09-02",
+    "endDate": "2026-09-08",
+    "scope": {
+      "siteUrl": "sc-domain:felikko.com",
+      "targetOrigin": "https://www.felikko.com",
+      "country": null,
+      "device": null,
+      "type": "web"
+    },
+    "finalized": true,
+    "availableDates": [
+      "2026-09-05",
+      "2026-09-06"
+    ],
+    "totals": {
+      "keyword": null,
+      "targetPath": null,
+      "rank": 7.375,
+      "impressions": 8,
+      "clicks": 2,
+      "ctr": 0.25
+    },
+    "discoveryCapped": false,
+    "discoveryIsExhaustive": false,
+    "observations": [
+      {
+        "keyword": "スマホリング ブラック",
+        "targetPath": "/products/84123212",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "玄関マット 40×60",
+        "targetPath": "/products/2e94330a",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット フタカバー セット",
+        "targetPath": "/products/86ffd483",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      }
+    ],
+    "discovery": []
   }
 ]
