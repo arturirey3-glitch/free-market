@@ -26,7 +26,9 @@ Merchant APIによる更新後、GETで上記値を確認。更新直後のGET�
 
 - node --test tests/shopping-feed.test.mjs: 3テスト成功（カテゴリ優先順、ブランド・GTIN、状態値）。
 - npm run build: 成功。
-- ソース公開後、公開フィードを確認し、Merchant Centerのデータソースを再取得する。
+- ソース修正コミット `9bb60dc` をmainへpushし、GitHub Actionsによる本番公開成功を確認。
+- 公開フィード118商品のID集合が変更前と一致。リュック100・座布団カバー2927・スマホケース2353、ブランド固定値なし、identifier_exists=no固定値なし、説明更新を確認。
+- Merchant Centerのデータソース再取得APIはHTTP 200で受理。Google側の再処理完了・警告解消は未確認。
 - Google側の警告解消・承認・表示実績は再処理後に確認する。順位や売上の改善は未判定。
 - 変更前後のAPI結果・対象商品の変更前データはローカル C:/tiket_pia/merchant_analysis_20260912 に保存。認証情報はGitに含めない。
 
