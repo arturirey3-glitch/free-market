@@ -1,47 +1,8 @@
 import type { APIRoute } from 'astro';
 import { createSupabaseServer } from '../lib/supabaseServer';
+import { getGoogleCategory, getCondition, escapeXml, identifierXml } from '../lib/shoppingFeed.mjs';
 
 export const prerender = false;
-
-// Google商品カテゴリマッピング
-const GOOGLE_CATEGORY_MAP: Record<string, string> = {
-  'スマホ・タブレット・パソコン': 'Electronics > Communications > Telephony > Mobile Phones',
-  'スマホアクセサリー': 'Electronics > Electronics Accessories > Mobile Phone Accessories',
-  'スマホリング': 'Electronics > Electronics Accessories > Mobile Phone Accessories',
-  'インテリア': 'Home & Garden > Decor',
-  'キッチンマット': 'Home & Garden > Decor > Rugs',
-  'ラグ・カーペット': 'Home & Garden > Decor > Rugs',
-  'マット': 'Home & Garden > Decor > Rugs',
-  'クッションカバー': 'Home & Garden > Decor > Throw Pillows',
-  '座布団カバー': 'Home & Garden > Decor > Throw Pillows',
-  'ランチョンマット': 'Home & Garden > Kitchen & Dining > Tabletop > Placemats',
-  'コースター': 'Home & Garden > Kitchen & Dining > Barware > Coasters',
-  'バッグ': 'Apparel & Accessories > Handbags, Wallets & Cases > Backpacks',
-};
-
-function getGoogleCategory(category: string | null): string {
-  if (!category) return 'Home & Garden';
-  for (const [key, value] of Object.entries(GOOGLE_CATEGORY_MAP)) {
-    if (category.includes(key)) return value;
-  }
-  return 'Home & Garden > Decor';
-}
-
-function getCondition(condition: string | null): string {
-  if (!condition) return 'new';
-  if (condition.includes('新品')) return 'new';
-  if (condition.includes('未使用に近い')) return 'like_new';
-  return 'used';
-}
-
-function escapeXml(str: string): string {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
 
 function cleanTitle(title: string): string {
   // 絵文字・記号を除去してGoogleポリシーに準拠
@@ -59,17 +20,20 @@ export const GET: APIRoute = async () => {
   let products: any[] = [];
   try {
     const supabase = createSupabaseServer();
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('products')
-      .select('id,title,description,price,category,thumbnail_url,shipping_payer,condition,updated_at,product_type')
+      .select('id,title,description,price,category,thumbnail_url,shipping_payer,condition,updated_at,product_type,brand,jan_code')
       .eq('status', 'published')
       .order('updated_at', { ascending: false })
       .limit(500);
+    if (error) throw error;
     // Google ショッピングは物販専用のため、デジタル/サービス商品(役務)は除外する
     // (merchant-feed.xml と同じ方針。混入すると「不実表示」判定の要因になる)
     products = (data ?? []).filter((p: any) => p.product_type !== 'digital');
   } catch {
-    products = [];
+    return new Response('Product feed temporarily unavailable', {
+      status: 503, headers: { 'Cache-Control': 'no-store' },
+    });
   }
 
   const items = products.map((p) => {
@@ -99,9 +63,8 @@ export const GET: APIRoute = async () => {
       <g:price>${price}</g:price>
       <g:availability>in_stock</g:availability>
       <g:condition>${condition}</g:condition>
-      <g:google_product_category>${escapeXml(googleCategory)}</g:google_product_category>
-      <g:brand>felikko</g:brand>
-      <g:identifier_exists>no</g:identifier_exists>
+      ${googleCategory ? `<g:google_product_category>${googleCategory}</g:google_product_category>` : ''}
+      ${identifierXml(p)}
       <g:shipping>
         <g:country>JP</g:country>
         <g:service>${escapeXml(shipping)}</g:service>

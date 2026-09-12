@@ -111,7 +111,7 @@ const jsonLd: Record<string, any> = {
       image: allImages.length > 0 ? allImages : undefined,
       url: ogUrl,
       sku: product.id,
-      brand: { '@type': 'Brand', name: product.brand || 'ノーブランド品' },
+      brand: product.brand ? { '@type': 'Brand', name: product.brand } : undefined,
       ...(product.condition ? { itemCondition: `https://schema.org/${
         product.condition.includes('新品') ? 'NewCondition' :
         product.condition.includes('未使用') ? 'LikeNewCondition' :
