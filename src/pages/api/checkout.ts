@@ -60,7 +60,17 @@ export const POST: APIRoute = async ({ request, locals }) => {
         price_data: {
           currency: 'jpy',
           product_data: {
-            name: productTitle,
+            // Stripe Checkout は都度購入だと必ず金額を出し、サブスクの
+            // 「今日期日の合計額 ¥0」表示は使えない（trial はサブスク専用）。
+            // 商品名と説明で「いま請求されない」ことを左パネルに出す。
+            name: trial ? `【本日のお支払い ¥0】${productTitle}（${trial.days}日間 無料お試し）` : productTitle,
+            ...(trial ? {
+              description:
+                `本日のお支払いは ¥0 です。`
+                + `商品到着後${trial.days}日間お試しいただけます。`
+                + `${formatJaDate(trial.dueAt)}頃に ¥${Number(price).toLocaleString('ja-JP')} を決済します。`
+                + `それまでにご返品いただければ請求は発生しません。`,
+            } : {}),
             ...(thumbnailUrl ? { images: [thumbnailUrl] } : {}),
           },
           unit_amount: price,
