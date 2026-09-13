@@ -45,9 +45,19 @@ openssl rand -hex 32   # CRON_SECRET の生成例
 
 エンドポイント: `POST https://www.felikko.com/api/trials/capture`
 
+**`Content-Type: application/json` を必ず付ける。** 付けないと Astro の CSRF 保護
+（`security.checkOrigin`）がフォーム送信とみなして 403 `Cross-site POST form submissions
+are forbidden` を返す。本番で実測済み。
+
 ```bat
 schtasks /create /tn "felikko-trial-capture" /sc daily /st 09:20 /ru rpa_admin ^
-  /tr "curl -s -X POST https://www.felikko.com/api/trials/capture -H \"Authorization: Bearer <CRON_SECRET>\""
+  /tr "curl -s -X POST https://www.felikko.com/api/trials/capture -H \"Content-Type: application/json\" -H \"Authorization: Bearer <CRON_SECRET>\" -d \"{}\""
+```
+
+疎通確認だけなら GET でもよい（同じ処理が動くので、本番では空振り時のみに使うこと）。
+
+```sh
+curl -s https://www.felikko.com/api/trials/capture -H "Authorization: Bearer <CRON_SECRET>"
 ```
 
 - 1回の実行で最大50件処理する（`BATCH`）
