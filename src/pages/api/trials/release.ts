@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { createClient } from '@supabase/supabase-js';
-import { createSupabaseServer } from '../../../lib/supabaseServer';
+import { createSupabaseAdmin } from '../../../lib/supabaseServer';
 
 export const prerender = false;
 
@@ -37,7 +37,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(JSON.stringify({ error: 'ログインが必要です' }), { status: 401, headers });
     }
 
-    const db = createSupabaseServer();
+    const db = createSupabaseAdmin(env);
     const { data: order } = await db.from('trial_orders').select('*').eq('id', orderId).maybeSingle();
     if (!order) {
       return new Response(JSON.stringify({ error: '注文が見つかりません' }), { status: 404, headers });

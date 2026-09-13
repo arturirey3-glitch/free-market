@@ -38,7 +38,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     let trial: { days: number; deliveryDays: number; dueAt: Date } | null = null;
     if (!isSubscription) {
       try {
-        const db = createSupabaseServer();
+        const db = createSupabaseServer(env);
         const { data: p } = await db
           .from('products')
           .select('trial_enabled,trial_days,delivery_time')

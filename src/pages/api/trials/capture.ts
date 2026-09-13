@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { createSupabaseServer } from '../../../lib/supabaseServer';
+import { createSupabaseAdmin } from '../../../lib/supabaseServer';
 import { AUTH_HOLD_DAYS, addDays } from '../../../lib/trial';
 
 export const prerender = false;
@@ -32,7 +32,7 @@ const handle = async (request: Request, locals: any) => {
 
   const Stripe = (await import('stripe')).default;
   const stripe = new Stripe(stripeSecretKey);
-  const db = createSupabaseServer();
+  const db = createSupabaseAdmin(env);
   const now = new Date();
 
   const { data: due, error } = await db

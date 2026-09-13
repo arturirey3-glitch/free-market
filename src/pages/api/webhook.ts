@@ -127,7 +127,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const isTrial = meta.trial === 'true';
     if (isTrial) {
       try {
-        const { createSupabaseServer } = await import('../../lib/supabaseServer');
+        const { createSupabaseAdmin } = await import('../../lib/supabaseServer');
         const { computeCaptureDueAt, clampTrialDays, clampDeliveryDays } = await import('../../lib/trial');
         const purchasedAt = new Date((session.created ?? Date.now() / 1000) * 1000);
         const trialDays = clampTrialDays(meta.trial_days);
@@ -138,7 +138,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           ? parsed
           : computeCaptureDueAt(purchasedAt, deliveryDays, trialDays);
 
-        await createSupabaseServer().from('trial_orders').upsert({
+        await createSupabaseAdmin(env).from('trial_orders').upsert({
           product_id: meta.product_id || null,
           product_title: productTitle,
           checkout_session_id: session.id,
