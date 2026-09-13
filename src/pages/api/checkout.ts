@@ -77,7 +77,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
           ...(isSubscription ? { recurring: { interval: 'month' } } : {})
         },
         quantity: 1,
-        ...(!isSubscription ? {
+        // お試しでは数量変更を出さない。
+        // ・数量セレクタがあると Stripe が「<店名>に支払う ￥999」のレイアウトに切り替わり、
+        //   商品名が見出しから降りて説明文も折りたたまれる（本番で実測）
+        // ・無料期間中に複数個まとめて持って行かれるリスクも避けたい
+        ...(!isSubscription && !trial ? {
           adjustable_quantity: {
             enabled: true,
             minimum: 1,
