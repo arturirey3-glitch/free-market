@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatJPY, formatRelativeTime } from '../../lib/format';
 import { createSupabaseServer } from '../../lib/supabaseServer';
-import { clampTrialDays, clampDeliveryDays } from '../../lib/trial';
+import { trialTimeline } from '../../lib/trial';
 
 export const prerender = false;
 
@@ -70,8 +70,8 @@ const isSoldOut = product.stock === 0;
 // 日数の算出は checkout / cron と同じ関数を使う。別実装にすると
 // 「表示は10日後なのに実際は7日後に課金」といったズレが生じる。
 const isTrial = !!product.trial_enabled && !product.is_subscription;
-const trialDays = clampTrialDays(product.trial_days);
-const trialTotalDays = trialDays + clampDeliveryDays(product.delivery_time);
+const tl = trialTimeline({ deliveryDays: product.delivery_time, trialDays: product.trial_days });
+const trialDays = tl.trialDays;
 const isLowStock = product.stock === 1;
 const breadcrumbs: string[] = product.category ? product.category.split(' > ').filter(Boolean) : [];
 
@@ -390,18 +390,36 @@ const jsonLdString = JSON.stringify(jsonLd);
         )}
 
         <!-- Price -->
-        <div class="flex items-baseline gap-2">
-          <span class="text-[2.125rem] font-bold leading-none tracking-tight">{formatJPY(product.price)}</span>
-          <span class="text-sm text-[var(--text-secondary)]">税込</span>
-          {product.shipping_payer && product.product_type !== 'digital' && (
-            <span class="text-sm text-[var(--text-secondary)]">
-              {product.shipping_payer.includes('出品者') ? '送料込み' : '着払い'}
-            </span>
-          )}
-          {product.is_subscription && (
-            <span class="rounded bg-[var(--primary-light)] px-2 py-0.5 text-xs font-bold text-[var(--primary)]">月額</span>
-          )}
-        </div>
+        {isTrial ? (
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xl font-medium text-gray-400 line-through">{formatJPY(product.price)}</span>
+              <span class="text-xs text-[var(--text-secondary)]">本日（{tl.today}）のお支払い</span>
+            </div>
+            <div class="flex flex-wrap items-baseline gap-2.5">
+              <span class="text-[40px] font-black leading-none tracking-tight text-[var(--primary)]">￥0</span>
+              <span class="rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-900">{trialDays}日間 無料お試し</span>
+              {product.shipping_payer && product.product_type !== 'digital' && (
+                <span class="text-[13px] text-[var(--text-secondary)]">
+                  {product.shipping_payer.includes('出品者') ? '送料込み' : '着払い'}
+                </span>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div class="flex items-baseline gap-2">
+            <span class="text-[2.125rem] font-bold leading-none tracking-tight">{formatJPY(product.price)}</span>
+            <span class="text-sm text-[var(--text-secondary)]">税込</span>
+            {product.shipping_payer && product.product_type !== 'digital' && (
+              <span class="text-sm text-[var(--text-secondary)]">
+                {product.shipping_payer.includes('出品者') ? '送料込み' : '着払い'}
+              </span>
+            )}
+            {product.is_subscription && (
+              <span class="rounded bg-[var(--primary-light)] px-2 py-0.5 text-xs font-bold text-[var(--primary)]">月額</span>
+            )}
+          </div>
+        )}
 
         <!-- Mercari-style action buttons -->
         <div class="mt-3 flex gap-2">
@@ -440,19 +458,26 @@ const jsonLdString = JSON.stringify(jsonLd);
           ) : (
             <>
             {isTrial && (
-              <div class="rounded-xl border-2 border-violet-500 bg-violet-50 p-3">
-                <p class="text-sm font-bold text-violet-800">🎁 {trialDays}日間 無料でお試しいただけます</p>
-                <p class="mt-1.5 text-[11px] leading-relaxed text-[var(--text-secondary)]">
-                  ご購入時に代金は請求されません（カードの利用枠のみ確保します）。<br />
-                  商品到着後{trialDays}日間お試しいただき、ご購入を続ける場合は
-                  <strong class="text-violet-800">約{trialTotalDays}日後に ¥{Number(product.price).toLocaleString()} が自動で決済</strong>されます。<br />
-                  期間内にご返品いただければ請求は発生しません。<br />
-                  <span class="text-[10px]">※お試しはカード決済のみ（コンビニ払い・アメリカン・エキスプレスは対象外）</span>
-                </p>
+              <div class="grid grid-cols-3 overflow-hidden rounded-xl border-[3px] border-double border-[var(--primary)]">
+                <div class="flex flex-col items-center gap-1.5 border-r border-gray-200 px-1.5 pb-4 pt-3.5">
+                  <span class="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">1</span>
+                  <div class="text-[11px] text-[var(--text-secondary)]">本日 {tl.today}</div>
+                  <div class="text-center text-sm font-bold">注文・￥0</div>
+                </div>
+                <div class="flex flex-col items-center gap-1.5 border-r border-gray-200 bg-green-50 px-1.5 pb-4 pt-3.5">
+                  <span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--primary)] text-xs font-bold text-white">2</span>
+                  <div class="text-center text-[11px] text-[var(--text-secondary)]">到着 {tl.arrive}〜<br />{trialDays}日間</div>
+                  <div class="text-center text-sm font-bold text-[var(--primary)]">自宅でお試し</div>
+                </div>
+                <div class="flex flex-col items-center gap-1.5 px-1.5 pb-4 pt-3.5">
+                  <span class="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">3</span>
+                  <div class="text-[11px] text-[var(--text-secondary)]">お試し終了 {tl.charge}</div>
+                  <div class="text-center text-sm font-bold leading-tight">{formatJPY(product.price)} 決済<br /><span class="text-xs font-medium text-[var(--text-secondary)]">返品なら ￥0</span></div>
+                </div>
               </div>
             )}
             <button
-              class="inline-flex w-full items-center justify-center gap-3 rounded-full bg-[var(--primary)] text-white h-[44px] px-3 text-sm font-semibold tracking-wide transition-colors hover:bg-[var(--primary-hover)]"
+              class={`inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[var(--primary)] text-white transition-colors hover:bg-[var(--primary-hover)] ${isTrial ? 'h-12 text-[15px] font-bold' : 'h-[44px] px-3 text-sm font-semibold tracking-wide'}`}
               data-checkout
               data-product-id={product.id}
               data-title={product.title}
@@ -468,8 +493,11 @@ const jsonLdString = JSON.stringify(jsonLd);
                 <circle cx="16.376" cy="19.674" r="1.688" fill="#fff"/>
                 <path d="M4.574 4.474a.9.9 0 0 1 .9-.9h13.904c.271 0 .528.123.699.334.17.211.237.488.18.754l-1.406 6.596c-.078.368-.376.648-.747.702l-.428.063c-.272.04-.663.1-1.133.17-1.858.277-4.438.682-6.538 1.014l-.07.013c-.253.05-.522.116-.687.161-.053.016-.075.024-.075.024l-.004.002c-.268.123-.443.383-.443.683 0 .41.342.754.758.754H18.015a.9.9 0 1 1 0 1.8H7.33c-1.407 0-2.558-1.146-2.558-2.554 0-1.035.614-1.914 1.487-2.317.203-.095.475-.162.62-.196l.343-.077C7.638 11.726 10.298 11.317 12.79 10.94l.943-.14 1.044-4.926H5.474a.9.9 0 0 1-.9-.9Z" fill="#fff"/>
               </svg>
-              {product.is_subscription ? '申し込む' : '購入手続きへ'}
+              {isTrial ? `${trialDays}日間 無料で試す` : product.is_subscription ? '申し込む' : '購入手続きへ'}
             </button>
+            {isTrial && (
+              <p class="-mt-1.5 text-center text-[11px] text-gray-400">クレジットカード決済のみ対象（コンビニ払い・AMEX 不可）</p>
+            )}
             </>
           )}
         </div>
@@ -1806,7 +1834,15 @@ lineCopyBtn?.addEventListener('click', () => {
   <div class="flex items-center gap-2">
     <!-- Left: price + shipping + rating -->
     <div class="flex-1 min-w-0">
-      <div class="text-[1.3rem] font-bold leading-none tracking-tight">{formatJPY(product.price)}</div>
+      {isTrial ? (
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-[1.3rem] font-black leading-none tracking-tight text-[var(--primary)]">￥0</span>
+          <span class="text-[11px] text-gray-400 line-through">{formatJPY(product.price)}</span>
+          <span class="rounded-full bg-green-100 px-1.5 py-0.5 text-[9px] font-bold text-green-900">{trialDays}日間無料</span>
+        </div>
+      ) : (
+        <div class="text-[1.3rem] font-bold leading-none tracking-tight">{formatJPY(product.price)}</div>
+      )}
       <div class="mt-1 flex items-center gap-1 text-[10px] text-stone-500 flex-wrap leading-none">
         {product.product_type !== 'digital' && (
           <span>{product.shipping_payer?.includes('出品者') ? '送料込み' : product.shipping_payer ? '着払い' : ''}</span>
@@ -1875,7 +1911,7 @@ lineCopyBtn?.addEventListener('click', () => {
             <circle cx="16.376" cy="19.674" r="1.688" fill="#fff"/>
             <path d="M4.574 4.474a.9.9 0 0 1 .9-.9h13.904c.271 0 .528.123.699.334.17.211.237.488.18.754l-1.406 6.596c-.078.368-.376.648-.747.702l-.428.063c-.272.04-.663.1-1.133.17-1.858.277-4.438.682-6.538 1.014l-.07.013c-.253.05-.522.116-.687.161-.053.016-.075.024-.075.024l-.004.002c-.268.123-.443.383-.443.683 0 .41.342.754.758.754H18.015a.9.9 0 1 1 0 1.8H7.33c-1.407 0-2.558-1.146-2.558-2.554 0-1.035.614-1.914 1.487-2.317.203-.095.475-.162.62-.196l.343-.077C7.638 11.726 10.298 11.317 12.79 10.94l.943-.14 1.044-4.926H5.474a.9.9 0 0 1-.9-.9Z" fill="#fff"/>
           </svg>
-          {product.is_subscription ? '申し込む' : '購入手続きへ'}
+          {isTrial ? `${trialDays}日間 無料で試す` : product.is_subscription ? '申し込む' : '購入手続きへ'}
         </button>
       )}
       <!-- オーナー用編集ボタン（モバイル）→ JSで表示切替 -->

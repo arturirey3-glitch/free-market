@@ -12,7 +12,7 @@ export const GET: APIRoute = async ({ url }) => {
 
     const { data, error } = await supabase
       .from('products')
-      .select('id,title,price,thumbnail_url,is_pickup')
+      .select('id,title,price,thumbnail_url,is_pickup,trial_enabled,trial_days,is_subscription')
       .eq('status', 'published')
       .eq('is_pickup', false)
       .order('sort_order', { ascending: true, nullsFirst: false })

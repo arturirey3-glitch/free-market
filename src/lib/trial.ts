@@ -57,6 +57,34 @@ export const formatJaDate = (d: Date): string =>
     year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Tokyo',
   });
 
+/** 画面用の短い日付 "9/13"（ゼロ埋めなし・年は出さない）。 */
+export const formatShortDate = (d: Date): string => {
+  const jst = new Date(d.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+  return `${jst.getMonth() + 1}/${jst.getDate()}`;
+};
+
+/**
+ * 商品ページの3ステップ表示に出す日付。
+ * today → arrive(today+発送目安) → charge(arrive+お試し日数)
+ */
+export const trialTimeline = (args: {
+  deliveryDays: unknown; trialDays: unknown; now?: Date;
+}) => {
+  const now = args.now ?? new Date();
+  const deliveryDays = clampDeliveryDays(args.deliveryDays);
+  const trialDays = clampTrialDays(args.trialDays);
+  const arrive = addDays(now, deliveryDays);
+  const charge = computeCaptureDueAt(now, deliveryDays, trialDays);
+  return {
+    trialDays,
+    deliveryDays,
+    today: formatShortDate(now),
+    arrive: formatShortDate(arrive),
+    charge: formatShortDate(charge),
+    chargeDate: charge,
+  };
+};
+
 /**
  * 購入前に必ず見せる文言。改正特商法（定期購入規制）が求める
  * 「無料期間・その後の金額・課金日・解約方法」をひとまとめにする。

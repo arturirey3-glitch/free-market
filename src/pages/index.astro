@@ -38,7 +38,7 @@ try {
   // ピックアップ取得
   const { data: pickupData } = await supabase
     .from('products')
-    .select('id,title,price,thumbnail_url,is_pickup')
+    .select('id,title,price,thumbnail_url,is_pickup,trial_enabled,trial_days,is_subscription')
     .eq('status', 'published')
     .eq('is_pickup', true)
     .order('sort_order', { ascending: true, nullsFirst: false });
@@ -46,7 +46,7 @@ try {
   // 通常商品（初期分）
   const { data, error } = await supabase
     .from('products')
-    .select('id,title,price,thumbnail_url,is_pickup')
+    .select('id,title,price,thumbnail_url,is_pickup,trial_enabled,trial_days,is_subscription')
     .eq('status', 'published')
     .eq('is_pickup', false)
     .order('sort_order', { ascending: true, nullsFirst: false })
@@ -153,17 +153,23 @@ function renderCard(p: any): string {
   const img = p.thumbnail_url
     ? `<img src="${p.thumbnail_url}" alt="${p.title.replace(/"/g, '&quot;')}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" loading="lazy" />`
     : `<div class="flex h-full w-full items-center justify-center text-sm text-[var(--text-placeholder)]">No Image</div>`;
+  // 評価が無い場合も同じ高さの空要素を置き、カード間で行位置を揃える
   const stars = (p.review_count ?? 0) > 0
-    ? `<div class="mt-1 flex items-center gap-0.5 text-[10px] text-[var(--text-secondary)]"><span class="text-[var(--star)]">★</span><span>${Number(p.review_average).toFixed(1)}</span><span>(${p.review_count})</span></div>`
-    : '';
+    ? `<div class="text-[10px] text-[var(--text-secondary)]"><span class="text-[var(--star)]">★</span> ${Number(p.review_average).toFixed(1)} (${p.review_count})</div>`
+    : '<div class="h-[15px]"></div>';
+  const isTrial = !!p.trial_enabled && !p.is_subscription;
+  const trialDays = Math.min(20, Math.max(1, Number(p.trial_days) || 7));
+  const priceRow = isTrial
+    ? `<span class="text-[17px] font-black leading-none text-[var(--primary)]">￥0</span>`
+      + `<span class="text-[11px] text-gray-400 line-through">${formatJPY(p.price)}</span>`
+      + `<span class="rounded-full bg-green-100 px-1.5 py-0.5 text-[9px] font-bold text-green-900">${trialDays}日間無料</span>`
+    : `<span class="text-[17px] font-bold leading-none">${formatJPY(p.price)}</span>`;
   return `
-    <a href="/products/${shortId}" class="card block group">
-      <div class="relative aspect-square w-full bg-[var(--bg-secondary)]">
-        <div class="absolute inset-0 overflow-hidden">${img}</div>
-        <div class="absolute bottom-3 left-0 rounded-r-full bg-black/50 text-white text-base font-bold px-4 py-1.5 leading-tight">${formatJPY(p.price)}</div>
-      </div>
-      <div class="px-2 py-2">
-        <h3 class="text-xs leading-snug line-clamp-2">${p.title}</h3>
+    <a href="/products/${shortId}" class="card group block overflow-hidden rounded-[10px] border border-gray-100">
+      <div class="aspect-square w-full bg-[var(--bg-secondary)]">${img}</div>
+      <div class="flex flex-col gap-1.5 px-2 pb-2.5 pt-2">
+        <h3 class="line-clamp-2 h-[33px] text-[11px] leading-[1.5]">${p.title}</h3>
+        <div class="flex h-5 items-center gap-1.5 whitespace-nowrap">${priceRow}</div>
         ${stars}
       </div>
     </a>`;

@@ -1,5 +1,6 @@
 ---
 import { formatJPY } from '../lib/format';
+import { clampTrialDays } from '../lib/trial';
 
 interface Props {
   product: {
@@ -10,41 +11,56 @@ interface Props {
     is_pickup?: boolean;
     review_count?: number;
     review_average?: number;
+    trial_enabled?: boolean;
+    trial_days?: number | null;
+    is_subscription?: boolean;
     profiles?: { display_name: string | null; avatar_url: string | null };
   };
 }
 
 const { product } = Astro.props;
 const shortId = product.id.slice(0, 8);
+const isTrial = !!product.trial_enabled && !product.is_subscription;
+const trialDays = clampTrialDays(product.trial_days);
+const hasReview = (product.review_count ?? 0) > 0;
 ---
-<a href={`/products/${shortId}`} class="card block group">
-  <div class="relative aspect-square w-full bg-[var(--bg-secondary)]">
-    <div class="absolute inset-0 overflow-hidden">
-      {product.thumbnail_url ? (
-        <img
-          src={product.thumbnail_url}
-          alt={product.title}
-          class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
+<a href={`/products/${shortId}`} class="card group block overflow-hidden rounded-[10px] border border-gray-100">
+  <div class="aspect-square w-full bg-[var(--bg-secondary)]">
+    {product.thumbnail_url ? (
+      <img
+        src={product.thumbnail_url}
+        alt={product.title}
+        class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+        loading="lazy"
+      />
+    ) : (
+      <div class="flex h-full w-full items-center justify-center text-sm text-[var(--text-placeholder)]">
+        No Image
+      </div>
+    )}
+  </div>
+  <div class="flex flex-col gap-1.5 px-2 pb-2.5 pt-2">
+    <!-- 商品名は2行で高さ固定。対象／対象外が混在しても下の行位置が揃う -->
+    <h3 class="line-clamp-2 h-[33px] text-[11px] leading-[1.5]">{product.title}</h3>
+
+    <div class="flex h-5 items-center gap-1.5 whitespace-nowrap">
+      {isTrial ? (
+        <>
+          <span class="text-[17px] font-black leading-none text-[var(--primary)]">￥0</span>
+          <span class="text-[11px] text-gray-400 line-through">{formatJPY(product.price)}</span>
+          <span class="rounded-full bg-green-100 px-1.5 py-0.5 text-[9px] font-bold text-green-900">{trialDays}日間無料</span>
+        </>
       ) : (
-        <div class="flex h-full w-full items-center justify-center text-sm text-[var(--text-placeholder)]">
-          No Image
-        </div>
+        <span class="text-[17px] font-bold leading-none">{formatJPY(product.price)}</span>
       )}
     </div>
-    <div class="absolute bottom-3 left-0 rounded-r-full bg-black/50 text-white text-base font-bold px-4 py-1.5 leading-tight">
-      {formatJPY(product.price)}
-    </div>
-  </div>
-  <div class="px-2 py-2">
-    <h3 class="text-xs leading-snug line-clamp-2">{product.title}</h3>
-    {(product.review_count ?? 0) > 0 && (
-      <div class="mt-1 flex items-center gap-0.5 text-[10px] text-[var(--text-secondary)]">
-        <span class="text-[var(--star)]">★</span>
-        <span>{(product.review_average ?? 0).toFixed(1)}</span>
-        <span>({product.review_count})</span>
+
+    {hasReview ? (
+      <div class="text-[10px] text-[var(--text-secondary)]">
+        <span class="text-[var(--star)]">★</span> {(product.review_average ?? 0).toFixed(1)} ({product.review_count})
       </div>
+    ) : (
+      <div class="h-[15px]"></div>
     )}
   </div>
 </a>

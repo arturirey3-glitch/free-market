@@ -49,7 +49,7 @@ try {
 
   let query = supabase
     .from('products')
-    .select('id,title,price,category,thumbnail_url,is_pickup,profiles:owner_id(display_name,avatar_url)')
+    .select('id,title,price,category,thumbnail_url,is_pickup,profiles:owner_id(display_name,avatar_url),trial_enabled,trial_days,is_subscription')
     .eq('status', 'published')
     .order('is_pickup', { ascending: false })
     .order('sort_order', { ascending: true, nullsFirst: false })
