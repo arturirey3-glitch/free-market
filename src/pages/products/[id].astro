@@ -449,6 +449,27 @@ const jsonLdString = JSON.stringify(jsonLd);
           </div>
         )}
 
+        <!-- お試しの流れ（PC・スマホ共通） -->
+        {isTrial && !isSoldOut && (
+          <div class="mt-5 grid grid-cols-3 overflow-hidden rounded-xl border-[3px] border-double border-[var(--primary)]">
+            <div class="flex flex-col items-center gap-1.5 border-r border-gray-200 px-1.5 pb-4 pt-3.5">
+              <span class="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">1</span>
+              <div class="text-[11px] text-[var(--text-secondary)]">本日 {tl.today}</div>
+              <div class="text-center text-sm font-bold">注文・￥0</div>
+            </div>
+            <div class="flex flex-col items-center gap-1.5 border-r border-gray-200 bg-green-50 px-1.5 pb-4 pt-3.5">
+              <span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--primary)] text-xs font-bold text-white">2</span>
+              <div class="text-center text-[11px] text-[var(--text-secondary)]">到着 {tl.arrive}〜<br />{trialDays}日間</div>
+              <div class="text-center text-sm font-bold text-[var(--primary)]">自宅でお試し</div>
+            </div>
+            <div class="flex flex-col items-center gap-1.5 px-1.5 pb-4 pt-3.5">
+              <span class="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">3</span>
+              <div class="text-[11px] text-[var(--text-secondary)]">お試し終了 {tl.charge}</div>
+              <div class="text-center text-sm font-bold leading-tight">{formatJPY(product.price)} 決済<br /><span class="text-xs font-medium text-[var(--text-secondary)]">返品なら ￥0</span></div>
+            </div>
+          </div>
+        )}
+
         <!-- Buttons (desktop only) -->
         <div class="mt-5 hidden md:flex flex-col gap-3" id="desktop-action-btns">
           {isSoldOut ? (
@@ -457,25 +478,6 @@ const jsonLdString = JSON.stringify(jsonLd);
             </button>
           ) : (
             <>
-            {isTrial && (
-              <div class="grid grid-cols-3 overflow-hidden rounded-xl border-[3px] border-double border-[var(--primary)]">
-                <div class="flex flex-col items-center gap-1.5 border-r border-gray-200 px-1.5 pb-4 pt-3.5">
-                  <span class="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">1</span>
-                  <div class="text-[11px] text-[var(--text-secondary)]">本日 {tl.today}</div>
-                  <div class="text-center text-sm font-bold">注文・￥0</div>
-                </div>
-                <div class="flex flex-col items-center gap-1.5 border-r border-gray-200 bg-green-50 px-1.5 pb-4 pt-3.5">
-                  <span class="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--primary)] text-xs font-bold text-white">2</span>
-                  <div class="text-center text-[11px] text-[var(--text-secondary)]">到着 {tl.arrive}〜<br />{trialDays}日間</div>
-                  <div class="text-center text-sm font-bold text-[var(--primary)]">自宅でお試し</div>
-                </div>
-                <div class="flex flex-col items-center gap-1.5 px-1.5 pb-4 pt-3.5">
-                  <span class="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">3</span>
-                  <div class="text-[11px] text-[var(--text-secondary)]">お試し終了 {tl.charge}</div>
-                  <div class="text-center text-sm font-bold leading-tight">{formatJPY(product.price)} 決済<br /><span class="text-xs font-medium text-[var(--text-secondary)]">返品なら ￥0</span></div>
-                </div>
-              </div>
-            )}
             <button
               class={`inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[var(--primary)] text-white transition-colors hover:bg-[var(--primary-hover)] ${isTrial ? 'h-12 text-[15px] font-bold' : 'h-[44px] px-3 text-sm font-semibold tracking-wide'}`}
               data-checkout
@@ -1835,15 +1837,20 @@ lineCopyBtn?.addEventListener('click', () => {
     <!-- Left: price + shipping + rating -->
     <div class="flex-1 min-w-0">
       {isTrial ? (
-        <div class="flex items-baseline gap-1.5">
+        <div class="flex items-baseline gap-1.5 whitespace-nowrap">
           <span class="text-[1.3rem] font-black leading-none tracking-tight text-[var(--primary)]">￥0</span>
           <span class="text-[11px] text-gray-400 line-through">{formatJPY(product.price)}</span>
-          <span class="rounded-full bg-green-100 px-1.5 py-0.5 text-[9px] font-bold text-green-900">{trialDays}日間無料</span>
         </div>
       ) : (
         <div class="text-[1.3rem] font-bold leading-none tracking-tight">{formatJPY(product.price)}</div>
       )}
-      <div class="mt-1 flex items-center gap-1 text-[10px] text-stone-500 flex-wrap leading-none">
+      <div class="mt-1 flex items-center gap-1 overflow-hidden text-[10px] text-stone-500 whitespace-nowrap leading-none">
+        {isTrial && (
+          <>
+            <span class="font-bold text-[var(--primary)]">{trialDays}日間無料</span>
+            <span class="text-stone-300">·</span>
+          </>
+        )}
         {product.product_type !== 'digital' && (
           <span>{product.shipping_payer?.includes('出品者') ? '送料込み' : product.shipping_payer ? '着払い' : ''}</span>
         )}
