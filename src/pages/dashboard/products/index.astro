@@ -41,7 +41,7 @@ import Toast from '../../../components/Toast.astro';
 
   const { data, error } = await supabase
     .from('products')
-    .select('id,title,price,status,thumbnail_url,created_at,sort_order,is_pickup')
+    .select('id,title,price,status,thumbnail_url,created_at,sort_order,is_pickup,trial_enabled,trial_days,is_subscription,product_type')
     .eq('owner_id', sessionData.session!.user.id)
     .order('sort_order', { ascending: true, nullsFirst: false })
     .order('created_at', { ascending: false });
@@ -57,9 +57,28 @@ import Toast from '../../../components/Toast.astro';
     hint.classList.remove('hidden');
 
     container.innerHTML = `
+      <!-- 一括でお試し対象を切り替えるバー -->
+      <div class="card mb-3 flex flex-wrap items-center gap-3 p-3">
+        <label class="flex items-center gap-2 text-xs font-medium">
+          <input type="checkbox" id="trial-select-all" class="accent-[var(--primary)]" />
+          すべて選択
+        </label>
+        <span id="trial-selected-count" class="text-xs text-[var(--text-secondary)]">0件選択中</span>
+        <div class="ml-auto flex items-center gap-2">
+          <label for="trial-bulk-days" class="text-xs text-[var(--text-secondary)]">お試し</label>
+          <input type="number" id="trial-bulk-days" min="1" max="20" value="7" class="input-field w-16 text-xs py-1" />
+          <span class="text-xs text-[var(--text-secondary)]">日</span>
+          <button id="trial-enable-btn" class="btn-primary text-xs py-1.5 px-3" disabled>お試しを有効化</button>
+          <button id="trial-disable-btn" class="btn-outline text-xs py-1.5 px-3" disabled>無効化</button>
+        </div>
+      </div>
+
       <div id="sortable-list" class="space-y-2">
         ${data.map((p: any, i: number) => `
           <div class="card flex items-center gap-3 p-3 cursor-default" data-id="${p.id}">
+            <!-- 一括選択（お試し対象の切り替え用）。サブスク・デジタル商品は対象外 -->
+            <input type="checkbox" class="trial-select accent-[var(--primary)] shrink-0 disabled:opacity-30"
+              data-id="${p.id}" ${p.is_subscription || p.product_type === 'digital' ? 'disabled title="サブスク・デジタル商品はお試し対象外です"' : ''} />
             <!-- ドラッグハンドル -->
             <div class="drag-handle cursor-grab active:cursor-grabbing text-[var(--text-placeholder)] select-none px-1 shrink-0 text-lg" title="ドラッグして並び替え">⠿</div>
             <!-- 順番 -->
@@ -76,6 +95,7 @@ import Toast from '../../../components/Toast.astro';
               <span class="inline-block mt-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${p.status === 'published' ? 'bg-[var(--primary-light)] text-[var(--primary)]' : 'bg-[var(--bg-secondary)] text-[var(--text-secondary)]'}">
                 ${p.status === 'published' ? '公開中' : '下書き'}
               </span>
+              ${p.trial_enabled ? `<span class="trial-badge inline-block mt-0.5 ml-1 rounded px-1.5 py-0.5 text-[10px] font-medium bg-violet-100 text-violet-700">🎁 ${p.trial_days ?? 7}日お試し</span>` : ''}
             </div>
             <p class="text-sm font-bold shrink-0">¥${Number(p.price).toLocaleString()}</p>
             <div class="flex gap-2 shrink-0">
@@ -211,6 +231,62 @@ import Toast from '../../../components/Toast.astro';
       input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
       input.addEventListener('blur', commit);
     });
+
+    // ── 無料お試しの一括設定 ──────────────────────────────────
+    const selectAll = document.getElementById('trial-select-all') as HTMLInputElement;
+    const countLabel = document.getElementById('trial-selected-count')!;
+    const bulkDays = document.getElementById('trial-bulk-days') as HTMLInputElement;
+    const enableBtn = document.getElementById('trial-enable-btn') as HTMLButtonElement;
+    const disableBtn = document.getElementById('trial-disable-btn') as HTMLButtonElement;
+    const boxes = () => Array.from(container.querySelectorAll<HTMLInputElement>('.trial-select:not(:disabled)'));
+    const selectedIds = () => boxes().filter(b => b.checked).map(b => b.dataset.id!);
+
+    function refreshSelection() {
+      const n = selectedIds().length;
+      countLabel.textContent = `${n}件選択中`;
+      enableBtn.disabled = n === 0;
+      disableBtn.disabled = n === 0;
+      const all = boxes();
+      selectAll.checked = all.length > 0 && n === all.length;
+      selectAll.indeterminate = n > 0 && n < all.length;
+    }
+
+    selectAll.addEventListener('change', () => {
+      boxes().forEach(b => { b.checked = selectAll.checked; });
+      refreshSelection();
+    });
+    boxes().forEach(b => b.addEventListener('change', refreshSelection));
+
+    async function applyTrial(enabled: boolean) {
+      const ids = selectedIds();
+      if (!ids.length) return;
+      const days = Math.min(20, Math.max(1, Number(bulkDays.value) || 7));
+      enableBtn.disabled = true; disableBtn.disabled = true;
+      const patch = enabled ? { trial_enabled: true, trial_days: days } : { trial_enabled: false };
+      const { error } = await supabase.from('products').update(patch).in('id', ids);
+      if (error) {
+        window.showToast?.('error', 'エラー', error.message);
+        refreshSelection();
+        return;
+      }
+      // バッジを描き直す（再読み込みなしで結果が見えるように）
+      ids.forEach(id => {
+        const row = container.querySelector<HTMLElement>(`[data-id="${id}"]`);
+        const info = row?.querySelector('.flex-1');
+        row?.querySelector('.trial-badge')?.remove();
+        if (enabled && info) {
+          info.insertAdjacentHTML('beforeend',
+            `<span class="trial-badge inline-block mt-0.5 ml-1 rounded px-1.5 py-0.5 text-[10px] font-medium bg-violet-100 text-violet-700">🎁 ${days}日お試し</span>`);
+        }
+      });
+      window.showToast?.('success', '更新しました',
+        enabled ? `${ids.length}件を${days}日間のお試し対象にしました` : `${ids.length}件のお試しを解除しました`);
+      refreshSelection();
+    }
+
+    enableBtn.addEventListener('click', () => applyTrial(true));
+    disableBtn.addEventListener('click', () => applyTrial(false));
+    refreshSelection();
 
     // ピックアップトグル
     container.querySelectorAll<HTMLButtonElement>('.pickup-btn').forEach(btn => {
