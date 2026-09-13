@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatJPY, formatRelativeTime } from '../../lib/format';
 import { createSupabaseServer } from '../../lib/supabaseServer';
+import { clampTrialDays, clampDeliveryDays } from '../../lib/trial';
 
 export const prerender = false;
 
@@ -66,9 +67,11 @@ const allImages: string[] = galleryImages.length > 0
 
 const isSoldOut = product.stock === 0;
 // 無料お試し（サブスクとは併用しない）。課金日は購入日＋お届け日数＋お試し日数。
+// 日数の算出は checkout / cron と同じ関数を使う。別実装にすると
+// 「表示は10日後なのに実際は7日後に課金」といったズレが生じる。
 const isTrial = !!product.trial_enabled && !product.is_subscription;
-const trialDays = Math.min(20, Math.max(1, Number(product.trial_days) || 7));
-const trialTotalDays = trialDays + Math.min(14, Math.max(0, Number(product.delivery_time) || 3));
+const trialDays = clampTrialDays(product.trial_days);
+const trialTotalDays = trialDays + clampDeliveryDays(product.delivery_time);
 const isLowStock = product.stock === 1;
 const breadcrumbs: string[] = product.category ? product.category.split(' > ').filter(Boolean) : [];
 

@@ -35,7 +35,15 @@ export const clampTrialDays = (n: unknown): number => {
   return Math.min(v, 20);
 };
 
+/**
+ * 配送日数を正規化する。
+ *
+ * delivery_time は大半の商品で未設定（null）なので、既定値へのフォールバックが要。
+ * Number(null) は 0 になってしまうため、null/undefined/空文字は数値化する前に弾く。
+ * ここが 0 に落ちると商品ページの表示より早く課金してしまう。
+ */
 export const clampDeliveryDays = (n: unknown): number => {
+  if (n === null || n === undefined || n === '') return DEFAULT_DELIVERY_DAYS;
   const v = Math.floor(Number(n));
   if (!Number.isFinite(v) || v < 0) return DEFAULT_DELIVERY_DAYS;
   return Math.min(v, 14);
