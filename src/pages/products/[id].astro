@@ -96,6 +96,17 @@ const showBlackRingGuide = product.id === '84123212-9395-465c-8e64-21f4d5ba837b'
 const ogDescription = showBlackRingGuide
   ? 'ブラックの貼り付け式スマホリング。指を通してスマートフォンを持つときの補助に、角度を変えて動画視聴用のスタンドにも使えます。取り付け方法・使い方・商品の状態を確認して購入できます。'
   : ogBaseDescription.slice(0, 120);
+// note・X・LINE のカード用。¥999 は実際の価格なので変えない。
+// 変えるのは見出しと説明文だけで、検索用の <title> / meta description は
+// SEO Rank Watch の管理対象なのでそのままにする。
+const cardTitle = isTrial
+  ? `【${trialDays}日間 無料でお試し】${product.title} | felikko`
+  : undefined;
+const cardDescription = isTrial
+  ? `ご注文時のお支払いは0円。商品到着後${trialDays}日間お部屋で試して、`
+    + `気に入ったらそのまま約${tl.trialDays + tl.deliveryDays}日後に${formatJPY(product.price)}をお支払い。`
+    + `期間内にご返品いただければ請求は発生しません（返送料はお客様負担・カード決済のみ）。`
+  : undefined;
 const productOgpImages: Record<string, string> = {
   e30d1416: `${siteOrigin}/og/furima-price-tool.png`,
   d2cc1737: `${siteOrigin}/og/furima-alert-tool-square.png?v=20260628-1`,
@@ -216,6 +227,8 @@ const jsonLdString = JSON.stringify(jsonLd);
 <BaseLayout
   title={showBlackRingGuide ? 'スマホリング ブラック｜貼り付け式・スタンド兼用 | felikko' : `${product.title} | felikko`}
   description={ogDescription}
+  ogTitle={cardTitle}
+  ogDescription={cardDescription}
   ogImage={ogImage}
   ogImageWidth={ogImageSize.width}
   ogImageHeight={ogImageSize.height}

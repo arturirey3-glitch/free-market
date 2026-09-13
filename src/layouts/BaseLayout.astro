@@ -10,9 +10,15 @@ interface Props {
   ogUrl?: string;
   ogType?: string;
   jsonLd?: string;
+  // SNS・note のカード専用。<title> と meta description は
+  // 検索用に別管理（SEO Rank Watch の対象）なので上書きしない。
+  ogTitle?: string;
+  ogDescription?: string;
 }
 
-const { title = 'felikko | スタバ・マリメッコ雑貨のフリマ通販', description = 'felikkoはスタバグッズ・マリメッコ・北欧インテリア雑貨を中心としたフリマ通販サイト。即購入OK・送料込みで安心お買い物。', ogImage, ogImageWidth = 1200, ogImageHeight = 630, ogUrl, ogType = 'website', jsonLd } = Astro.props;
+const { title = 'felikko | スタバ・マリメッコ雑貨のフリマ通販', description = 'felikkoはスタバグッズ・マリメッコ・北欧インテリア雑貨を中心としたフリマ通販サイト。即購入OK・送料込みで安心お買い物。', ogImage, ogImageWidth = 1200, ogImageHeight = 630, ogUrl, ogType = 'website', jsonLd, ogTitle, ogDescription } = Astro.props;
+const cardTitle = ogTitle || title;
+const cardDescription = ogDescription || description;
 const siteUrl = 'https://www.felikko.com';
 const canonicalUrl = ogUrl || siteUrl + Astro.url.pathname;
 // Public measurement ID verified against the existing felikko GA4 web stream.
@@ -34,17 +40,17 @@ const GA_ID = /^G-[A-Z0-9]+$/.test(gaMeasurementId) ? gaMeasurementId : '';
     <link rel="stylesheet" href={globalStyles} />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={cardTitle} />
     <meta property="og:site_name" content="felikko" />
     <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonicalUrl} />
-    {description && <meta property="og:description" content={description} />}
+    {cardDescription && <meta property="og:description" content={cardDescription} />}
     {ogImage && <meta property="og:image" content={ogImage} />}
     {ogImage && <meta property="og:image:width" content={String(ogImageWidth)} />}
     {ogImage && <meta property="og:image:height" content={String(ogImageHeight)} />}
     <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
-    <meta name="twitter:title" content={title} />
-    {description && <meta name="twitter:description" content={description} />}
+    <meta name="twitter:title" content={cardTitle} />
+    {cardDescription && <meta name="twitter:description" content={cardDescription} />}
     {ogImage && <meta name="twitter:image" content={ogImage} />}
     <!-- Google Analytics 4 -->
     {GA_ID && (
