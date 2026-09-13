@@ -122,11 +122,51 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     console.log('[webhook] checkout.session.completed payment_status:', session.payment_status, 'email:', buyerEmail);
 
+    // ── 無料お試し: 台帳に記録して cron のキャプチャー対象にする ──
+    // payment_status は与信確保のみだと 'unpaid' のままなので、判定は metadata.trial で行う。
+    const isTrial = meta.trial === 'true';
+    if (isTrial) {
+      try {
+        const { createSupabaseServer } = await import('../../lib/supabaseServer');
+        const { computeCaptureDueAt, clampTrialDays, clampDeliveryDays } = await import('../../lib/trial');
+        const purchasedAt = new Date((session.created ?? Date.now() / 1000) * 1000);
+        const trialDays = clampTrialDays(meta.trial_days);
+        const deliveryDays = clampDeliveryDays(meta.delivery_days);
+        // metadata の予定日を正とし、壊れていたら購入日から再計算する
+        const parsed = meta.capture_due_at ? new Date(meta.capture_due_at) : null;
+        const dueAt = parsed && !Number.isNaN(parsed.getTime())
+          ? parsed
+          : computeCaptureDueAt(purchasedAt, deliveryDays, trialDays);
+
+        await createSupabaseServer().from('trial_orders').upsert({
+          product_id: meta.product_id || null,
+          product_title: productTitle,
+          checkout_session_id: session.id,
+          payment_intent_id: session.payment_intent ?? null,
+          customer_email: buyerEmail ?? null,
+          customer_name: buyerName,
+          amount,
+          quantity: 1,
+          purchased_at: purchasedAt.toISOString(),
+          delivery_days: deliveryDays,
+          trial_days: trialDays,
+          capture_due_at: dueAt.toISOString(),
+          status: 'trialing',
+        }, { onConflict: 'checkout_session_id' });
+      } catch (e) {
+        // 記録に失敗しても Stripe 側の与信は生きている。webhook は 200 を返し、
+        // 取りこぼしは Stripe の未キャプチャー一覧から復旧できるようログに残す。
+        console.error('[webhook] trial_orders upsert failed', session.id, e);
+      }
+    }
+
     await notifyDiscord(
-      session.payment_status === 'paid'
-        ? `💰 商品が購入されました：${productTitle}`
-        : `🏪 コンビニ支払い番号を発行：${productTitle}`,
-      session.payment_status === 'paid' ? 0x2e7d32 : 0xf59e0b,
+      isTrial
+        ? `🎁 無料お試しが開始されました：${productTitle}`
+        : session.payment_status === 'paid'
+          ? `💰 商品が購入されました：${productTitle}`
+          : `🏪 コンビニ支払い番号を発行：${productTitle}`,
+      isTrial ? 0x7c3aed : session.payment_status === 'paid' ? 0x2e7d32 : 0xf59e0b,
       [
         { name: '👤 購入者', value: `${buyerName}（${buyerEmail ?? 'メール不明'}）`, inline: false },
         { name: '💴 金額', value: amountFormatted, inline: true },
@@ -136,7 +176,36 @@ export const POST: APIRoute = async ({ request, locals }) => {
     );
 
     if (buyerEmail) {
-      if (session.payment_status === 'paid') {
+      if (isTrial) {
+        // ── 無料お試し開始 → 課金予定日を明記した案内メール ──
+        // 与信確保のみなので payment_status は 'unpaid'。コンビニ扱いにしないこと。
+        const { computeCaptureDueAt, clampTrialDays, clampDeliveryDays, formatJaDate } = await import('../../lib/trial');
+        const trialDays = clampTrialDays(meta.trial_days);
+        const parsedDue = meta.capture_due_at ? new Date(meta.capture_due_at) : null;
+        const dueAt = parsedDue && !Number.isNaN(parsedDue.getTime())
+          ? parsedDue
+          : computeCaptureDueAt(new Date((session.created ?? Date.now() / 1000) * 1000), clampDeliveryDays(meta.delivery_days), trialDays);
+
+        await sendEmail(buyerEmail, `【felikko】${trialDays}日間の無料お試しを開始しました`, emailLayout(`
+<p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#1a1a1a;">${trialDays}日間、無料でお試しいただけます</p>
+<p style="margin:0 0 24px;font-size:14px;color:#555;">${buyerName} 様、ご注文ありがとうございます。<br><strong>現時点ではまだ請求は発生していません。</strong></p>
+${orderBox(productTitle, sellerName, orderDate, orderId, receiptUrl, amountFormatted)}
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f3ff;border:2px solid #7c3aed;border-radius:12px;margin-bottom:24px;">
+<tr><td style="padding:20px;">
+  <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:#5b21b6;">お支払いについて</p>
+  <p style="margin:0;font-size:13px;color:#555;line-height:1.8;">
+    ・ご購入時にカードの利用枠を確保していますが、<strong>まだ引き落とされていません</strong>。<br>
+    ・商品到着後${trialDays}日間はご自由にお試しください。<br>
+    ・<strong>${formatJaDate(dueAt)}頃に ${amountFormatted} を自動で決済します。</strong><br>
+    ・それまでにご返品いただければ請求は発生しません（確保した利用枠を解放します）。<br>
+    ・ご返品は support@felikko.com またはLINEへご連絡ください。
+  </p>
+</td></tr></table>
+<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;"><tr><td align="center">
+  <a href="${productUrl}" style="display:inline-block;background:#7c3aed;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 36px;border-radius:100px;">商品ページを確認する</a>
+</td></tr></table>
+${lineBlock}`));
+      } else if (session.payment_status === 'paid') {
         // ── カード決済完了 → 購入完了メール ──
         await sendEmail(buyerEmail, '【felikko】ご購入ありがとうございます', emailLayout(`
 <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#1a1a1a;">ご購入ありがとうございます！</p>

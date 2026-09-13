@@ -131,6 +131,28 @@ const { id } = Astro.params;
         </label>
       </div>
 
+      <!-- 無料お試し -->
+      <div id="trial-block" class="rounded-lg border border-[var(--border)] p-3">
+        <label class="flex items-center gap-2 text-sm font-medium">
+          <input type="checkbox" name="trial_enabled" id="trial-enabled" value="true" class="accent-[var(--primary)]" />
+          無料お試しを有効にする
+        </label>
+        <p class="mt-1.5 text-[11px] leading-relaxed text-[var(--text-secondary)]">
+          購入時は請求せずカードの利用枠だけ確保し、お届け後の一定期間が過ぎたら自動で決済します。
+          期間内に返品された場合は請求されません。
+        </p>
+        <div id="trial-days-row" class="mt-2.5 hidden items-center gap-2">
+          <label for="trial-days" class="text-xs text-[var(--text-secondary)]">お試し期間</label>
+          <input type="number" name="trial_days" id="trial-days" min="1" max="20" value="7"
+            class="input-field w-20 text-sm" />
+          <span class="text-xs text-[var(--text-secondary)]">日間（商品到着後）</span>
+        </div>
+        <p id="trial-note" class="mt-2 hidden text-[11px] leading-relaxed text-[var(--text-secondary)]">
+          課金日は「購入日 ＋ お届け日数 ＋ お試し期間」で自動計算されます。
+          お試し中はカード決済のみになり、コンビニ払いとアメリカン・エキスプレスは選べません。
+        </p>
+      </div>
+
       <!-- 購入にあたっての注意 -->
       <div>
         <label class="text-xs text-[var(--text-secondary)]">購入にあたっての注意 <span class="text-[10px] text-[var(--text-placeholder)]">（任意）</span></label>
@@ -215,8 +237,29 @@ const { id } = Astro.params;
     set('shipping_duration', product.shipping_duration);
     set('purchase_notes', product.purchase_notes);
     set('is_subscription', product.is_subscription);
+    set('trial_enabled', product.trial_enabled);
+    set('trial_days', product.trial_days ?? 7);
     set('delivery_time', product.delivery_time ?? 1);
     set('product_type', product.product_type ?? 'physical');
+
+    // ── 無料お試し: チェック時だけ日数入力を出す ──
+    // サブスクとは併用できない（サブスクは毎月課金で、与信確保の対象外）
+    const trialCheckbox = document.getElementById('trial-enabled') as HTMLInputElement;
+    const trialDaysRow = document.getElementById('trial-days-row')!;
+    const trialNote = document.getElementById('trial-note')!;
+    const subsCheckbox = form.querySelector<HTMLInputElement>('input[name="is_subscription"]')!;
+
+    function applyTrialUi() {
+      const on = trialCheckbox.checked && !subsCheckbox.checked;
+      trialDaysRow.classList.toggle('hidden', !on);
+      trialDaysRow.classList.toggle('flex', on);
+      trialNote.classList.toggle('hidden', !on);
+      trialCheckbox.disabled = subsCheckbox.checked;
+      if (subsCheckbox.checked) trialCheckbox.checked = false;
+    }
+    trialCheckbox.addEventListener('change', applyTrialUi);
+    subsCheckbox.addEventListener('change', applyTrialUi);
+    applyTrialUi();
 
     // product_typeに応じてフィールド表示切替
     const fieldsPhysical = document.getElementById('fields-physical')!;
@@ -439,6 +482,9 @@ const { id } = Astro.params;
         delivery_time:    isDigital ? (Number(fd.get('delivery_time')) || 1) : null,
         purchase_notes:   fd.get('purchase_notes') || null,
         is_subscription:  fd.get('is_subscription') === 'true',
+        // サブスクとデジタル商品は与信確保による後払いができないため強制的にオフ
+        trial_enabled:    fd.get('is_subscription') !== 'true' && !isDigital && fd.get('trial_enabled') === 'true',
+        trial_days:       Math.min(20, Math.max(1, Number(fd.get('trial_days')) || 7)),
         thumbnail_url:    thumbnailUrl,
         status:           submitStatus,
       }).eq('id', productId);
