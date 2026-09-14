@@ -94,5 +94,52 @@
     "publicPages": [],
     "channels": [],
     "note": "Purchase counts reflect recorded GA events, not verified Stripe orders. GA dates use property time zone; GSC uses Pacific time."
+  },
+  {
+    "source": "ga4",
+    "propertyId": "534557326",
+    "host": "www.felikko.com",
+    "days": 28,
+    "startDate": "2026-08-14",
+    "endDate": "2026-09-10",
+    "measuredAt": "2026-09-14T02:26:19.970Z",
+    "propertyTimeZone": "Asia/Tokyo",
+    "currencyCode": "JPY",
+    "subjectToThresholding": false,
+    "totals": {
+      "activeUsers": 3,
+      "sessions": 3,
+      "screenPageViews": 10,
+      "ecommercePurchases": 0,
+      "purchaseRevenue": 0
+    },
+    "publicPages": [
+      {
+        "pagePath": "/",
+        "screenPageViews": 7
+      },
+      {
+        "pagePath": "/products/af5a13a9",
+        "screenPageViews": 1
+      }
+    ],
+    "channels": [
+      {
+        "sessionDefaultChannelGroup": "Direct",
+        "sessions": 1,
+        "activeUsers": 1
+      },
+      {
+        "sessionDefaultChannelGroup": "Organic Search",
+        "sessions": 1,
+        "activeUsers": 1
+      },
+      {
+        "sessionDefaultChannelGroup": "Referral",
+        "sessions": 1,
+        "activeUsers": 1
+      }
+    ],
+    "note": "Purchase counts reflect recorded GA events, not verified Stripe orders. GA dates use property time zone; GSC uses Pacific time."
   }
 ]
