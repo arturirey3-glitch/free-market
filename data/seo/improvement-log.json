@@ -53,5 +53,49 @@
     ],
     "status": "observing",
     "nextReviewDate": "2026-09-19T03:17:17.392Z"
+  },
+  {
+    "keyword": "玄関マット 40×60",
+    "targetPath": "/products/2e94330a",
+    "actions": [
+      {
+        "keyword": "玄関マット 40×60",
+        "targetPath": "/products/2e94330a",
+        "needs": "自宅の玄関に合う40×60cmのマットを探し、設置寸法や裏面仕様、手入れ方法を確認して購入したい。",
+        "gap": "Web検索の上位に現れたIKEAの2商品は寸法・裏面素材・手入れ方法を明示。対象ページは仕様が長い説明に埋もれ、厚さと洗濯可否の記載がない。検索結果の順序は概算でありGoogle実測順位ではない。",
+        "done": "対象商品のみに説明冒頭の案内を追加。既存説明に基づく40×60cm・玄関/キッチン用途・裏面不織布とゴム製滑り止めを整理し、設置寸法とドア下のすき間の確認、未記載の厚さ・洗濯可否を既存商品コメント欄で質問するリンクを掲載。",
+        "method": "product-sizing-and-care-confirmation-guide",
+        "sources": [
+          "https://www.ikea.com/jp/ja/p/tiokrona-door-mat-natural-70590146/",
+          "https://www.ikea.com/jp/ja/p/trampa-door-mat-natural-70399044/",
+          "https://www.felikko.com/products/2e94330a"
+        ],
+        "deployedAt": "2026-09-21T01:06:33.049Z",
+        "deploymentEvidence": "Commit 45d2d2b68cdf0f9b4eb52808ab44cd3a887eb5f4 pushed to origin/main via existing Git workflow. Production https://www.felikko.com/products/2e94330a returned HTTP 200 with entrance-mat-guide and all new copy. Title, meta description, robots and canonical unchanged versus pre-edit HTML. Two control products /products/84123212 and /products/86ffd483 returned HTTP 200 without mat guide; their head fields unchanged and existing black-ring guide retained. Timestamp is successful production verification, a conservative cooldown start. Build and 13 related tests passed.",
+        "runId": "2026-09-21",
+        "date": "2026-09-21",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "玄関マット 40×60",
+          "targetPath": "/products/2e94330a",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-09-11",
+          "endDate": "2026-09-17"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-09-28T01:06:33.049Z"
   }
 ]
