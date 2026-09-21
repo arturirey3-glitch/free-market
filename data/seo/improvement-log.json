@@ -38,7 +38,19 @@
         }
       }
     ],
-    "reviews": [],
+    "reviews": [
+      {
+        "reviewedAt": "2026-09-21T01:01:24.581Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-11",
+          "endDate": "2026-09-17"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
+      }
+    ],
     "status": "observing",
     "nextReviewDate": "2026-09-19T03:17:17.392Z"
   }
