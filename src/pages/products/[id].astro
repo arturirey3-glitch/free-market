@@ -93,6 +93,7 @@ const ogBaseDescription = product.description
   : '';
 // One-page SEO experiment; other products retain their existing copy.
 const showBlackRingGuide = product.id === '84123212-9395-465c-8e64-21f4d5ba837b';
+const showEntranceMatGuide = product.id === '2e94330a-1dc7-463d-9b11-7ab1714a00ce';
 const ogDescription = showBlackRingGuide
   ? 'ブラックの貼り付け式スマホリング。指を通してスマートフォンを持つときの補助に、角度を変えて動画視聴用のスタンドにも使えます。取り付け方法・使い方・商品の状態を確認して購入できます。'
   : ogBaseDescription.slice(0, 120);
@@ -649,6 +650,14 @@ const jsonLdString = JSON.stringify(jsonLd);
 
         <!-- Description with expand -->
         <div class="relative mt-8 overflow-hidden text-sm leading-relaxed" id="desc-wrapper">
+          {showEntranceMatGuide && (
+            <section aria-labelledby="entrance-mat-guide" class="mb-6 rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm leading-relaxed">
+              <h3 id="entrance-mat-guide" class="mb-3 font-bold text-[var(--text-primary)]">玄関マット 40×60cm｜サイズと購入前の確認</h3>
+              <p class="mb-3">玄関やキッチンに使える、40cm×60cmのステンドグラス柄マットです。商品説明では、裏面に不織布を使用し、ゴム製の滑り止め加工を施していると案内しています。</p>
+              <p class="mb-3">置きたい場所の幅と奥行きを測り、40cm×60cmのスペースが取れるか確認してください。ドアの開閉範囲に敷く場合は、マットの厚さとドア下のすき間も確認しましょう。</p>
+              <p>厚さや洗濯・水洗いの可否は商品説明に記載がありません。設置場所やお手入れに合うか、購入前に<a href="#product-comments" class="text-blue-600 underline">商品コメント欄で確認する</a>ことができます。</p>
+            </section>
+          )}
           {showBlackRingGuide && (
             <section aria-labelledby="black-ring-guide" class="mb-6 rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm leading-relaxed">
               <h3 id="black-ring-guide" class="mb-3 font-bold text-[var(--text-primary)]">スマホリング ブラックの取り付け方・使い方</h3>
