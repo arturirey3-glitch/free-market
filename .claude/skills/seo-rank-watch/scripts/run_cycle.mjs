@@ -12,9 +12,12 @@ const runner=JSON.parse(fs.readFileSync(a.config,'utf8')),repo=path.resolve(runn
 process.env.GSC_CREDENTIALS_FILE=runner.credentialsFile;
 process.env.GIT_TERMINAL_PROMPT='0';
 process.env.GCM_INTERACTIVE='never';
+const branch=runner.branch || 'main';
+if(!/^[A-Za-z0-9_/-]+$/.test(branch))throw new Error('Invalid runner branch');
 const runtime=path.join(repo,'.seo-runtime');fs.mkdirSync(runtime,{recursive:true});
 const lockPath=path.join(repo,'.seo-cycle.lock');
 let lock;
+let report, reportPath;
 function git(...args) {
   const result=spawnSync('git',args,{cwd:repo,encoding:'utf8',timeout:120000,windowsHide:true});
   if(result.status!==0)throw new Error('Git operation failed: '+args[0]+' (no raw credential-bearing output logged)');
@@ -23,10 +26,13 @@ function git(...args) {
 async function run() {
 try {
   lock=fs.openSync(lockPath,'wx');
+  if(git('branch','--show-current')!==branch)throw new Error('Checkout branch does not match configured production branch');
+  if(!fs.existsSync(runner.codexPath||''))throw new Error('Configured AI executable is missing');
   if(git('status','--porcelain'))throw new Error('Working tree has pending changes; resolve before automated work');
-  if(runner.syncRemote){git('fetch','origin');git('merge','--ff-only','origin/main');}
+  if(runner.syncRemote){git('fetch','origin');git('merge','--ff-only','origin/'+branch);}
   const config=read(repo,'config.json');
-  const runId=localDate(new Date(),config.timeZone),reportPath=path.join(runtime,runId+'.json');
+  const runId=localDate(new Date(),config.timeZone);
+  reportPath=path.join(runtime,runId+'.json');
   if(fs.existsSync(reportPath)&&!a.force) {
     const previous=JSON.parse(fs.readFileSync(reportPath,'utf8'));
     if(previous.completedAt&&['observing_only','agent_finished'].includes(previous.status)) {
@@ -35,7 +41,7 @@ try {
     }
     throw new Error('This daily cycle is incomplete; inspect its report before retrying');
   }
-  const report={runId,startedAt:new Date().toISOString(),status:'measuring'};
+  report={runId,startedAt:new Date().toISOString(),status:'measuring'};
   await locked(repo,async()=>{
     const previous=read(repo,'rank-history.json').filter(x=>x.days===28&&x.source==='gsc'&&
       x.scope.siteUrl===config.siteUrl&&x.scope.country===config.country&&x.scope.device===config.device&&
@@ -67,6 +73,8 @@ try {
   if(fs.existsSync(path.join(repo,'data/seo/analytics-history.json')))dataFiles.push('data/seo/analytics-history.json');
   git('add','--',...dataFiles);
   if(git('diff','--cached','--name-only'))git('commit','-m',`SEO measurement ${runId} [skip ci]`);
+  // Persist measurements remotely even if the subsequent improvement cannot complete.
+  if(runner.syncRemote)git('push','origin','HEAD:'+branch);
   if(report.selection.candidate) {
     if(!runner.codexPath)throw new Error('Candidate found but no AI runner is configured');
     report.status='agent_running';fs.writeFileSync(reportPath,JSON.stringify(report,null,2));
@@ -78,27 +86,32 @@ Preserve the seven-day cooldown and append-only history. Investigate current top
 Do not change noindex, canonical/URL routes or broad page structure; if required, report approval needed and stop.
 Do not use private credentials beyond the configured GSC access and existing Git authentication. Never print secrets or send email/Discord/social posts.
 Do not read unrelated local credential documents. The credential JSON is outside the repository and must never be copied or committed.
-Validate the change, commit only intended files, and ${runner.allowPublish?'push to origin/main using existing Git authentication; confirm production deployment before recording observing':'leave the change as a local draft; do not mark observing'}.
-If tests, authentication or deployment fail, report the blocker. Do not claim unpublished work is an improvement. No unlimited retry loops.
+Validate the change, commit only intended files, and ${runner.allowPublish?'push to origin/'+branch+' using existing Git authentication; confirm production deployment before recording observing':'leave the change as a local draft; do not mark observing'}.
+The runner uses workspace-write with automatic approval review. For Git writes denied by the sandbox, request tool escalation with a concrete justification so the reviewer can evaluate it; do not bypass a rejected review. If tests, authentication or deployment fail, report the blocker. Do not claim unpublished work is an improvement. No unlimited retry loops.
 After confirmed deployment, use seo_watch.mjs record with runId ${runId}, actual deployedAt and deploymentEvidence; commit/push data updates with [skip ci].
 End with a concise Japanese report covering measured changes, intent, actual edits, and next review dates.`;
     const output=path.join(runtime,runId+'-agent.md');
-    const result=spawnSync(runner.codexPath,['--search','-a','never','exec','--sandbox','workspace-write',
+    const result=spawnSync(runner.codexPath,['--search','exec','--approve-for-me',
       '-c','sandbox_workspace_write.network_access=true','-C',repo,'--output-last-message',output,'-'],
       {cwd:repo,input:prompt,encoding:'utf8',timeout:45*60*1000,maxBuffer:32*1024*1024,windowsHide:true});
     if(result.status!==0)throw new Error('AI cycle failed or timed out; inspect the final report and repo state before retrying');
     report.status='agent_finished';report.agentReport=output;
   } else {report.status='observing_only';}
   if(git('status','--porcelain'))throw new Error('Cycle left uncommitted changes; automatic publishing stopped');
-  if(runner.syncRemote)git('push','origin','HEAD:main');
+  if(runner.syncRemote)git('push','origin','HEAD:'+branch);
   report.completedAt=new Date().toISOString();
   report.summaryJa=report.selection.candidate?'候補をAIで確認しました。実際の変更内容はエージェントの報告を参照してください。':'改善候補がないため測定のみ実施しました。サイトの文章は変更していません。';
   report.observing=read(repo,'improvement-log.json').filter(x=>x.status==='observing').map(x=>({keyword:x.keyword,nextReviewDate:x.nextReviewDate}));
   fs.writeFileSync(reportPath,JSON.stringify(report,null,2)+'\n');
+  fs.rmSync(path.join(runtime,'last-failure.json'),{force:true});
   console.log(JSON.stringify(report,null,2));
 } catch(e) {
   const failure={failedAt:new Date().toISOString(),message:e.message};
   fs.writeFileSync(path.join(runtime,'last-failure.json'),JSON.stringify(failure,null,2));
+  if(report && reportPath) {
+    report.failedStage=report.status; report.status='failed'; report.failure=failure;
+    fs.writeFileSync(reportPath,JSON.stringify(report,null,2)+'\n');
+  }
   console.error(e.message);process.exitCode=1;
 } finally {if(lock!==undefined){fs.closeSync(lock);fs.unlinkSync(lockPath);}}
 }
