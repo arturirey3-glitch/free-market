@@ -49,6 +49,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-09-22T00:10:10.945Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-12",
+          "endDate": "2026-09-18"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
