@@ -108,5 +108,49 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-09-28T01:06:33.049Z"
+  },
+  {
+    "keyword": "トイレマット フタカバー セット",
+    "targetPath": "/products/86ffd483",
+    "actions": [
+      {
+        "keyword": "トイレマット フタカバー セット",
+        "targetPath": "/products/86ffd483",
+        "needs": "トイレマットとフタカバーをそろえたい人が、セットの寸法と自宅のトイレへの適合を確認して購入したい。",
+        "gap": "Web検索で上位に現れたニトリの商品ページはセット内容・寸法・適応サイズ・取り付け方式を明記し、エアリゾームの商品ページもセットの寸法と洗濯条件を掲載。対象商品は寸法が長い説明に埋もれ、対応機種・取り付け方法・お手入れ方法の詳細がない。Web検索の順序は概算でGoogle実測順位ではない。",
+        "done": "対象商品の説明冒頭だけに購入前の確認案内を追加。既存の商品説明に基づきマット40×50cm・フタカバー35×44cmと花柄のセットを明示し、床とフタの採寸、メーカー・型番を添えた適合・取り付け方法の質問、お手入れ確認を案内。既存の商品コメント欄にリンク。",
+        "method": "product-set-sizing-and-fit-confirmation-guide",
+        "sources": [
+          "https://www.nitori-net.jp/ec/product/2112100014066-2112100014073s/",
+          "https://www.air-r.jp/products/detail.php?product_id=8015",
+          "https://www.felikko.com/products/86ffd483"
+        ],
+        "runId": "2026-09-22",
+        "deployedAt": "2026-09-22T00:16:57.458Z",
+        "deploymentEvidence": "Commit a76173894a1211bf4b42e15c1b09f0470ec6ca5f pushed to origin/main; GitHub deployment workflow https://github.com/arturirey3-glitch/free-market/actions/runs/35671088984 completed successfully. Production https://www.felikko.com/products/86ffd483 returned HTTP 200 with toilet-mat-guide and all new copy. Title, description, robots and canonical unchanged versus pre-edit HTML on target and controls /products/84123212 and /products/2e94330a; controls retain their existing guides and do not contain the new guide. npm.cmd run build and 10 SEO management tests passed. Timestamp is successful production verification, a conservative cooldown start.",
+        "date": "2026-09-22",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "トイレマット フタカバー セット",
+          "targetPath": "/products/86ffd483",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-09-12",
+          "endDate": "2026-09-18"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-09-29T00:16:57.458Z"
   }
 ]
