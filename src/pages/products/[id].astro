@@ -94,6 +94,7 @@ const ogBaseDescription = product.description
 // One-page SEO experiment; other products retain their existing copy.
 const showBlackRingGuide = product.id === '84123212-9395-465c-8e64-21f4d5ba837b';
 const showEntranceMatGuide = product.id === '2e94330a-1dc7-463d-9b11-7ab1714a00ce';
+const showToiletMatGuide = product.id === '86ffd483-7415-4ff0-bc3a-5dfd1227a5e2';
 const ogDescription = showBlackRingGuide
   ? 'ブラックの貼り付け式スマホリング。指を通してスマートフォンを持つときの補助に、角度を変えて動画視聴用のスタンドにも使えます。取り付け方法・使い方・商品の状態を確認して購入できます。'
   : ogBaseDescription.slice(0, 120);
@@ -650,6 +651,14 @@ const jsonLdString = JSON.stringify(jsonLd);
 
         <!-- Description with expand -->
         <div class="relative mt-8 overflow-hidden text-sm leading-relaxed" id="desc-wrapper">
+          {showToiletMatGuide && (
+            <section aria-labelledby="toilet-mat-guide" class="mb-6 rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm leading-relaxed">
+              <h3 id="toilet-mat-guide" class="mb-3 font-bold text-[var(--text-primary)]">トイレマット・フタカバーセット｜サイズと適合の確認</h3>
+              <p class="mb-3">花柄のトイレマットとフタカバーのセットです。商品説明に記載のサイズは、マットが40cm×50cm、フタカバーが35cm×44cmです。</p>
+              <p class="mb-3">購入前に、便器まわりの床のスペースとフタの縦・横の寸法を測ってください。商品説明では洗浄暖房型・普通型に使用できると案内していますが、対応機種や取り付け方法の詳細は記載されていません。</p>
+              <p>お使いのトイレに合うか不明な場合は、メーカー・型番とフタの寸法を添えて<a href="#product-comments" class="text-blue-600 underline">商品コメント欄で適合・取り付け方法を確認する</a>ことができます。洗濯の可否やお手入れ方法も、購入前に確認してください。</p>
+            </section>
+          )}
           {showEntranceMatGuide && (
             <section aria-labelledby="entrance-mat-guide" class="mb-6 rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm leading-relaxed">
               <h3 id="entrance-mat-guide" class="mb-3 font-bold text-[var(--text-primary)]">玄関マット 40×60cm｜サイズと購入前の確認</h3>
