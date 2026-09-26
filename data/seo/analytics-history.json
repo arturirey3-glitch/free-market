@@ -992,5 +992,213 @@
       }
     ],
     "note": "Purchase counts reflect recorded GA events, not verified Stripe orders. GA dates use property time zone; GSC uses Pacific time."
+  },
+  {
+    "source": "ga4",
+    "propertyId": "534557326",
+    "host": "www.felikko.com",
+    "days": 28,
+    "startDate": "2026-08-26",
+    "endDate": "2026-09-22",
+    "measuredAt": "2026-09-26T00:10:11.944Z",
+    "propertyTimeZone": "Asia/Tokyo",
+    "currencyCode": "JPY",
+    "subjectToThresholding": false,
+    "totals": {
+      "activeUsers": 20,
+      "sessions": 44,
+      "screenPageViews": 282,
+      "ecommercePurchases": 0,
+      "purchaseRevenue": 0
+    },
+    "publicPages": [
+      {
+        "pagePath": "/",
+        "screenPageViews": 80
+      },
+      {
+        "pagePath": "/products/d2837399",
+        "screenPageViews": 30
+      },
+      {
+        "pagePath": "/products",
+        "screenPageViews": 21
+      },
+      {
+        "pagePath": "/products/d1973a22",
+        "screenPageViews": 12
+      },
+      {
+        "pagePath": "/products/af5a13a9",
+        "screenPageViews": 6
+      },
+      {
+        "pagePath": "/products/a9ad72cb",
+        "screenPageViews": 5
+      },
+      {
+        "pagePath": "/products/239562e1",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/5af4e64c",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/e30d1416",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/2ba87b5d",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/2e94330a",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/548a3292",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/b4ddc2c4",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/039a1b87",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/2aeca057",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/3a507ba5",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/5761f720",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/985af052",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/ac0f2019",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/c3b214fe",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/d2cc1737",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/fcf11eb9",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/0c13ce55",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/1d15bd1c",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/1d7284ed",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/27deeec1",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/41692535",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/435264c4",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/5349080e",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/590d76ab",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/5983b6e8",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/5ee64b4f",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/88d9266b",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/97269b92",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/9e51fdd9",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/9e78083a",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/a4d06e39",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/bc8cdd2f",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/d32f96fe",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/e698dadb",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/e905cc89",
+        "screenPageViews": 1
+      }
+    ],
+    "channels": [
+      {
+        "sessionDefaultChannelGroup": "Referral",
+        "sessions": 21,
+        "activeUsers": 9
+      },
+      {
+        "sessionDefaultChannelGroup": "Direct",
+        "sessions": 19,
+        "activeUsers": 12
+      },
+      {
+        "sessionDefaultChannelGroup": "Organic Search",
+        "sessions": 3,
+        "activeUsers": 2
+      },
+      {
+        "sessionDefaultChannelGroup": "Organic Shopping",
+        "sessions": 1,
+        "activeUsers": 1
+      }
+    ],
+    "note": "Purchase counts reflect recorded GA events, not verified Stripe orders. GA dates use property time zone; GSC uses Pacific time."
   }
 ]
