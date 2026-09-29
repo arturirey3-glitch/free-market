@@ -126,6 +126,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-09-29T00:10:08.118Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-19",
+          "endDate": "2026-09-25"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -171,7 +182,19 @@
         }
       }
     ],
-    "reviews": [],
+    "reviews": [
+      {
+        "reviewedAt": "2026-09-29T00:10:08.118Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-19",
+          "endDate": "2026-09-25"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
+      }
+    ],
     "status": "observing",
     "nextReviewDate": "2026-09-28T01:06:33.049Z"
   },
