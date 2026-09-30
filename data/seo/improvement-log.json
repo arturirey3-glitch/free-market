@@ -275,5 +275,49 @@
     ],
     "status": "observing",
     "nextReviewDate": "2026-09-29T00:16:57.458Z"
+  },
+  {
+    "keyword": "マリメッコ トイレマット",
+    "targetPath": "/products/5af4e64c",
+    "actions": [
+      {
+        "keyword": "マリメッコ トイレマット",
+        "targetPath": "/products/5af4e64c",
+        "needs": "柄を指定してトイレマットを探す人が、寸法と単品・セットの違いを確認して購入したい。",
+        "gap": "Web検索上位に現れたマリメッコ公式カテゴリと商品ページは用途・寸法を明示。対象商品の説明にはマットのみの記載とフタカバーの説明が混在しており、販売内容を把握しにくい。Web検索順は概略でGoogle実測順位ではない。ホームへのクルミッ子トート検索は掲載商品との適合を確認できず選択しなかった。",
+        "done": "対象商品の説明冒頭だけに40×50cm・マット単品・フタカバー付属なしを既存説明に基づき明記。混在するフタカバー説明を補足し、設置寸法と未記載のお手入れ方法の確認、既存コメント欄へのリンクを追加。",
+        "method": "product-single-mat-contents-clarification",
+        "sources": [
+          "https://www.marimekko.jp/shop/marimekko/item/list/category_id/228",
+          "https://www.marimekko.jp/shop/marimekko/item/view/shop_product_id/24857",
+          "https://www.felikko.com/products/5af4e64c"
+        ],
+        "runId": "2026-09-30",
+        "deployedAt": "2026-09-30T00:15:30.755Z",
+        "deploymentEvidence": "Commit ab43fa8a16d543fa31bd520cd7dba8e6c0e67610 pushed to origin/main through existing Git workflow. Production https://www.felikko.com/products/5af4e64c returned HTTP 200 with black-toilet-mat-guide and new copy. Title, description, robots and canonical unchanged versus pre-edit HTML. Three control products /products/84123212, /products/2e94330a, /products/86ffd483 return HTTP 200, retain their guides and head fields, and do not contain the new guide. npm run build and 10 SEO management tests passed. Historical observations preserved unchanged. Timestamp is successful production verification, a conservative cooldown start. GitHub workflow https://github.com/arturirey3-glitch/free-market/actions/runs/36649291045 completed successfully.",
+        "date": "2026-09-30",
+        "rankAtAction": 8.5,
+        "baseline": {
+          "keyword": "マリメッコ トイレマット",
+          "targetPath": "/products/5af4e64c",
+          "rank": 8.5,
+          "impressions": 2,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-09-20",
+          "endDate": "2026-09-26"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-10-07T00:15:30.755Z"
   }
 ]
