@@ -16,5 +16,11 @@
     "targetPath": "/products/86ffd483",
     "priority": "high",
     "basis": "既存商品のセット内容に一致。GSCページ別28日実績に1表示あり。語句の順位・検索数は未確認。改善前に検索意図の調査が必要。"
+  },
+  {
+    "keyword": "マリメッコ トイレマット",
+    "targetPath": "/products/5af4e64c",
+    "priority": "normal",
+    "basis": "2026-09-30保存済みGSC28日実績は平均8.5位・2表示。既存説明の40×50cm・マット単品を明確にする候補。"
   }
 ]
