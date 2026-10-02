@@ -385,5 +385,48 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-10-07T00:15:30.755Z"
+  },
+  {
+    "keyword": "スタバクルミッ子トートバッグ",
+    "targetPath": "/",
+    "actions": [
+      {
+        "keyword": "スタバクルミッ子トートバッグ",
+        "targetPath": "/",
+        "needs": "スタバとクルミッ子のトートバッグを探す人が、正式商品名・色と販売掲載状況を確認したい。",
+        "gap": "検索上位に現れたスターバックス公式の商品ページ・発売案内は正式商品名と色を明示。felikkoトップには対象商品の識別案内がなく、サイト内クルミッ子検索は現時点で0件。検索順は概算でGoogle実測順位とは扱わない。",
+        "done": "トップページの既存商品一覧の前に短い案内文を追加。公式の商品名・色が分かる公式ページと、felikko内のクルミッ子商品検索をリンクし、掲載がない場合もあることと購入前の写真・サイズ・状態確認を明記。商品在庫や公式品であるとの断定は追加していない。",
+        "method": "homepage-product-identification-and-listing-lookup",
+        "sources": [
+          "https://menu.starbucks.co.jp/4524785642225",
+          "https://stories.starbucks.co.jp/press/2026/pr-2026-0902-2/"
+        ],
+        "deployedAt": "2026-10-02T00:14:35.316Z",
+        "deploymentEvidence": "Commit 73663a40aff370b6e43dc0190a8aaf725de21bc4 pushed to origin/main. Workflow https://github.com/arturirey3-glitch/free-market/actions/runs/36944908297. Production https://www.felikko.com/ returned HTTP 200 with kurumicco-tote-guide, official product link, internal search link and availability qualification. Title, meta description, robots and canonical match pre-edit HTML. npm run build and 10 SEO tests passed. Timestamp is successful production verification, a conservative cooldown start. Exact seven-day GSC baseline succeeded before page edit; an earlier encoding-corrupted query snapshot was retained unchanged and superseded by the correct exact-query snapshot at 2026-10-02T00:12:00.854Z.",
+        "runId": "2026-10-02",
+        "date": "2026-10-02",
+        "rankAtAction": 8,
+        "baseline": {
+          "keyword": "スタバクルミッ子トートバッグ",
+          "targetPath": "/",
+          "rank": 8,
+          "impressions": 3,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-09-22",
+          "endDate": "2026-09-28"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-10-09T00:14:35.316Z"
   }
 ]
