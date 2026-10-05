@@ -420,24 +420,23 @@ const { id } = Astro.params;
       const buttons = form.querySelectorAll<HTMLButtonElement>('button[type="submit"]');
       buttons.forEach(b => { b.disabled = true; b.textContent = '保存中...'; });
 
-      // 画像：並び順どおりに保存（新規はアップロードしてから）
+      // 画像：並び順どおりに保存し直す
+      // product_images には UPDATE の権限（RLS）がないため、並べた順で新しく登録してから古い行を消す
       const finalUrls: string[] = [];
-      const keptIds = new Set(items.filter(it => it.kind === 'old').map((it: any) => it.id));
-      for (const img of sortedImages) {
-        if (!keptIds.has(img.id)) await supabase.from('product_images').delete().eq('id', img.id);
-      }
       let order = 0;
       for (const it of items) {
-        if (it.kind === 'old') {
-          await supabase.from('product_images').update({ sort_order: order }).eq('id', it.id);
-          finalUrls.push(it.url); order++;
-        } else {
-          const url = await uploadOne(it.file, order);
-          if (!url) continue;
-          await supabase.from('product_images').insert({ product_id: productId, image_url: url, sort_order: order });
-          finalUrls.push(url); order++;
-        }
+        const url = it.kind === 'old' ? it.url : await uploadOne(it.file, order);
+        if (!url) continue;
+        finalUrls.push(url); order++;
       }
+      const rows = finalUrls.map((url, i) => ({ product_id: productId, image_url: url, sort_order: i }));
+      const { error: imgError } = rows.length ? await supabase.from('product_images').insert(rows) : { error: null };
+      if (imgError) {
+        window.showToast?.('error', '画像の保存に失敗しました', imgError.message);
+        buttons.forEach(b => { b.disabled = false; b.textContent = b.value === 'draft' ? '下書きに変更' : '更新する'; });
+        return;
+      }
+      for (const img of sortedImages) await supabase.from('product_images').delete().eq('id', img.id);
       // サムネイル更新（並び順の1枚目）
       const thumbnailUrl = finalUrls[0] || null;
 
