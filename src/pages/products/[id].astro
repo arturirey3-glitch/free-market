@@ -265,8 +265,8 @@ const jsonLdString = JSON.stringify(jsonLd);
 
     <div class="md:flex md:gap-10">
 
-      <!-- LEFT: Images + spec + shipping (desktop) -->
-      <div class="md:w-[560px] md:shrink-0">
+      <!-- LEFT: Images（PCではスクロールしても画像が残る。仕様・配送は右側に表示） -->
+      <div class="md:w-[560px] md:shrink-0 md:self-start [@media(min-width:768px)_and_(min-height:760px)]:sticky [@media(min-width:768px)_and_(min-height:760px)]:top-[96px]">
         {allImages.length > 0 ? (
           <>
             <div class="relative aspect-square bg-[var(--bg-secondary)]">
@@ -314,8 +314,8 @@ const jsonLdString = JSON.stringify(jsonLd);
           <div class="flex aspect-square w-full items-center justify-center bg-[var(--bg-secondary)] text-[var(--text-placeholder)] text-sm">No Image</div>
         )}
 
-        <!-- Spec table (desktop only) -->
-        <div class="mt-5 hidden border-t border-[var(--border-light)] md:block">
+        <!-- Spec table (desktop only) → 右側の表に統一したため非表示 -->
+        <div class="mt-5 hidden border-t border-[var(--border-light)]">
           {product.product_type === 'digital' ? (
             <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
               <dt class="shrink-0 text-sm text-[var(--text-secondary)]">お届け日数</dt>
@@ -335,8 +335,8 @@ const jsonLdString = JSON.stringify(jsonLd);
           )}
         </div>
 
-        <!-- Info section (desktop) -->
-        <div class="hidden border-[var(--border-light)] md:block">
+        <!-- Info section (desktop) → 右側に統一したため非表示 -->
+        <div class="hidden border-[var(--border-light)]">
           {product.product_type === 'digital' ? (
             <>
               {product.purchase_notes && (
@@ -529,8 +529,8 @@ const jsonLdString = JSON.stringify(jsonLd);
           商品を編集する
         </a>
 
-        <!-- Spec table (mobile only) -->
-        <div class="mt-6 border-t border-[var(--border-light)] md:hidden">
+        <!-- Spec table（スマホ・PC共通） -->
+        <div class="mt-6 border-t border-[var(--border-light)]">
           {product.product_type === 'digital' ? (
             <dl class="flex h-[54px] items-center justify-between border-b border-[var(--border-light)]">
               <dt class="shrink-0 text-sm text-[var(--text-secondary)]">お届け日数</dt>
@@ -550,8 +550,8 @@ const jsonLdString = JSON.stringify(jsonLd);
           )}
         </div>
 
-        <!-- Info section (mobile) -->
-        <div class="border-[var(--border-light)] md:hidden">
+        <!-- Info section（スマホ・PC共通） -->
+        <div class="border-[var(--border-light)]">
           {product.product_type === 'digital' ? (
             <>
               {product.purchase_notes && (
