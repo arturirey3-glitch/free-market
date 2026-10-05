@@ -12,6 +12,7 @@ const { id } = Astro.params;
     <div class="flex items-center gap-3 mb-6">
       <a href="/dashboard/products" class="text-xs text-[var(--text-secondary)] hover:text-[var(--primary)]">← 出品一覧</a>
       <h1 class="text-lg font-bold">商品編集</h1>
+      <a href={`/dashboard/products/new?copy=${encodeURIComponent(id ?? '')}`} class="ml-auto btn-outline text-xs py-1.5 px-3" title="この商品をコピーして新規出品">コピーして新規出品</a>
     </div>
 
     <div id="loading" class="py-16 text-center text-sm text-[var(--text-secondary)]">読み込み中...</div>

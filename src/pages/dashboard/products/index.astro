@@ -101,6 +101,7 @@ import Toast from '../../../components/Toast.astro';
             <div class="flex gap-2 shrink-0">
               <button class="pickup-btn shrink-0 rounded border px-2 py-1 text-xs font-medium transition ${p.is_pickup ? 'border-amber-400 bg-amber-50 text-amber-600' : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-amber-400 hover:text-amber-500'}" data-id="${p.id}" data-pickup="${p.is_pickup ? '1' : '0'}">${p.is_pickup ? '⭐ 固定中' : '☆ 固定'}</button>
               <a href="/dashboard/products/${p.id}" class="btn-outline text-xs py-1 px-2">編集</a>
+              <a href="/dashboard/products/new?copy=${p.id}" class="btn-outline text-xs py-1 px-2" title="この商品をコピーして新規出品">コピー</a>
               <button class="btn-danger text-xs py-1 px-2" data-delete="${p.id}">削除</button>
             </div>
           </div>

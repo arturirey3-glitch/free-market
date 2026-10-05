@@ -7,6 +7,8 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
   <Toast />
   <div class="mx-auto max-w-lg px-4 py-6">
     <h1 class="text-lg font-bold mb-6">新規出品</h1>
+    <!-- 出品済みの商品をコピーしたとき（?copy=商品ID）に表示 -->
+    <div id="copy-banner" class="hidden mb-5 rounded-lg border border-[var(--primary)] bg-[var(--primary-light)] px-4 py-3 text-sm"></div>
     <form class="space-y-5" id="product-form">
 
       <!-- 商品タイプ切替 -->
@@ -252,6 +254,9 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
     return urls;
   };
 
+  // コピー元のお試し設定（新規出品画面には入力欄がないので、そのまま引き継ぐ）
+  let copiedTrial: { trial_enabled: boolean; trial_days: number } | null = null;
+
   let submitStatus = 'draft';
   form.querySelectorAll<HTMLButtonElement>('button[name="status"]').forEach((btn) => {
     btn.addEventListener('click', () => { submitStatus = btn.value; });
@@ -285,6 +290,7 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
       product_type: (fd.get('product_type') as string) || 'physical',
       catch_copy: fd.get('catch_copy') as string || null,
       faq: fd.get('faq') as string || null,
+      ...(copiedTrial && fd.get('is_subscription') !== 'true' && fd.get('product_type') !== 'digital' ? copiedTrial : {}),
     }).select().single();
 
     if (error) {
@@ -379,5 +385,60 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
   });
   // 初期スタイル
   setType('physical');
+
+  // ── 出品済みの商品をコピー（?copy=商品ID）──────────────────
+  // 自分の商品だけを読み込み、全項目と画像を入力済みにする。出品は確認してから手動で押す。
+  const copyId = new URLSearchParams(location.search).get('copy');
+  if (copyId && sessionData.session) {
+    const banner = document.getElementById('copy-banner')!;
+    banner.classList.remove('hidden');
+    banner.textContent = 'コピー元の商品を読み込んでいます…';
+    const { data: src, error: srcError } = await supabase
+      .from('products')
+      .select('*, product_images(image_url, sort_order)')
+      .eq('id', copyId)
+      .eq('owner_id', sessionData.session.user.id)
+      .single();
+
+    if (srcError || !src) {
+      banner.textContent = 'コピー元の商品が見つかりませんでした。';
+    } else {
+      setType(src.product_type || 'physical');
+      const setVal = (name: string, value: unknown) => {
+        const el = form.querySelector(`[name="${name}"]`) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | null;
+        if (!el || value === null || value === undefined) return;
+        if (el instanceof HTMLInputElement && el.type === 'checkbox') el.checked = !!value;
+        else el.value = String(value);
+      };
+      for (const name of ['title', 'catch_copy', 'category', 'description', 'condition', 'brand', 'shipping_payer',
+        'shipping_method', 'shipping_from', 'shipping_duration', 'stock', 'delivery_time', 'price', 'is_subscription', 'purchase_notes', 'faq']) {
+        setVal(name, src[name]);
+      }
+      if (src.trial_enabled) copiedTrial = { trial_enabled: true, trial_days: src.trial_days ?? 7 };
+
+      // 画像：コピー元の画像を読み込み、新しい商品用にアップロードし直す（元の商品を消しても残る）
+      const urls = (src.product_images || []).sort((a: any, b: any) => a.sort_order - b.sort_order).map((im: any) => im.image_url);
+      if (!urls.length && src.thumbnail_url) urls.push(src.thumbnail_url);
+      let failed = 0;
+      const files = await Promise.all(urls.slice(0, MAX_IMAGES).map(async (url: string, i: number) => {
+        try {
+          const blob = await (await fetch(url)).blob();
+          const ext = (url.split('?')[0].split('.').pop() || 'jpg').toLowerCase();
+          return new File([blob], `copy_${i}.${ext}`, { type: blob.type || 'image/jpeg' });
+        } catch { failed++; return null; }
+      }));
+      selectedFiles = files.filter((f): f is File => !!f);
+      renderPreviews();
+
+      const title = String(src.title || '');
+      banner.innerHTML = '';
+      const b = document.createElement('b'); b.textContent = `「${title}」をコピーしました。`;
+      banner.appendChild(b);
+      banner.appendChild(document.createTextNode(
+        ` 画像${selectedFiles.length}枚・全項目を入力済みです。内容を確認して「出品する」を押してください。` +
+        (copiedTrial ? `（お試し${copiedTrial.trial_days}日の設定も引き継ぎます）` : '') +
+        (failed ? ` ※画像${failed}枚を読み込めませんでした。` : '')));
+    }
+  }
   </script>
 </BaseLayout>
