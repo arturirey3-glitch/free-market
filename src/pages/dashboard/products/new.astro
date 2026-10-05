@@ -42,7 +42,7 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
           <input type="file" id="image-input" accept="image/*" multiple class="hidden" />
         </div>
         <div id="image-preview" class="mt-2 flex gap-2 flex-wrap"></div>
-        <p class="mt-1 text-[10px] text-[var(--text-placeholder)]">1枚目がサムネイルになります。</p>
+        <p class="mt-1 text-[10px] text-[var(--text-placeholder)]">1枚目がサムネイルになります。画像をドラッグすると順番を変えられます（スマホは長押しして移動）。</p>
       </div>
 
       <!-- 商品名 -->
@@ -179,6 +179,7 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
     </form>
   </div>
 
+  <script is:inline src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   <script>
   import { supabase } from '../../../lib/supabaseClient';
 
@@ -200,9 +201,10 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
     previewContainer.innerHTML = '';
     selectedFiles.forEach((file, i) => {
       const wrapper = document.createElement('div');
-      wrapper.className = 'relative group';
+      wrapper.className = 'relative group cursor-grab active:cursor-grabbing';
       const img = document.createElement('img');
       img.src = URL.createObjectURL(file);
+      img.draggable = false;
       img.className = 'h-20 w-20 rounded-lg object-cover border border-[var(--border-light)]';
       const badge = document.createElement('span');
       badge.className = 'absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--primary)] text-[10px] text-white font-bold';
@@ -221,6 +223,17 @@ import { CATEGORIES, CONDITIONS, SHIPPING_PAYERS, SHIPPING_DURATIONS, PREFECTURE
       previewContainer.appendChild(wrapper);
     });
   };
+
+  // ドラッグで画像の順番を変える（1枚目がサムネイル）
+  (window as any).Sortable?.create(previewContainer, {
+    animation: 150, delay: 150, delayOnTouchOnly: true, ghostClass: 'opacity-40',
+    onEnd: (e: any) => {
+      if (e.oldIndex === e.newIndex) return;
+      const [moved] = selectedFiles.splice(e.oldIndex, 1);
+      selectedFiles.splice(e.newIndex, 0, moved);
+      renderPreviews();
+    },
+  });
 
   const addFiles = (files: FileList | File[]) => {
     const arr = Array.from(files).filter(f => f.type.startsWith('image/'));

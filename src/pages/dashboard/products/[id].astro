@@ -31,7 +31,7 @@ const { id } = Astro.params;
           <input type="file" id="image-input" accept="image/*" multiple class="hidden" />
         </div>
         <div id="image-preview" class="mt-2 flex gap-2 flex-wrap"></div>
-        <p class="mt-1 text-[10px] text-[var(--text-placeholder)]">1枚目がサムネイルになります。</p>
+        <p class="mt-1 text-[10px] text-[var(--text-placeholder)]">1枚目がサムネイルになります。画像をドラッグすると順番を変えられます（スマホは長押しして移動）。</p>
       </div>
 
       <!-- product_type hidden -->
@@ -187,6 +187,7 @@ const { id } = Astro.params;
     </form>
   </div>
 
+  <script is:inline src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
   <script>
   import { supabase } from '../../../lib/supabaseClient';
 
@@ -283,74 +284,55 @@ const { id } = Astro.params;
     }
     applyType(product.product_type ?? 'physical');
 
-    // 既存画像表示
+    // 画像（既存＋新規を1つの並びで管理し、ドラッグで並べ替え）
     const existingImagesEl = document.getElementById('existing-images')!;
     const sortedImages = (product.product_images || []).sort((a: any, b: any) => a.sort_order - b.sort_order);
-    let existingImageIds: string[] = sortedImages.map((img: any) => img.id);
+    type ImgItem = { kind: 'old'; id: string; url: string } | { kind: 'new'; file: File; url: string };
+    let items: ImgItem[] = sortedImages.map((img: any) => ({ kind: 'old', id: img.id, url: img.image_url }));
+    const MAX_IMAGES = 20;
 
-    const renderExistingImages = () => {
+    const renderImages = () => {
       existingImagesEl.innerHTML = '';
-      sortedImages
-        .filter((img: any) => existingImageIds.includes(img.id))
-        .forEach((img: any, i: number) => {
-          const wrapper = document.createElement('div');
-          wrapper.className = 'relative group';
-          const image = document.createElement('img');
-          image.src = img.image_url;
-          image.className = 'h-20 w-20 rounded-lg object-cover border border-[var(--border-light)]';
-          const badge = document.createElement('span');
-          badge.className = 'absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--primary)] text-[10px] text-white font-bold';
-          badge.textContent = String(i + 1);
-          const removeBtn = document.createElement('button');
-          removeBtn.type = 'button';
-          removeBtn.className = 'absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--danger)] text-white text-xs leading-none opacity-0 group-hover:opacity-100 transition';
-          removeBtn.textContent = '×';
-          removeBtn.addEventListener('click', () => {
-            existingImageIds = existingImageIds.filter(id => id !== img.id);
-            renderExistingImages();
-          });
-          wrapper.appendChild(image);
-          wrapper.appendChild(badge);
-          wrapper.appendChild(removeBtn);
-          existingImagesEl.appendChild(wrapper);
-        });
+      items.forEach((it, i) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'relative group cursor-grab active:cursor-grabbing';
+        const image = document.createElement('img');
+        image.src = it.url;
+        image.draggable = false;
+        image.className = 'h-20 w-20 rounded-lg object-cover border border-[var(--border-light)]';
+        const badge = document.createElement('span');
+        badge.className = `absolute -top-1 -left-1 flex h-5 min-w-5 px-1 items-center justify-center rounded-full ${it.kind === 'new' ? 'bg-blue-500' : 'bg-[var(--primary)]'} text-[10px] text-white font-bold`;
+        badge.textContent = it.kind === 'new' ? `${i + 1}新` : String(i + 1);
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--danger)] text-white text-xs leading-none opacity-0 group-hover:opacity-100 transition';
+        removeBtn.textContent = '×';
+        removeBtn.addEventListener('click', () => { items.splice(i, 1); renderImages(); });
+        wrapper.appendChild(image); wrapper.appendChild(badge); wrapper.appendChild(removeBtn);
+        existingImagesEl.appendChild(wrapper);
+      });
     };
-    renderExistingImages();
+    renderImages();
+    (window as any).Sortable?.create(existingImagesEl, {
+      animation: 150, delay: 150, delayOnTouchOnly: true, ghostClass: 'opacity-40',
+      onEnd: (e: any) => {
+        if (e.oldIndex === e.newIndex) return;
+        const [moved] = items.splice(e.oldIndex, 1);
+        items.splice(e.newIndex, 0, moved);
+        renderImages();
+      },
+    });
 
     // 新規画像追加
     const dropZone = document.getElementById('drop-zone')!;
     const imageInput = document.getElementById('image-input') as HTMLInputElement;
     const selectBtn = document.getElementById('select-images-btn')!;
-    const previewContainer = document.getElementById('image-preview')!;
-    let newFiles: File[] = [];
-    const MAX_IMAGES = 20;
-
-    const renderNewPreviews = () => {
-      previewContainer.innerHTML = '';
-      newFiles.forEach((file, i) => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'relative group';
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        img.className = 'h-20 w-20 rounded-lg object-cover border border-[var(--border-light)]';
-        const badge = document.createElement('span');
-        badge.className = 'absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] text-white font-bold';
-        badge.textContent = '新';
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.className = 'absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--danger)] text-white text-xs leading-none opacity-0 group-hover:opacity-100 transition';
-        removeBtn.textContent = '×';
-        removeBtn.addEventListener('click', () => { newFiles.splice(i, 1); renderNewPreviews(); });
-        wrapper.appendChild(img); wrapper.appendChild(badge); wrapper.appendChild(removeBtn);
-        previewContainer.appendChild(wrapper);
-      });
-    };
 
     const addFiles = (files: FileList | File[]) => {
       const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
-      const remaining = MAX_IMAGES - existingImageIds.length - newFiles.length;
-      newFiles.push(...arr.slice(0, remaining));
-      renderNewPreviews();
+      const remaining = MAX_IMAGES - items.length;
+      for (const file of arr.slice(0, Math.max(0, remaining))) items.push({ kind: 'new', file, url: URL.createObjectURL(file) });
+      renderImages();
     };
 
     selectBtn.addEventListener('click', (e) => { e.preventDefault(); imageInput.click(); });
@@ -362,19 +344,13 @@ const { id } = Astro.params;
       if (e.dataTransfer?.files) addFiles(e.dataTransfer.files);
     });
 
-    // 新規画像アップロード
-    const uploadImages = async (): Promise<string[]> => {
-      const urls: string[] = [];
-      for (let i = 0; i < newFiles.length; i++) {
-        const file = newFiles[i];
-        const ext = file.name.split('.').pop() || 'jpg';
-        const path = `${productId}/edit_${i}_${Date.now()}.${ext}`;
-        const { error } = await supabase.storage.from('product-images').upload(path, file, { upsert: true });
-        if (error) { console.error('Upload error:', error); continue; }
-        const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path);
-        urls.push(urlData.publicUrl);
-      }
-      return urls;
+    // 新規画像アップロード（1枚）
+    const uploadOne = async (file: File, i: number): Promise<string | null> => {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const path = `${productId}/edit_${i}_${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from('product-images').upload(path, file, { upsert: true });
+      if (error) { console.error('Upload error:', error); return null; }
+      return supabase.storage.from('product-images').getPublicUrl(path).data.publicUrl;
     };
 
     // レビューURL発行
@@ -444,28 +420,26 @@ const { id } = Astro.params;
       const buttons = form.querySelectorAll<HTMLButtonElement>('button[type="submit"]');
       buttons.forEach(b => { b.disabled = true; b.textContent = '保存中...'; });
 
-      // 新規画像アップロード
-      const newUrls = newFiles.length > 0 ? await uploadImages() : [];
-
-      // 削除された既存画像をDBから削除
-      const removedIds = sortedImages
-        .filter((img: any) => !existingImageIds.includes(img.id))
-        .map((img: any) => img.id);
-      for (const imgId of removedIds) {
-        await supabase.from('product_images').delete().eq('id', imgId);
+      // 画像：並び順どおりに保存（新規はアップロードしてから）
+      const finalUrls: string[] = [];
+      const keptIds = new Set(items.filter(it => it.kind === 'old').map((it: any) => it.id));
+      for (const img of sortedImages) {
+        if (!keptIds.has(img.id)) await supabase.from('product_images').delete().eq('id', img.id);
       }
-
-      // 新規画像をproduct_imagesに追加
-      const currentCount = existingImageIds.length;
-      if (newUrls.length > 0) {
-        await supabase.from('product_images').insert(
-          newUrls.map((url, i) => ({ product_id: productId, image_url: url, sort_order: currentCount + i }))
-        );
+      let order = 0;
+      for (const it of items) {
+        if (it.kind === 'old') {
+          await supabase.from('product_images').update({ sort_order: order }).eq('id', it.id);
+          finalUrls.push(it.url); order++;
+        } else {
+          const url = await uploadOne(it.file, order);
+          if (!url) continue;
+          await supabase.from('product_images').insert({ product_id: productId, image_url: url, sort_order: order });
+          finalUrls.push(url); order++;
+        }
       }
-
-      // サムネイル更新（残っている最初の画像）
-      const remainingImages = sortedImages.filter((img: any) => existingImageIds.includes(img.id));
-      const thumbnailUrl = remainingImages[0]?.image_url || newUrls[0] || null;
+      // サムネイル更新（並び順の1枚目）
+      const thumbnailUrl = finalUrls[0] || null;
 
       // 商品レコード更新
       const isDigital = fd.get('product_type') === 'digital';
