@@ -214,6 +214,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-07T00:10:10.117Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-27",
+          "endDate": "2026-10-03"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -347,6 +358,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-07T00:10:10.117Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-27",
+          "endDate": "2026-10-03"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -465,6 +487,17 @@
         "window": {
           "startDate": "2026-09-26",
           "endDate": "2026-10-02"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-07T00:10:10.117Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-27",
+          "endDate": "2026-10-03"
         },
         "rank": null,
         "impressions": 0,
