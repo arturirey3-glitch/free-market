@@ -247,6 +247,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-10T00:10:09.523Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-30",
+          "endDate": "2026-10-06"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -413,6 +424,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-10T00:10:09.523Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-30",
+          "endDate": "2026-10-06"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -568,6 +590,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-10T00:10:09.523Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-30",
+          "endDate": "2026-10-06"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -635,6 +668,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-10T00:10:09.523Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-30",
+          "endDate": "2026-10-06"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -679,7 +723,19 @@
         }
       }
     ],
-    "reviews": [],
+    "reviews": [
+      {
+        "reviewedAt": "2026-10-10T00:10:09.523Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-09-30",
+          "endDate": "2026-10-06"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
+      }
+    ],
     "status": "observing",
     "nextReviewDate": "2026-10-09T00:14:35.316Z"
   }
