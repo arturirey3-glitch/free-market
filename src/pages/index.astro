@@ -143,6 +143,8 @@ const grid = document.getElementById('products-grid');
 const wrapper = document.getElementById('load-more-wrapper');
 
 const LIMIT = 50;
+// 下までスクロールしたら自動で次を読み込む（ボタンは押さなくてもよい・念のため残す）
+let autoLoader: IntersectionObserver | null = null;
 
 function formatJPY(price: number) {
   return '￥' + price.toLocaleString('ja-JP');
@@ -197,10 +199,19 @@ btn?.addEventListener('click', async () => {
     } else {
       btn.disabled = false;
       btn.textContent = 'もっと見る';
+      // 読み込んだあとも画面の下が見えていれば、続けて読み込む
+      if (autoLoader && wrapper) { autoLoader.unobserve(wrapper); autoLoader.observe(wrapper); }
     }
   } catch {
     btn.disabled = false;
     btn.textContent = 'もっと見る';
   }
 });
+
+if (btn && wrapper && 'IntersectionObserver' in window) {
+  autoLoader = new IntersectionObserver((entries) => {
+    if (entries.some((e) => e.isIntersecting) && !btn.disabled) btn.click();
+  }, { rootMargin: '600px 0px' });
+  autoLoader.observe(wrapper);
+}
 </script>
