@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { formatJPY, formatRelativeTime } from '../../lib/format';
 import { createSupabaseServer } from '../../lib/supabaseServer';
-import { trialTimeline } from '../../lib/trial';
+import { trialTimeline, TRIAL_OPEN, RETURN_DAYS } from '../../lib/trial';
 
 export const prerender = false;
 
@@ -69,7 +69,7 @@ const isSoldOut = product.stock === 0;
 // 無料お試し（サブスクとは併用しない）。課金日は購入日＋お届け日数＋お試し日数。
 // 日数の算出は checkout / cron と同じ関数を使う。別実装にすると
 // 「表示は10日後なのに実際は7日後に課金」といったズレが生じる。
-const isTrial = !!product.trial_enabled && !product.is_subscription;
+const isTrial = TRIAL_OPEN && !!product.trial_enabled && !product.is_subscription;
 const tl = trialTimeline({ deliveryDays: product.delivery_time, trialDays: product.trial_days });
 const trialDays = tl.trialDays;
 const isLowStock = product.stock === 1;
@@ -169,11 +169,11 @@ const jsonLd: Record<string, any> = {
           hasMerchantReturnPolicy: {
             '@type': 'MerchantReturnPolicy',
             applicableCountry: 'JP',
-            // 不良品・誤送品のみ7日以内に返品可（お客様都合の返品は不可）
+            // 30日返品保証（未使用）。お客様都合の返送料はお客様負担・不良品／誤送品は当店負担
             returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-            merchantReturnDays: 7,
+            merchantReturnDays: RETURN_DAYS,
             returnMethod: 'https://schema.org/ReturnByMail',
-            returnFees: 'https://schema.org/FreeReturn',
+            returnFees: 'https://schema.org/ReturnFeesCustomerResponsibility',
             merchantReturnLink: `${siteOrigin}/law/`,
           },
         }),
@@ -433,6 +433,9 @@ const jsonLdString = JSON.stringify(jsonLd);
             )}
             {product.is_subscription && (
               <span class="rounded bg-[var(--primary-light)] px-2 py-0.5 text-xs font-bold text-[var(--primary)]">月額</span>
+            )}
+            {!product.is_subscription && product.product_type !== 'digital' && (
+              <a href="/law/#returns" class="rounded-full bg-green-100 px-2.5 py-1 text-xs font-bold text-green-900 no-underline">{RETURN_DAYS}日返品保証</a>
             )}
           </div>
         )}

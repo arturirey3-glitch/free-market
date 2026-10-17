@@ -10,6 +10,16 @@ export const AUTH_HOLD_DAYS = 30;
 export const CAPTURE_SAFETY_DAYS = 2;
 
 export const DEFAULT_TRIAL_DAYS = 7;
+
+/**
+ * 無料お試しを受け付けるか（2026-10-17 終了 → 30日返品保証に切り替え）。
+ * false のあいだは、商品に trial_enabled が付いていても、表示も申し込みも通常購入になる。
+ * 申し込み済みのお試しの決済（cron の capture/release）はそのまま動く。
+ */
+export const TRIAL_OPEN = false;
+
+/** 返品保証の日数（商品到着から）。特商法ページ・商品ページ・構造化データで共通。 */
+export const RETURN_DAYS = 30;
 export const DEFAULT_DELIVERY_DAYS = 3;
 
 /**

@@ -138,6 +138,7 @@ try {
 </BaseLayout>
 
 <script>
+import { TRIAL_OPEN } from '../lib/trial';
 const btn = document.getElementById('load-more-btn') as HTMLButtonElement | null;
 const grid = document.getElementById('products-grid');
 const wrapper = document.getElementById('load-more-wrapper');
@@ -159,7 +160,7 @@ function renderCard(p: any): string {
   const stars = (p.review_count ?? 0) > 0
     ? `<div class="text-[10px] text-[var(--text-secondary)]"><span class="text-[var(--star)]">★</span> ${Number(p.review_average).toFixed(1)} (${p.review_count})</div>`
     : '<div class="h-[15px]"></div>';
-  const isTrial = !!p.trial_enabled && !p.is_subscription;
+  const isTrial = TRIAL_OPEN && !!p.trial_enabled && !p.is_subscription;
   const trialDays = Math.min(20, Math.max(1, Number(p.trial_days) || 7));
   const priceRow = isTrial
     ? `<span class="text-[17px] font-black leading-none text-[var(--primary)]">￥0</span>`

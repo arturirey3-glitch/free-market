@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { createSupabaseServer } from '../../lib/supabaseServer';
 import {
+  TRIAL_OPEN,
   computeCaptureDueAt, clampTrialDays, clampDeliveryDays, formatJaDate,
 } from '../../lib/trial';
 
@@ -44,7 +45,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           .select('trial_enabled,trial_days,delivery_time')
           .eq('id', productId)
           .maybeSingle();
-        if (p?.trial_enabled) {
+        if (TRIAL_OPEN && p?.trial_enabled) {
           const days = clampTrialDays(p.trial_days);
           const deliveryDays = clampDeliveryDays(p.delivery_time);
           trial = { days, deliveryDays, dueAt: computeCaptureDueAt(new Date(), deliveryDays, days) };

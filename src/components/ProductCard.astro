@@ -1,6 +1,6 @@
 ---
 import { formatJPY } from '../lib/format';
-import { clampTrialDays } from '../lib/trial';
+import { clampTrialDays, TRIAL_OPEN } from '../lib/trial';
 
 interface Props {
   product: {
@@ -20,7 +20,7 @@ interface Props {
 
 const { product } = Astro.props;
 const shortId = product.id.slice(0, 8);
-const isTrial = !!product.trial_enabled && !product.is_subscription;
+const isTrial = TRIAL_OPEN && !!product.trial_enabled && !product.is_subscription;
 const trialDays = clampTrialDays(product.trial_days);
 const hasReview = (product.review_count ?? 0) > 0;
 ---
