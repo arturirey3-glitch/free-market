@@ -1443,14 +1443,17 @@ let _isAdmin = false;
       const ownerId = (document.getElementById('product-owner-id') as HTMLInputElement)?.value;
       if (ownerId && session.user.id === ownerId) {
         // デスクトップ
-        document.getElementById('desktop-action-btns')?.classList.add('hidden');
+        const desktopBtns = document.getElementById('desktop-action-btns');
+        if (desktopBtns) desktopBtns.style.display = 'none';
         const editDesktop = document.getElementById('owner-edit-btn-desktop');
         editDesktop?.classList.remove('hidden');
         editDesktop?.classList.add('inline-flex');
         // モバイル購入バー内のボタン切替
         const mobileBuyArea = document.getElementById('mobile-buy-area');
         if (mobileBuyArea) {
-          mobileBuyArea.querySelector('[data-checkout]')?.closest('button')?.classList.add('hidden');
+          // 購入ボタン自身に inline-flex が付いていて hidden が効かないので、style で消す
+          const buyBtn = mobileBuyArea.querySelector('[data-checkout]') as HTMLElement | null;
+          if (buyBtn) buyBtn.style.display = 'none';
           const editMobile = document.getElementById('owner-edit-btn-mobile');
           editMobile?.classList.remove('hidden');
           editMobile?.classList.add('inline-flex');
