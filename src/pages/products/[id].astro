@@ -1875,10 +1875,10 @@ lineCopyBtn?.addEventListener('click', () => {
 <div class="h-24 md:hidden"></div>
 
 <!-- Mobile Sticky Buy Bar -->
-<div id="mobile-purchase-bar" class="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white border-t border-[var(--border-light)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] px-3" style="padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px))">
+<div id="mobile-purchase-bar" data-support-avoid class="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white border-t border-[var(--border-light)] shadow-[0_-2px_12px_rgba(0,0,0,0.08)] px-3" style="padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px))">
   <div class="flex items-center gap-2">
-    <!-- Left: price + shipping + rating -->
-    <div class="flex-1 min-w-0">
+    <!-- Left: price + shipping + rating（値段は縮めない：縮めると右のボタンに重なる） -->
+    <div class="shrink-0 whitespace-nowrap">
       {isTrial ? (
         <div class="flex items-baseline gap-1.5 whitespace-nowrap">
           <span class="text-[1.3rem] font-black leading-none tracking-tight text-[var(--primary)]">￥0</span>
@@ -1887,7 +1887,7 @@ lineCopyBtn?.addEventListener('click', () => {
       ) : (
         <div class="text-[1.3rem] font-bold leading-none tracking-tight">{formatJPY(product.price)}</div>
       )}
-      <div class="mt-1 flex items-center gap-1 overflow-hidden text-[10px] text-stone-500 whitespace-nowrap leading-none">
+      <div class="mt-1 flex items-center gap-1 text-[10px] text-stone-500 whitespace-nowrap leading-none">
         {isTrial && (
           <>
             <span class="font-bold text-[var(--primary)]">{trialDays}日間無料</span>
@@ -1907,6 +1907,7 @@ lineCopyBtn?.addEventListener('click', () => {
         )}
       </div>
     </div>
+    <span class="flex-1"></span>
     <!-- Like icon -->
     <button id="like-btn-mobile"
       class="inline-flex items-center gap-1 h-9 px-2.5 rounded-full border border-stone-200 text-stone-500 hover:text-red-400 hover:border-red-300 transition-colors shrink-0"
