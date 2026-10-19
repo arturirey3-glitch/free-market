@@ -66,6 +66,8 @@ const allImages: string[] = galleryImages.length > 0
   : product.thumbnail_url ? [product.thumbnail_url] : [];
 
 const isSoldOut = product.stock === 0;
+// 物販（定期購入以外）はお届け先をこのページのフォームで入力してからお支払いへ
+const ownShipping = product.product_type !== 'digital' && !product.is_subscription;
 // 無料お試し（サブスクとは併用しない）。課金日は購入日＋お届け日数＋お試し日数。
 // 日数の算出は checkout / cron と同じ関数を使う。別実装にすると
 // 「表示は10日後なのに実際は7日後に課金」といったズレが生じる。
@@ -507,6 +509,7 @@ const jsonLdString = JSON.stringify(jsonLd);
               data-seller-name={profile?.display_name ?? ''}
               data-thumbnail={product.thumbnail_url ?? ''}
               data-stock={product.stock ?? ''}
+              data-physical={ownShipping ? '1' : undefined}
             >
               <svg width="18" height="18" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M0.785 1.68C0.785 1.184 1.188.781 1.685.781H3.343c.915 0 1.724.601 1.992 1.481l2.68 9.85c.13.48-.153.975-.632 1.105-.48.13-.975-.153-1.105-.632L3.61 2.779C3.57 2.656 3.458 2.581 3.343 2.581H1.685C1.188 2.581.785 2.178.785 1.681Z" fill="#fff"/>
@@ -1111,36 +1114,92 @@ const jsonLdString = JSON.stringify(jsonLd);
     });
 
     // --- Checkout ---
+    const startCheckout = async (payload: Record<string, unknown>) => {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!data.url) throw new Error(data.error || 'エラーが発生しました');
+      window.location.href = data.url;
+    };
+
+    // 物販：お届け先をこのページで入力してからお支払いへ
+    const shipModal = document.getElementById('ship-modal');
+    // 親要素の重なり順・変形の影響を受けないよう body 直下へ移す
+    if (shipModal) document.body.appendChild(shipModal);
+    const shipForm = document.getElementById('ship-form') as HTMLFormElement | null;
+    const shipError = document.getElementById('ship-error');
+    let shipProduct: Record<string, string> = {};
+    const openShip = () => { shipModal?.classList.remove('hidden'); shipModal?.classList.add('flex'); document.body.style.overflow = 'hidden'; };
+    const closeShip = () => { shipModal?.classList.add('hidden'); shipModal?.classList.remove('flex'); document.body.style.overflow = ''; };
+    document.getElementById('ship-close')?.addEventListener('click', closeShip);
+    shipModal?.addEventListener('click', (e) => { if (e.target === shipModal) closeShip(); });
+
+    const zipInput = shipForm?.elements.namedItem('postal_code') as HTMLInputElement | null;
+    zipInput?.addEventListener('input', async () => {
+      const code = zipInput.value.replace(/[^0-9]/g, '');
+      if (code.length !== 7 || !shipForm) return;
+      try {
+        const r = await (await fetch(`/api/zip?code=${code}`)).json();
+        if (!r.found) return;
+        (shipForm.elements.namedItem('prefecture') as HTMLSelectElement).value = r.pref;
+        const city = shipForm.elements.namedItem('city') as HTMLInputElement;
+        if (!city.value) city.value = r.city;
+        (shipForm.elements.namedItem('line1') as HTMLInputElement).focus();
+      } catch {}
+    });
+
+    shipForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(shipForm);
+      const v = (k: string) => `${fd.get(k) ?? ''}`.trim();
+      const postal = v('postal_code').replace(/[^0-9]/g, '');
+      const phone = v('phone').replace(/[^0-9]/g, '');
+      const showErr = (t: string) => { if (shipError) { shipError.textContent = t; shipError.classList.remove('hidden'); } };
+      shipError?.classList.add('hidden');
+      if (postal.length !== 7) return showErr('郵便番号は7けたの数字で入力してください。');
+      if (phone.length < 10 || phone.length > 11) return showErr('電話番号は10〜11けたの数字で入力してください。');
+      const submit = document.getElementById('ship-submit') as HTMLButtonElement | null;
+      const original = submit?.innerHTML ?? '';
+      if (submit) { submit.disabled = true; submit.textContent = '処理中...'; }
+      try {
+        await startCheckout({
+          ...shipProduct,
+          shipping: {
+            name: `${v('last_name')} ${v('first_name')}`,
+            postal_code: postal,
+            prefecture: v('prefecture'),
+            city: v('city'),
+            line1: v('line1'),
+            phone,
+          },
+        });
+      } catch (err) {
+        showErr(err instanceof Error ? err.message : 'エラーが発生しました');
+        if (submit) { submit.disabled = false; submit.innerHTML = original; }
+      }
+    });
+
     document.querySelectorAll<HTMLButtonElement>('[data-checkout]').forEach((btn) => {
       btn.addEventListener('click', async () => {
+        const payload = {
+          productId: btn.dataset.productId ?? '',
+          sellerName: btn.dataset.sellerName ?? '',
+        };
+        if (btn.dataset.physical === '1' && shipModal) {
+          shipProduct = payload;
+          openShip();
+          return;
+        }
         btn.disabled = true;
         const origHTML = btn.innerHTML;
         btn.textContent = '処理中...';
         try {
-          const res = await fetch('/api/checkout', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              productId: btn.dataset.productId,
-              productTitle: btn.dataset.title,
-              price: Number(btn.dataset.price),
-              mode: btn.dataset.mode,
-              sellerName: btn.dataset.sellerName,
-              thumbnailUrl: btn.dataset.thumbnail,
-              stock: btn.dataset.stock !== '' ? Number(btn.dataset.stock) : null,
-              ...(btn.dataset.paymentMethod ? { paymentMethod: btn.dataset.paymentMethod } : {}),
-            }),
-          });
-          const data = await res.json();
-          if (data.url) {
-            window.location.href = data.url;
-          } else {
-            alert(data.error || 'エラーが発生しました');
-            btn.disabled = false;
-            btn.innerHTML = origHTML;
-          }
-        } catch {
-          alert('エラーが発生しました');
+          await startCheckout(payload);
+        } catch (err) {
+          alert(err instanceof Error ? err.message : 'エラーが発生しました');
           btn.disabled = false;
           btn.innerHTML = origHTML;
         }
@@ -1958,6 +2017,7 @@ lineCopyBtn?.addEventListener('click', () => {
           data-seller-name={profile?.display_name ?? ''}
           data-thumbnail={product.thumbnail_url ?? ''}
           data-stock={product.stock ?? ''}
+          data-physical={ownShipping ? '1' : undefined}
         >
           <svg width="15" height="15" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M0.785 1.68C0.785 1.184 1.188.781 1.685.781H3.343c.915 0 1.724.601 1.992 1.481l2.68 9.85c.13.48-.153.975-.632 1.105-.48.13-.975-.153-1.105-.632L3.61 2.779C3.57 2.656 3.458 2.581 3.343 2.581H1.685C1.188 2.581.785 2.178.785 1.681Z" fill="#fff"/>
@@ -1981,6 +2041,54 @@ lineCopyBtn?.addEventListener('click', () => {
 </div>
 
 <!-- Purchase Success Modal -->
+<!-- お届け先モーダル（物販商品） -->
+{ownShipping && !isSoldOut && (
+<div id="ship-modal" class="fixed inset-0 z-50 hidden items-end justify-center bg-black/60 sm:items-center sm:px-4">
+  <div class="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white p-6 shadow-xl sm:rounded-2xl">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-bold">お届け先情報</h2>
+      <button type="button" id="ship-close" class="flex h-9 w-9 items-center justify-center rounded-full text-2xl leading-none text-[var(--text-secondary)] hover:bg-[var(--bg-secondary,#f5f5f5)]" aria-label="閉じる">×</button>
+    </div>
+    <form id="ship-form" class="mt-5 space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <input name="last_name" placeholder="お名前（姓）" required autocomplete="family-name" class="input-field" />
+          <p class="mt-1 text-right text-xs text-[var(--text-placeholder)]">例）鈴木</p>
+        </div>
+        <div>
+          <input name="first_name" placeholder="お名前（名）" required autocomplete="given-name" class="input-field" />
+          <p class="mt-1 text-right text-xs text-[var(--text-placeholder)]">例）太郎</p>
+        </div>
+      </div>
+        <div>
+          <input name="postal_code" placeholder="郵便番号" required inputmode="numeric" maxlength="8" autocomplete="postal-code" class="input-field" />
+          <p class="mt-1 text-right text-xs text-[var(--text-placeholder)]">例）1066237</p>
+        </div>
+      <div>
+        <select name="prefecture" required class="input-field">
+          <option value="">都道府県を選択してください</option><option value="北海道">北海道</option><option value="青森県">青森県</option><option value="岩手県">岩手県</option><option value="宮城県">宮城県</option><option value="秋田県">秋田県</option><option value="山形県">山形県</option><option value="福島県">福島県</option><option value="茨城県">茨城県</option><option value="栃木県">栃木県</option><option value="群馬県">群馬県</option><option value="埼玉県">埼玉県</option><option value="千葉県">千葉県</option><option value="東京都">東京都</option><option value="神奈川県">神奈川県</option><option value="新潟県">新潟県</option><option value="富山県">富山県</option><option value="石川県">石川県</option><option value="福井県">福井県</option><option value="山梨県">山梨県</option><option value="長野県">長野県</option><option value="岐阜県">岐阜県</option><option value="静岡県">静岡県</option><option value="愛知県">愛知県</option><option value="三重県">三重県</option><option value="滋賀県">滋賀県</option><option value="京都府">京都府</option><option value="大阪府">大阪府</option><option value="兵庫県">兵庫県</option><option value="奈良県">奈良県</option><option value="和歌山県">和歌山県</option><option value="鳥取県">鳥取県</option><option value="島根県">島根県</option><option value="岡山県">岡山県</option><option value="広島県">広島県</option><option value="山口県">山口県</option><option value="徳島県">徳島県</option><option value="香川県">香川県</option><option value="愛媛県">愛媛県</option><option value="高知県">高知県</option><option value="福岡県">福岡県</option><option value="佐賀県">佐賀県</option><option value="長崎県">長崎県</option><option value="熊本県">熊本県</option><option value="大分県">大分県</option><option value="宮崎県">宮崎県</option><option value="鹿児島県">鹿児島県</option><option value="沖縄県">沖縄県</option>
+        </select>
+      </div>
+        <div>
+          <input name="city" placeholder="市区町村" required autocomplete="address-level2" class="input-field" />
+          <p class="mt-1 text-right text-xs text-[var(--text-placeholder)]">例）港区六本木</p>
+        </div>
+        <div>
+          <input name="line1" placeholder="番地・建物名・部屋番号" required autocomplete="address-line1" class="input-field" />
+          <p class="mt-1 text-right text-xs text-[var(--text-placeholder)]">例）3丁目2-1 六本木グランドハイツ307号室</p>
+        </div>
+        <div>
+          <input name="phone" placeholder="電話番号" required type="tel" inputmode="tel" autocomplete="tel" class="input-field" />
+          <p class="mt-1 text-right text-xs text-[var(--text-placeholder)]">例）09012345678</p>
+        </div>
+      <p class="text-xs text-[var(--text-secondary)]">次の画面でお支払い方法を入力します。</p>
+      <p id="ship-error" class="hidden text-sm text-[var(--danger)]"></p>
+      <button type="submit" id="ship-submit" class="inline-flex h-12 w-full items-center justify-center rounded-full bg-[var(--primary)] text-[15px] font-bold text-white transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-60">お支払いへ進む</button>
+    </form>
+  </div>
+</div>
+)}
+
 <div id="purchase-success-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 px-4">
   <div class="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl text-center">
     <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">

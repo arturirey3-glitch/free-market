@@ -172,6 +172,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         { name: '💴 金額', value: amountFormatted, inline: true },
         { name: '🏷 出品者', value: sellerName, inline: true },
         { name: '🧾 注文ID', value: String(orderId || '-'), inline: false },
+        ...(meta.ship_to ? [{ name: '📦 お届け先', value: String(meta.ship_to).replace(/　/g, '\n'), inline: false }] : []),
       ]
     );
 
