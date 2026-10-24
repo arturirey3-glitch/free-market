@@ -80,6 +80,7 @@ test('missing credentials fail rather than generating zero-rank observations',as
 test('page-only measurements remain separate from keyword observations',async()=>{
  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'seo-watch-test-'));
  try {
+  fs.mkdirSync(path.join(repo,'data/seo'),{recursive:true});
   write(repo,'config.json',config);write(repo,'watchwords.json',[w]);
   const got=await measure(repo,{days:28,now},async body=>
    body.dimensions?.length===1&&body.dimensions[0]==='page'
