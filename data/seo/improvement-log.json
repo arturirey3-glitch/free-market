@@ -1508,5 +1508,49 @@
     ],
     "status": "observing",
     "nextReviewDate": "2026-10-09T00:14:35.316Z"
+  },
+  {
+    "keyword": "トイレマット グリーン",
+    "targetPath": "/products/5761f720",
+    "actions": [
+      {
+        "keyword": "トイレマット グリーン",
+        "targetPath": "/products/5761f720",
+        "needs": "グリーンのトイレマットを探す人が、サイズとマット単品かセットかを検索結果で見分けて購入ページに進めるようにする。",
+        "gap": "GSCページ別28日4表示・平均8.75位だが検索語別行は非表示。検索上位のメーカー公式・同種マットでは色、寸法、単品/セット内容を明示。対象ページの従来meta説明はあいさつと大人気の記述から始まり、40×50cmと単品の情報が検索結果に出にくかった。ページ順位を対象語の順位とは扱わない。",
+        "done": "対象商品だけのtitleを「トイレマット グリーン 40×50cm｜マット単品 | felikko」に変更。descriptionにグリーン、40×50cm、マット単品、フタカバーなし、既存説明にある裏面の仕様を明記。商品名・価格・画像・購入処理・canonical・他商品・トップの説明は変更なし。",
+        "method": "target-specific-search-snippet",
+        "sources": [
+          "https://www.senko-online.com/view/category/SC22",
+          "https://yokozuna-cre.jp/img/item_toilet/chamfle.pdf",
+          "https://www.felikko.com/products/5761f720"
+        ],
+        "deployedAt": "2026-10-24T04:27:21.379343+00:00",
+        "deploymentEvidence": "GitHub main dd113a9d7e3845852d2c3421baa5f2645d1be55d; workflow 40062316279 completed success. Production HTTP200 and exact title/description verified. Canonical unchanged; Product JSON-LD except intended description unchanged; homepage and two control products retain their metadata. npm run build and 13 SEO tests passed.",
+        "runId": "2026-10-24",
+        "date": "2026-10-24",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "トイレマット グリーン",
+          "targetPath": "/products/5761f720",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-10-14",
+          "endDate": "2026-10-20"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-10-31T04:27:21.379Z"
   }
 ]
