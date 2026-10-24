@@ -98,8 +98,11 @@ const showBlackRingGuide = product.id === '84123212-9395-465c-8e64-21f4d5ba837b'
 const showEntranceMatGuide = product.id === '2e94330a-1dc7-463d-9b11-7ab1714a00ce';
 const showToiletMatGuide = product.id === '86ffd483-7415-4ff0-bc3a-5dfd1227a5e2';
 const showBlackToiletMatGuide = product.id === '5af4e64c-2f6d-4e54-8f58-f3d29d961bea';
+const showGreenToiletMatMeta = product.id.slice(0, 8) === '5761f720';
 const ogDescription = showBlackRingGuide
   ? 'ブラックの貼り付け式スマホリング。指を通してスマートフォンを持つときの補助に、角度を変えて動画視聴用のスタンドにも使えます。取り付け方法・使い方・商品の状態を確認して購入できます。'
+  : showGreenToiletMatMeta
+  ? 'グリーンのトイレマット、40×50cmのマット単品です。フタカバーは付属しません。裏面には不織布と滑り止め加工。商品写真・サイズ・配送方法を確認して購入できます。'
   : ogBaseDescription.slice(0, 120);
 // note・X・LINE のカード用。¥999 は実際の価格なので変えない。
 // 変えるのは見出しと説明文だけで、検索用の <title> / meta description は
@@ -230,7 +233,7 @@ const jsonLdString = JSON.stringify(jsonLd);
 
 ---
 <BaseLayout
-  title={showBlackRingGuide ? 'スマホリング ブラック｜貼り付け式・スタンド兼用 | felikko' : `${product.title} | felikko`}
+  title={showBlackRingGuide ? 'スマホリング ブラック｜貼り付け式・スタンド兼用 | felikko' : showGreenToiletMatMeta ? 'トイレマット グリーン 40×50cm｜マット単品 | felikko' : `${product.title} | felikko`}
   description={ogDescription}
   ogTitle={cardTitle}
   ogDescription={cardDescription}

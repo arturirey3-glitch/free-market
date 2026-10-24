@@ -36,8 +36,16 @@ export function plan(watch,logs,history,config,now=new Date()) {
     if(group!==null)candidates.push({...w,...m,group,tracked:tracked.has(pair(w))});
   }
   candidates.sort((a,b)=>a.group-b.group||(a.group===0?a.rank-b.rank:b.impressions-a.impressions));
-  return {candidate:candidates[0]||null,candidates,measuredAt:measured.measuredAt,
-    reason:candidates.length?'Choose one after search-intent and gap analysis':'No eligible candidate; observe only'};
+  const blockedDiscoveryPages=new Set(logs.filter(x=>['observing','achieved'].includes(x.status)).map(x=>x.targetPath));
+  const pageCandidates=(measured.pageObservations||[]).filter(x=>
+    /^\/products\/[a-f0-9]{8}$/.test(x.targetPath)&&x.impressions>0&&
+    Number.isFinite(x.rank)&&!blockedDiscoveryPages.has(x.targetPath))
+    .sort((a,b)=>b.impressions-a.impressions||a.rank-b.rank)
+    .map(x=>({targetPath:x.targetPath,impressions:x.impressions,clicks:x.clicks,pageRank:x.rank}));
+  return {candidate:candidates[0]||null,candidates,pageCandidates,
+    discoveryPage:!candidates.length?(pageCandidates[0]||null):null,measuredAt:measured.measuredAt,
+    reason:candidates.length?'Choose one after search-intent and gap analysis':
+      pageCandidates.length?'Inspect a measured product page; verify intent and measure an exact keyword before editing':'No eligible candidate; observe only'};
 }
 export function review(logs,history,config,now=new Date()) {
   const result=structuredClone(logs),reports=[];

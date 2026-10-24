@@ -75,11 +75,14 @@ try {
   if(git('diff','--cached','--name-only'))git('commit','-m',`SEO measurement ${runId} [skip ci]`);
   // Persist measurements remotely even if the subsequent improvement cannot complete.
   if(runner.syncRemote)git('push','origin','HEAD:'+branch);
-  if(report.selection.candidate) {
+  if(report.selection.candidate||report.selection.discoveryPage) {
     if(!runner.codexPath)throw new Error('Candidate found but no AI runner is configured');
     report.status='agent_running';fs.writeFileSync(reportPath,JSON.stringify(report,null,2));
     const prompt=`Read .claude/skills/seo-rank-watch/SKILL.md and perform exactly one SEO improvement cycle for this repository.
 Run ID: ${runId}. Measurement and due reviews have already completed; use today's saved snapshots. For an untracked candidate lacking a seven-day baseline, register the keyword/path and fetch its exact seven-day baseline before any page edit or publication.
+If no query candidate exists, inspect this measured product-page opportunity: ${JSON.stringify(report.selection.discoveryPage||null)}.
+Page-level impressions can include anonymized searches and are NOT keyword-level rankings. Verify the current product facts and a useful search-intent gap with primary sources before selecting ONE natural keyword. Do not invent demand, attributes, reviews or query rankings.
+If a factual, useful gap exists on that unblocked page, register the exact keyword/path as high priority with its evidence, then fetch BOTH a fresh 28-day snapshot and exact seven-day baseline before editing. A null query rank is unknown, not proof of no indexing. Preserve observing/achieved page blocks. If no useful gap exists, report only; do not force an edit.
 The user authorized routine one-keyword SEO improvements and publishing through this site's existing Git workflow.
 GA4 analytics-history.json provides supporting usage context only; GSC remains the ranking source. Missing GA rows are not proof of zero sales; purchase events are not verified orders.
 Preserve the seven-day cooldown and append-only history. Investigate current top 1–3 pages with web search before choosing a useful factual change.
@@ -100,7 +103,7 @@ End with a concise Japanese report covering measured changes, intent, actual edi
   if(git('status','--porcelain'))throw new Error('Cycle left uncommitted changes; automatic publishing stopped');
   if(runner.syncRemote)git('push','origin','HEAD:'+branch);
   report.completedAt=new Date().toISOString();
-  report.summaryJa=report.selection.candidate?'候補をAIで確認しました。実際の変更内容はエージェントの報告を参照してください。':'改善候補がないため測定のみ実施しました。サイトの文章は変更していません。';
+  report.summaryJa=(report.selection.candidate||report.selection.discoveryPage)?'候補をAIで確認しました。実際の変更内容はエージェントの報告を参照してください。':'改善候補がないため測定のみ実施しました。サイトの文章は変更していません。';
   report.observing=read(repo,'improvement-log.json').filter(x=>x.status==='observing').map(x=>({keyword:x.keyword,nextReviewDate:x.nextReviewDate}));
   fs.writeFileSync(reportPath,JSON.stringify(report,null,2)+'\n');
   fs.rmSync(path.join(runtime,'last-failure.json'),{force:true});

@@ -38,6 +38,18 @@ Do not seed fictitious rank data or force a keyword into an empty watchlist. GSC
    ACTION_JSON fields: keyword, targetPath, needs, gap, done, method, sources (1–3 HTTPS URLs), deployedAt (ISO timestamp), deploymentEvidence, runId (the same identifier throughout this cycle). No secrets. The recorder requires an eligible candidate and a pre-change seven-day baseline, enforces one action per runId, and sets observing until deployedAt + 7 full days.
 8. Commit only the intended page change and `data/seo/*.json`. Do not commit credentials, runtime caches, report artifacts or unrelated files. Do not rewrite rank-history. A daily scheduled run should skip edits during observing, even under another keyword for that URL.
 
+## Page-level discovery when queries are anonymized
+
+If there is no eligible query candidate, the runner may return a `discoveryPage` from
+GSC `pageObservations`. Only real product pages with impressions and no observing or
+achieved page block qualify. This is a research opportunity, not a measured keyword
+rank: never substitute the page's average position for a keyword's position.
+Read the current product facts and research the search intent using primary sources.
+Only when a useful factual gap exists, register one natural keyword/path as high
+priority with the evidence, then fetch BOTH 28-day and exact seven-day snapshots
+before editing. Do not mark existing missing-data reviews active, bypass cooldowns,
+force a keyword, or make changes without a useful gap. All other cycle rules apply.
+
 ## Report
 
 Report large comparable position rises/falls; due review results; the chosen keyword and reason; inferred intent; actual changes and publication evidence; observing keywords and nextReviewDate. If no GSC access, no candidate or no complete post-change window, say so and do not claim improvement. Achieved entries are monitored only.

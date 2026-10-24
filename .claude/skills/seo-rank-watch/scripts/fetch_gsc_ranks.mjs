@@ -84,8 +84,17 @@ export async function measure(repo,options={},request) {
   const daily=await request({...base,dimensions:['date'],rowLimit:25000});
   const availableDates=(daily.rows||[]).filter(r=>r.impressions>0).map(r=>r.keys[0]).sort();
   const total=await request({...base,dimensions:[],rowLimit:1});
+  // Query rows omit anonymized searches. Keep page-only evidence separate;
+  // a page position is never reported as the position of an invented query.
+  const pageResponse=await request({...base,dimensions:['page'],rowLimit:25000});
+  const pageObservations=(pageResponse.rows||[]).map(row=>{
+    if(!Array.isArray(row.keys)||row.keys.length!==1)throw new Error('Unexpected page dimensions');
+    const u=new URL(row.keys[0]);
+    if(u.origin!==config.targetOrigin)throw new Error('GSC returned a different page host');
+    return metric(row,null,u.pathname+u.search);
+  });
   return {measuredAt:(options.now||new Date()).toISOString(),source:'gsc',days,...dates,scope,
-    finalized:true,availableDates,totals:metric(total.rows?.[0],null,null),discoveryCapped:capped,discoveryIsExhaustive:false,observations,discovery};
+    finalized:true,availableDates,totals:metric(total.rows?.[0],null,null),discoveryCapped:capped,discoveryIsExhaustive:false,observations,discovery,pageObservations};
 }
 export async function main(argv=process.argv.slice(2)) {
   const a=args(argv),repo=path.resolve(a.repo||'.');

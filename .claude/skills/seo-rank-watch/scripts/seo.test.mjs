@@ -41,6 +41,18 @@ test('empty/stale data creates no candidate; discovery is allowed',()=>{
  assert.equal(plan([w],[],[snapshot(28,{measuredAt:'2026-08-01T00:00:00Z'})],config,now).candidate,null);
  assert.equal(plan([],[],[snapshot(28,{observations:[],discovery:[m]})],config,now).candidate.keyword,w.keyword);
 });
+test('anonymized page evidence can trigger research but never invents a keyword rank',()=>{
+ const page={targetPath:'/products/5761f720',keyword:null,impressions:4,clicks:0,rank:8.75};
+ const s=snapshot(28,{observations:[],discovery:[],pageObservations:[page,
+  {...page,targetPath:'/privacy/',impressions:100},
+  {...page,targetPath:'/products/12345678',impressions:0}]});
+ const p=plan([],[],[s],config,now);
+ assert.equal(p.candidate,null);
+ assert.deepEqual(p.discoveryPage,{targetPath:page.targetPath,impressions:4,clicks:0,pageRank:8.75});
+ assert.equal(plan([],[{targetPath:page.targetPath,status:'observing'}],[s],config,now).discoveryPage,null);
+ assert.equal(plan([],[{targetPath:page.targetPath,status:'achieved'}],[s],config,now).discoveryPage,null);
+ assert.throws(()=>recordAction([],[],[s],config,{...input,targetPath:page.targetPath},now));
+});
 test('record needs baseline/evidence and enforces cooldown and run uniqueness',()=>{
  const r=recordAction([w],[],history,config,input,now);
  assert.equal(r.entry.nextReviewDate,'2026-09-17T02:00:00.000Z');
@@ -64,6 +76,23 @@ test('post-change seven-day review marks measured outcomes only',()=>{
 });
 test('missing credentials fail rather than generating zero-rank observations',async()=>{
  await assert.rejects(accessToken({}),/credentials missing/);
+});
+test('page-only measurements remain separate from keyword observations',async()=>{
+ const repo=fs.mkdtempSync(path.join(os.tmpdir(),'seo-watch-test-'));
+ try {
+  write(repo,'config.json',config);write(repo,'watchwords.json',[w]);
+  const got=await measure(repo,{days:28,now},async body=>
+   body.dimensions?.length===1&&body.dimensions[0]==='page'
+    ? {rows:[{keys:['https://www.example.com/products/5761f720'],position:8.75,impressions:4,clicks:0,ctr:0}]}
+    : {rows:[]});
+  assert.equal(got.observations[0].rank,null);
+  assert.equal(got.pageObservations[0].keyword,null);
+  assert.equal(got.pageObservations[0].impressions,4);
+ } finally {
+  assert.ok(path.resolve(repo).startsWith(path.resolve(os.tmpdir())+path.sep));
+  assert.ok(path.basename(repo).startsWith('seo-watch-test-'));
+  fs.rmSync(repo,{recursive:true,force:true});
+ }
 });
 test('targeted reads preserve nulls; append keeps old observations untouched',async()=>{
  const repo=fs.mkdtempSync(path.join(os.tmpdir(),'seo-watch-test-'));

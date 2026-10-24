@@ -6460,5 +6460,376 @@
       }
     ],
     "discovery": []
+  },
+  {
+    "measuredAt": "2026-10-24T04:23:16.764Z",
+    "source": "gsc",
+    "days": 28,
+    "startDate": "2026-09-23",
+    "endDate": "2026-10-20",
+    "scope": {
+      "siteUrl": "sc-domain:felikko.com",
+      "targetOrigin": "https://www.felikko.com",
+      "country": null,
+      "device": null,
+      "type": "web"
+    },
+    "finalized": true,
+    "availableDates": [
+      "2026-09-26",
+      "2026-09-27",
+      "2026-09-28",
+      "2026-10-03",
+      "2026-10-04",
+      "2026-10-06",
+      "2026-10-09",
+      "2026-10-12",
+      "2026-10-17"
+    ],
+    "totals": {
+      "keyword": null,
+      "targetPath": null,
+      "rank": 12.826086956521738,
+      "impressions": 46,
+      "clicks": 0,
+      "ctr": 0
+    },
+    "discoveryCapped": false,
+    "discoveryIsExhaustive": false,
+    "observations": [
+      {
+        "keyword": "スマホリング ブラック",
+        "targetPath": "/products/84123212",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "玄関マット 40×60",
+        "targetPath": "/products/2e94330a",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット フタカバー セット",
+        "targetPath": "/products/86ffd483",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "マリメッコ トイレマット",
+        "targetPath": "/products/5af4e64c",
+        "rank": 8.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "スタバクルミッ子トートバッグ",
+        "targetPath": "/",
+        "rank": 8,
+        "impressions": 3,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット グリーン",
+        "targetPath": "/products/5761f720",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      }
+    ],
+    "discovery": [
+      {
+        "keyword": "スタバクルミッ子トートバッグ",
+        "targetPath": "/",
+        "rank": 8,
+        "impressions": 3,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "マリメッコ トイレマット",
+        "targetPath": "/products/5af4e64c",
+        "rank": 8.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      }
+    ],
+    "pageObservations": [
+      {
+        "keyword": null,
+        "targetPath": "/",
+        "rank": 3.7777777777777777,
+        "impressions": 9,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/privacy/",
+        "rank": 4.25,
+        "impressions": 4,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products",
+        "rank": 4.75,
+        "impressions": 4,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/1d15bd1c",
+        "rank": 6,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/285c935d",
+        "rank": 29,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/3bbc20c9",
+        "rank": 51.666666666666664,
+        "impressions": 3,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/4c2bc673",
+        "rank": 7.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/534dafa0",
+        "rank": 7,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/5463457e",
+        "rank": 9,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/548a3292",
+        "rank": 2,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/5761f720",
+        "rank": 8.75,
+        "impressions": 4,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/5af4e64c",
+        "rank": 8.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/734ac705",
+        "rank": 7,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/73f905de",
+        "rank": 5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/809fa8fd",
+        "rank": 7,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/84123212",
+        "rank": 18,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/973e5bba",
+        "rank": 8,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/985af052",
+        "rank": 71.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/9a77a931",
+        "rank": 10,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/d32f96fe",
+        "rank": 8.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/daa3c3ee",
+        "rank": 23,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/e8a5178a",
+        "rank": 2,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      }
+    ]
+  },
+  {
+    "measuredAt": "2026-10-24T04:23:19.983Z",
+    "source": "gsc",
+    "days": 7,
+    "startDate": "2026-10-14",
+    "endDate": "2026-10-20",
+    "scope": {
+      "siteUrl": "sc-domain:felikko.com",
+      "targetOrigin": "https://www.felikko.com",
+      "country": null,
+      "device": null,
+      "type": "web"
+    },
+    "finalized": true,
+    "availableDates": [
+      "2026-10-17"
+    ],
+    "totals": {
+      "keyword": null,
+      "targetPath": null,
+      "rank": 7,
+      "impressions": 1,
+      "clicks": 0,
+      "ctr": 0
+    },
+    "discoveryCapped": false,
+    "discoveryIsExhaustive": false,
+    "observations": [
+      {
+        "keyword": "スマホリング ブラック",
+        "targetPath": "/products/84123212",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "玄関マット 40×60",
+        "targetPath": "/products/2e94330a",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット フタカバー セット",
+        "targetPath": "/products/86ffd483",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "マリメッコ トイレマット",
+        "targetPath": "/products/5af4e64c",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "スタバクルミッ子トートバッグ",
+        "targetPath": "/",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット グリーン",
+        "targetPath": "/products/5761f720",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      }
+    ],
+    "discovery": [],
+    "pageObservations": [
+      {
+        "keyword": null,
+        "targetPath": "/products/534dafa0",
+        "rank": 7,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      }
+    ]
   }
 ]
