@@ -412,6 +412,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-25T00:10:11.264Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-15",
+          "endDate": "2026-10-21"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -743,6 +754,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-25T00:10:11.264Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-15",
+          "endDate": "2026-10-21"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -1063,6 +1085,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-25T00:10:11.264Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-15",
+          "endDate": "2026-10-21"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -1295,6 +1328,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-25T00:10:11.264Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-15",
+          "endDate": "2026-10-21"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -1500,6 +1544,17 @@
         "window": {
           "startDate": "2026-10-14",
           "endDate": "2026-10-20"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-10-25T00:10:11.264Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-15",
+          "endDate": "2026-10-21"
         },
         "rank": null,
         "impressions": 0,
