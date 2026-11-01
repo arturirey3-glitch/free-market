@@ -2070,5 +2070,49 @@
     ],
     "status": "observing",
     "nextReviewDate": "2026-10-31T04:27:21.379Z"
+  },
+  {
+    "keyword": "トイレマット フタカバー セット ブラック",
+    "targetPath": "/products/a1e0a45b",
+    "actions": [
+      {
+        "keyword": "トイレマット フタカバー セット ブラック",
+        "targetPath": "/products/a1e0a45b",
+        "needs": "黒いトイレマットとフタカバーを揃えたい人が、セット内容と各寸法を検索段階で確認し、自宅のトイレに合うか検討したい。",
+        "gap": "現行公開商品にはマット40×50cm・フタカバー35×44cmの記載があるが、検索用説明文は挨拶から始まり途切れる。Web検索で上位表示された https://store.shopping.yahoo.co.jp/e-zakkaya/179ss0583.html 、https://www.dinos.co.jp/p/N000434765/ 、https://www.dinos.co.jp/p/N000434767/ はセット内容と寸法を明示（検索順は概算でGoogle実測順位ではない）。メーカー公式もセット内容・寸法の確認を助けている。既存商品ページを一次資料として寸法を確認。他社の素材・適合・機能は転用せず、ブランド正規性も未確認のため新規訴求しない。ページ平均9.33位・3表示は語句順位や需要ではない。登録後に28日・完全一致7日測定を取得、いずれも0表示・順位不明。",
+        "done": "対象商品IDに限定して検索タイトルを『トイレマット・フタカバーセット ブラック｜40×50cm・35×44cm | felikko』へ変更。meta descriptionと同値を使うProduct説明に黒色・セット内容・確認済みの両寸法・既存コメント欄への相談案内を整理した。npm.cmd run build成功、git diff --check成功、過去履歴不変と2件追記を検証。本番で対象の新メタ情報および観察中2商品への非適用を確認。",
+        "method": "product-specific-set-dimensions-search-metadata",
+        "sources": [
+          "https://www.felikko.com/products/a1e0a45b",
+          "https://shop.oka-kk.co.jp/view/item/000000000992",
+          "https://www.oka-kk.co.jp/faq/toiletmat_004/"
+        ],
+        "runId": "2026-11-01",
+        "deployedAt": "2026-11-01T10:12:53.833Z",
+        "deploymentEvidence": "Commit d9ee6f3fba3cccebfd11f40516aa531b0b68de04 pushed to origin/main; GitHub Actions https://github.com/arturirey3-glitch/free-market/actions/runs/41296383379 completed success. Production https://www.felikko.com/products/a1e0a45b returned HTTP 200 with new title, meta description and matching Product description. Observing pages /products/5761f720 and /products/86ffd483 retained their prior title/description. deployedAt is successful production verification time, used conservatively for cooldown.",
+        "date": "2026-11-01",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "トイレマット フタカバー セット ブラック",
+          "targetPath": "/products/a1e0a45b",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-10-23",
+          "endDate": "2026-10-29"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-11-08T10:12:53.833Z"
   }
 ]
