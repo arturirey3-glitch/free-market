@@ -12,6 +12,13 @@ const runner=JSON.parse(fs.readFileSync(a.config,'utf8')),repo=path.resolve(runn
 process.env.GSC_CREDENTIALS_FILE=runner.credentialsFile;
 process.env.GIT_TERMINAL_PROMPT='0';
 process.env.GCM_INTERACTIVE='never';
+// Desktop updates replace versioned CLI directories. Resolve the installed CLI at each run.
+function resolveCodex() {
+  const base=path.join(process.env.LOCALAPPDATA||'', 'OpenAI','Codex','bin');
+  const candidates=fs.existsSync(base)?fs.readdirSync(base).map(n=>path.join(base,n,'codex.exe')).filter(p=>fs.existsSync(p)).sort((a,b)=>fs.statSync(b).mtimeMs-fs.statSync(a).mtimeMs):[];
+  return candidates[0] || (fs.existsSync(runner.codexPath||'')?runner.codexPath:null);
+}
+runner.codexPath=resolveCodex();
 const branch=runner.branch || 'main';
 if(!/^[A-Za-z0-9_/-]+$/.test(branch))throw new Error('Invalid runner branch');
 const runtime=path.join(repo,'.seo-runtime');fs.mkdirSync(runtime,{recursive:true});
@@ -97,7 +104,11 @@ End with a concise Japanese report covering measured changes, intent, actual edi
     const result=spawnSync(runner.codexPath,['--search','exec','--approve-for-me',
       '-c','sandbox_workspace_write.network_access=true','-C',repo,'--output-last-message',output,'-'],
       {cwd:repo,input:prompt,encoding:'utf8',timeout:45*60*1000,maxBuffer:32*1024*1024,windowsHide:true});
-    if(result.status!==0)throw new Error('AI cycle failed or timed out; inspect the final report and repo state before retrying');
+    if(result.status!==0) {
+      const detail={exitCode:result.status,signal:result.signal,errorCode:result.error?.code||null,executable:runner.codexPath};
+      fs.writeFileSync(path.join(runtime,runId+'-agent-failure.json'),JSON.stringify(detail,null,2)+'\n');
+      throw new Error('AI cycle failed: '+JSON.stringify(detail)+'; inspect the final report and repo state before retrying');
+    }
     report.status='agent_finished';report.agentReport=output;
   } else {report.status='observing_only';}
   if(git('status','--porcelain'))throw new Error('Cycle left uncommitted changes; automatic publishing stopped');
