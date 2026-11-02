@@ -25,11 +25,14 @@ try {
       else if (new Date(tokenData.expires_at) < new Date()) { tokenExpired = true; }
       else { tokenValid = true; }
 
-      const isShort = id && id.length === 8;
+      const isShort = id && /^[0-9a-f]{8}$/.test(id);
       if (isShort) {
         const { data } = await supabase
-          .from('products').select('id,title,thumbnail_url').eq('status', 'published');
-        product = data?.find((p: any) => p.id.startsWith(id!)) ?? null;
+          .from('products').select('id,title,thumbnail_url').eq('status', 'published')
+          .gte('id', `${id}-0000-0000-0000-000000000000`)
+          .lte('id', `${id}-ffff-ffff-ffff-ffffffffffff`)
+          .limit(1).maybeSingle();
+        product = data;
       } else {
         const { data } = await supabase
           .from('products').select('id,title,thumbnail_url')

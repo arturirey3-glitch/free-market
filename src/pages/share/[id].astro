@@ -15,9 +15,13 @@ try {
   const supabase = createSupabaseServer();
   const fields = 'id,title,description,price,thumbnail_url,stock,status,is_subscription,product_images(image_url,sort_order)';
 
-  if (id && id.length === 8) {
-    const { data } = await supabase.from('products').select(fields).eq('status', 'published');
-    product = data?.find((p: any) => p.id.startsWith(id)) ?? null;
+  if (id && /^[0-9a-f]{8}$/.test(id)) {
+    const { data } = await supabase.from('products').select(fields)
+      .eq('status', 'published')
+      .gte('id', `${id}-0000-0000-0000-000000000000`)
+      .lte('id', `${id}-ffff-ffff-ffff-ffffffffffff`)
+      .limit(1).maybeSingle();
+    product = data;
   } else if (id) {
     const { data } = await supabase.from('products').select(fields).eq('id', id).eq('status', 'published').single();
     product = data;
