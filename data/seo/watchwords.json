@@ -39,5 +39,11 @@
     "targetPath": "/products/a1e0a45b",
     "priority": "high",
     "basis": "2026-11-01保存済みGSC28日ページ実績は3表示・0クリック・平均9.33位。ページ全体の値で、この語の需要・順位ではない。現行公開商品の黒色、マット40×50cm、フタカバー35×44cmを確認。検索上位表示3ページ（https://store.shopping.yahoo.co.jp/e-zakkaya/179ss0583.html 、https://www.dinos.co.jp/p/N000434765/ 、https://www.dinos.co.jp/p/N000434767/ ）はセット内容・寸法を提示。メーカー一次資料 https://shop.oka-kk.co.jp/view/item/000000000992 も内容と寸法を明示。対象の検索用説明文は挨拶から始まり寸法前後で途切れるため、確認済み寸法とセット内容を検索用見出し・説明文に整理する余地がある。https://www.oka-kk.co.jp/faq/toiletmat_004/ により機種適合は別途確認が必要と理解し、他社商品の適合・素材等を転用しない。ブランド正規性・需要・クエリ順位は未確認。編集前に28日と完全一致7日ベースラインを取得する。"
+  },
+  {
+    "keyword": "キッチンマット ブラック 60×240",
+    "targetPath": "/products/3bbc20c9",
+    "priority": "high",
+    "basis": "2026-11-02保存済みGSC28日ページ実績は3表示・0クリック・平均51.67位。ページ全体の値であり、この語の需要・順位ではない。現行公開商品ページのタイトル・説明・カテゴリでブラック、60×240cm、キッチンマット用途を確認。Web検索上位に表示された公式販売ページ https://shop.oka-kk.co.jp/view/item/000000000225 、 https://kabegamiyahonpo.com/products/jycf-kmat-so-240-cf3550 、 https://www.gekikagu.com/products/cpt000129 は用途・寸法・色を明示（検索順は概略でGoogle実測順位ではない）。対象の検索用説明は挨拶から始まり、用途と寸法を把握しにくいため、確認済みの用途・色・寸法を先に示す余地がある。対象商品の一次資料は https://www.felikko.com/products/3bbc20c9 。他社の素材・洗濯可否・床暖房適合等は転用せず、ブランド正規性も新規訴求しない。初回登録時にPowerShell経由で文字化けした28日観測は履歴を保持し、正しい語の28日・完全一致7日GSCを編集前に再取得する。"
   }
 ]

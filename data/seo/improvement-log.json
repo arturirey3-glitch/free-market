@@ -2114,5 +2114,49 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-11-08T10:12:53.833Z"
+  },
+  {
+    "keyword": "キッチンマット ブラック 60×240",
+    "targetPath": "/products/3bbc20c9",
+    "actions": [
+      {
+        "keyword": "キッチンマット ブラック 60×240",
+        "targetPath": "/products/3bbc20c9",
+        "runId": "2026-11-02",
+        "needs": "黒い60×240cmのキッチンマットを探す人が、検索段階で用途・色・寸法を把握し、設置場所と比較して購入を検討したい。",
+        "gap": "公開商品ページのタイトル・説明・カテゴリを一次資料として用途・ブラック・60×240cmを確認。Web検索で上位に表示された公式販売ページは用途・寸法・色を明示している。対象の検索用説明は挨拶から始まり、用途と寸法をすぐ把握しにくい。検索順は概略でGoogle実測順位ではない。ページ実績3表示・平均51.67位はキーワード順位や需要ではない。高優先度登録後に28日と完全一致7日を取得し、両方0表示・順位不明。未インデックスとは断定しない。初回文字化けの28日観測は保持し正しい語で再取得した。",
+        "done": "商品UUIDの完全一致で対象のみ検索タイトルを「キッチンマット ブラック 60×240cm | felikko」に変更。meta descriptionと同じ値を使うProduct説明に、確認済みの用途・色・寸法、写真と設置寸法の確認、既存コメント欄でのサイズ・色相談を整理。ブランド正規性・他社素材・洗濯可否・床暖房適合等は追加していない。npm run buildとSEOテスト12件、git diff --check成功。既存履歴不変と3件追記を検証。本番HTTP200、新メタ情報、対象のcanonical・robots・説明以外のProduct JSON-LD不変とホーム/観測中3商品のメタ情報不変を確認。",
+        "method": "product-specific-kitchen-mat-size-search-metadata",
+        "sources": [
+          "https://www.felikko.com/products/3bbc20c9",
+          "https://shop.oka-kk.co.jp/view/item/000000000225",
+          "https://kabegamiyahonpo.com/products/jycf-kmat-so-240-cf3550"
+        ],
+        "deployedAt": "2026-11-02T00:14:44.980Z",
+        "deploymentEvidence": "Commit faddf53cd47423968a9857f4ebb4c531f7b30078 pushed to origin/main. GitHub Actions https://github.com/arturirey3-glitch/free-market/actions/runs/41365984701 completed success. Production https://www.felikko.com/products/3bbc20c9 returned HTTP200 with exact new title/meta description and matching Product description. Canonical, robots and all other Product JSON-LD values unchanged. Homepage and observing products /products/5761f720, /products/a1e0a45b, /products/86ffd483 retained their metadata. deployedAt is successful production verification time, conservatively starting cooldown.",
+        "date": "2026-11-02",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "キッチンマット ブラック 60×240",
+          "targetPath": "/products/3bbc20c9",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-10-23",
+          "endDate": "2026-10-29"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-11-09T00:14:44.980Z"
   }
 ]
