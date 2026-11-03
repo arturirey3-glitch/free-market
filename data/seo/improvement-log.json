@@ -2224,5 +2224,49 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-11-09T00:14:44.980Z"
+  },
+  {
+    "keyword": "玄関マット ブラック 40×60",
+    "targetPath": "/products/514797cd",
+    "actions": [
+      {
+        "keyword": "玄関マット ブラック 40×60",
+        "targetPath": "/products/514797cd",
+        "runId": "2026-11-03",
+        "needs": "黒い40×60cmの玄関マットを探す人が、用途・色・寸法を検索段階で把握し、設置場所に合うか比較したい。",
+        "gap": "現行公開商品ページを一次資料としてブラック、40×60cm、玄関・キッチン用途を確認。検索「玄関マット ブラック 40×60」で上位表示のIKEA公式、Pocket Company販売ページ、コーナン公式を調査し、用途・色・寸法を明示する比較意図を確認。検索順は概算でGoogle実測順位ではない。対象の検索タイトルは用途が不明瞭で、説明文は挨拶から始まる。確認済み用途・色・寸法を検索タイトルと説明文の先頭に整理する余地がある。ページ3表示・平均9.33位はキーワード順位や需要ではない。高優先度登録後の28日と完全一致7日GSCはいずれも0表示・順位不明。未インデックスとは判断しない。",
+        "done": "対象商品UUIDの完全一致で検索タイトルを「玄関マット ブラック 40×60cm｜キッチンにも | felikko」に変更。meta descriptionおよび同じ値を使うProduct説明文に、確認済み用途・色・寸法と、写真・設置場所の寸法確認および既存コメント欄への案内を整理。ブランド正規性、他社素材、洗濯可否、屋外適合等は追加していない。npm run build、SEOテスト12件、git diff --check成功。GSC履歴の既存部分不変と2件追記を検証。本番HTTP200・新メタ情報・canonical/robots・説明以外のProduct JSON-LD不変と、観測中8ページのメタ情報不変を確認。",
+        "method": "product-specific-entrance-mat-size-purpose-search-metadata",
+        "sources": [
+          "https://www.felikko.com/products/514797cd",
+          "https://www.ikea.com/jp/ja/p/tagfordon-door-mat-black-dot-pattern-30608073/",
+          "https://store.shopping.yahoo.co.jp/pocketcompany/2236148.html"
+        ],
+        "deployedAt": "2026-11-03T00:15:46.317Z",
+        "deploymentEvidence": "Commit 24cd44d33418e97b63b3f2f0c5586463a8300dd5 pushed to origin/main. GitHub Actions https://github.com/arturirey3-glitch/free-market/actions/runs/41551387168 completed success. Production https://www.felikko.com/products/514797cd returned HTTP200 with exact new title/meta description and matching Product description. Canonical, robots and all other Product JSON-LD values unchanged; all eight observing pages retained their metadata. deployedAt is successful production verification time, conservatively starting seven-day cooldown.",
+        "date": "2026-11-03",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "玄関マット ブラック 40×60",
+          "targetPath": "/products/514797cd",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-10-24",
+          "endDate": "2026-10-30"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-11-10T00:15:46.317Z"
   }
 ]
