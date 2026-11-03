@@ -107,6 +107,7 @@ const showBlackToiletMatGuide = product.id === '5af4e64c-2f6d-4e54-8f58-f3d29d96
 const showGreenToiletMatMeta = product.id.slice(0, 8) === '5761f720';
 const showBlackToiletSetMeta = product.id === 'a1e0a45b-d0da-4a8e-90ae-f89929198bb4';
 const showBlackKitchenMatMeta = product.id === '3bbc20c9-b6e0-4e5e-8b24-874090b44b71';
+const showBlackEntranceMatMeta = product.id === '514797cd-8ac1-4f0c-bc51-46a662e58f08';
 const ogDescription = showBlackRingGuide
   ? 'ブラックの貼り付け式スマホリング。指を通してスマートフォンを持つときの補助に、角度を変えて動画視聴用のスタンドにも使えます。取り付け方法・使い方・商品の状態を確認して購入できます。'
   : showGreenToiletMatMeta
@@ -115,6 +116,8 @@ const ogDescription = showBlackRingGuide
   ? 'ブラックのトイレマットとフタカバーのセット。マット40×50cm、フタカバー35×44cmです。商品写真と各寸法を確認し、お使いのトイレへの取り付けについては商品へのコメント欄からご相談いただけます。'
   : showBlackKitchenMatMeta
   ? 'ブラックのキッチンマット、サイズは60×240cmです。商品写真で柄を確認し、設置場所の寸法と合わせてご検討いただけます。サイズや色についてのご相談は、商品へのコメント欄からお問い合わせください。'
+  : showBlackEntranceMatMeta
+  ? 'ブラックの玄関・キッチンマット、サイズは40×60cmです。商品写真で柄を確認し、設置場所の寸法と合わせてご検討いただけます。サイズや色については、商品へのコメント欄からお問い合わせください。'
   : ogBaseDescription.slice(0, 120);
 // note・X・LINE のカード用。¥999 は実際の価格なので変えない。
 // 変えるのは見出しと説明文だけで、検索用の <title> / meta description は
@@ -245,7 +248,7 @@ const jsonLdString = JSON.stringify(jsonLd);
 
 ---
 <BaseLayout
-  title={showBlackRingGuide ? 'スマホリング ブラック｜貼り付け式・スタンド兼用 | felikko' : showGreenToiletMatMeta ? 'トイレマット グリーン 40×50cm｜マット単品 | felikko' : showBlackToiletSetMeta ? 'トイレマット・フタカバーセット ブラック｜40×50cm・35×44cm | felikko' : showBlackKitchenMatMeta ? 'キッチンマット ブラック 60×240cm | felikko' : `${product.title} | felikko`}
+  title={showBlackRingGuide ? 'スマホリング ブラック｜貼り付け式・スタンド兼用 | felikko' : showGreenToiletMatMeta ? 'トイレマット グリーン 40×50cm｜マット単品 | felikko' : showBlackToiletSetMeta ? 'トイレマット・フタカバーセット ブラック｜40×50cm・35×44cm | felikko' : showBlackKitchenMatMeta ? 'キッチンマット ブラック 60×240cm | felikko' : showBlackEntranceMatMeta ? '玄関マット ブラック 40×60cm｜キッチンにも | felikko' : `${product.title} | felikko`}
   description={ogDescription}
   ogTitle={cardTitle}
   ogDescription={cardDescription}
