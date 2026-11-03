@@ -60,7 +60,9 @@ try {
     const conditions = keywords.map(k => `category.ilike.%${k}%`).join(',');
     query = query.or(conditions);
   }
-  if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%,category.ilike.%${q}%`);
+  // Split on half/full-width spaces and AND the words; drop chars that break PostgREST filters
+  const words = q.split(/[\s　]+/).map((w) => w.replace(/[,()*%\\]/g, '')).filter(Boolean).slice(0, 5);
+  for (const w of words) query = query.or(`title.ilike.%${w}%,description.ilike.%${w}%,category.ilike.%${w}%`);
 
   const { data } = await query.limit(60);
   products = data ?? [];
