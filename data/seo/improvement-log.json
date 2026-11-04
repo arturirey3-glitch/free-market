@@ -522,6 +522,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-04T00:10:13.781Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-25",
+          "endDate": "2026-10-31"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -963,6 +974,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-04T00:10:13.781Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-25",
+          "endDate": "2026-10-31"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -1393,6 +1415,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-04T00:10:13.781Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-25",
+          "endDate": "2026-10-31"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -1735,6 +1768,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-04T00:10:13.781Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-25",
+          "endDate": "2026-10-31"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -2054,6 +2098,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-04T00:10:13.781Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-25",
+          "endDate": "2026-10-31"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -2128,6 +2183,17 @@
         "window": {
           "startDate": "2026-10-24",
           "endDate": "2026-10-30"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-04T00:10:13.781Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-10-25",
+          "endDate": "2026-10-31"
         },
         "rank": null,
         "impressions": 0,
