@@ -2334,5 +2334,49 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-11-10T00:15:46.317Z"
+  },
+  {
+    "keyword": "キッチンマット ブラック 40×120",
+    "targetPath": "/products/985af052",
+    "actions": [
+      {
+        "keyword": "キッチンマット ブラック 40×120",
+        "targetPath": "/products/985af052",
+        "runId": "2026-11-04",
+        "needs": "黒い40×120cmのキッチンマットを探す人が、用途・色・寸法を検索段階で把握し、設置場所に合うか比較して購入を検討したい。",
+        "gap": "対象の現行公開商品ページを一次資料としてブラック・40×120cm・キッチンと玄関用途を確認。Web検索上位表示のメーカーLIV PLUS公式とニトリ公式は用途・色・寸法を明示している。対象の検索タイトルは用途が不明瞭で、検索用説明文は挨拶から始まるため、確認済みの用途と寸法を先頭に整理する余地がある。検索順は概算でGoogle実測順位ではない。GSCページ全体3表示・平均49位はキーワード順位や需要ではない。高優先登録後、編集前28日と完全一致7日GSCを取得し、いずれも0表示・順位不明。未インデックスとは判断しない。",
+        "done": "対象商品UUIDの完全一致で検索タイトルを「キッチンマット ブラック 40×120cm｜玄関にも | felikko」に変更。meta descriptionと同じ値を使うProduct説明文に、確認済みの用途・色・寸法、商品写真と設置寸法の確認、既存コメント欄でのサイズ・色相談を整理。ブランド正規性・他社素材・機能は追加していない。npm run build、SEOテスト12件、git diff --check成功。本番HTTP200、新メタ情報、canonical/robotsと説明以外のProduct JSON-LD不変、観測中9ページのメタ情報不変を確認。",
+        "method": "product-specific-120cm-kitchen-mat-purpose-search-metadata",
+        "sources": [
+          "https://www.felikko.com/products/985af052",
+          "https://livplus.co.jp/products/detail/marblekitchen-kitchenmat",
+          "https://www.nitori-net.jp/ec/product/4955872959733/"
+        ],
+        "deployedAt": "2026-11-04T00:15:51.353Z",
+        "deploymentEvidence": "Commit 085993ecd35598980d78db929c39d61c1bba95d3 pushed to origin/main. GitHub Actions https://github.com/arturirey3-glitch/free-market/actions/runs/41745350549 completed success. Production https://www.felikko.com/products/985af052 returned HTTP200 with exact new title/meta description and matching Product description. Canonical, robots and all other Product JSON-LD values unchanged; all 9 observing pages retained their metadata. deployedAt is successful production verification time, conservatively starting seven-day cooldown.",
+        "date": "2026-11-04",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "キッチンマット ブラック 40×120",
+          "targetPath": "/products/985af052",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-10-25",
+          "endDate": "2026-10-31"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-11-11T00:15:51.353Z"
   }
 ]
