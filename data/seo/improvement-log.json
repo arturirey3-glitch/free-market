@@ -2444,5 +2444,49 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-11-11T00:15:51.353Z"
+  },
+  {
+    "keyword": "座布団カバー ブルー 55×59",
+    "targetPath": "/products/daa3c3ee",
+    "actions": [
+      {
+        "keyword": "座布団カバー ブルー 55×59",
+        "targetPath": "/products/daa3c3ee",
+        "runId": "2026-11-05",
+        "needs": "ブルーの約55×59cmの座布団カバーを探す人が、寸法とファスナー仕様を確認して、お手持ちの座布団に合うか比較して購入を検討したい。",
+        "gap": "対象の現行公開商品ページを一次資料としてブルー・約55×59cm・ファスナー付き座布団カバーを確認。Web検索「座布団カバー ブルー 55×59」の上位表示3ページ（西川公式）は色・寸法・仕様を明示している。色・寸法・開閉仕様を比較する意図と推定。検索順は概算でGoogle実測順位ではない。対象の検索用説明文は挨拶と購入案内から始まり、仕様が後方にあるため、確認済み情報を先頭にまとめる余地がある。GSC28日ページ全体2表示・0クリック・平均12位はキーワード順位や需要ではない。高優先登録後、編集前28日（10/5〜11/1）と完全一致7日（10/26〜11/1）のGSC取得成功。いずれも0表示・順位不明で、未インデックスとは判断しない。",
+        "done": "対象商品UUIDの完全一致でmeta descriptionと同じ値を使うProduct説明文のみ変更。ブルー・約55×59cm・ファスナー付きを先頭に整理し、商品写真と手持ち座布団の寸法確認、既存コメント欄でのサイズ・色相談を案内。ブランド正規性・他社の素材比率・洗濯可否・ロングファスナー等は追加していない。npm.cmd run build、git diff --check成功。履歴の追記性を検証。本番HTTP200と新説明文、タイトル・canonical・robots・説明以外のProduct JSON-LD不変、既存観測中10ページのメタ情報不変を確認。",
+        "method": "product-specific-blue-zabuton-cover-search-description",
+        "sources": [
+          "https://www.felikko.com/products/daa3c3ee",
+          "https://www.nishikawa1566.com/shop/g/gPG03154016800/",
+          "https://www.nishikawa1566.com/shop/g/gPG02083093800/"
+        ],
+        "deployedAt": "2026-11-05T00:15:44.662Z",
+        "deploymentEvidence": "Commit 2107cc057f41fa657c03cfaf238c39e9f9f6a17b pushed to origin/main. GitHub Actions https://github.com/arturirey3-glitch/free-market/actions/runs/41939847830 completed success. Production https://www.felikko.com/products/daa3c3ee returned HTTP200 with exact new meta description and matching Product description. Title, canonical, robots and all other Product JSON-LD values unchanged; all 10 observing pages retained their metadata. deployedAt is successful production verification time, conservatively starting seven-day cooldown.",
+        "date": "2026-11-05",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "座布団カバー ブルー 55×59",
+          "targetPath": "/products/daa3c3ee",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-10-26",
+          "endDate": "2026-11-01"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-11-12T00:15:44.662Z"
   }
 ]
