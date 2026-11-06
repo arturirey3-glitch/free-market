@@ -14898,5 +14898,843 @@
       }
     ],
     "note": "Purchase counts reflect recorded GA events, not verified Stripe orders. GA dates use property time zone; GSC uses Pacific time."
+  },
+  {
+    "source": "ga4",
+    "propertyId": "534557326",
+    "host": "www.felikko.com",
+    "days": 28,
+    "startDate": "2026-10-06",
+    "endDate": "2026-11-02",
+    "measuredAt": "2026-11-06T00:10:19.107Z",
+    "propertyTimeZone": "Asia/Tokyo",
+    "currencyCode": "JPY",
+    "subjectToThresholding": false,
+    "totals": {
+      "activeUsers": 112,
+      "sessions": 186,
+      "screenPageViews": 1208,
+      "ecommercePurchases": 0,
+      "purchaseRevenue": 0
+    },
+    "publicPages": [
+      {
+        "pagePath": "/",
+        "screenPageViews": 242
+      },
+      {
+        "pagePath": "/products",
+        "screenPageViews": 204
+      },
+      {
+        "pagePath": "/products/d2837399",
+        "screenPageViews": 30
+      },
+      {
+        "pagePath": "/products/8aef1fee",
+        "screenPageViews": 23
+      },
+      {
+        "pagePath": "/products/e30d1416",
+        "screenPageViews": 20
+      },
+      {
+        "pagePath": "/products/7fbdcb08",
+        "screenPageViews": 19
+      },
+      {
+        "pagePath": "/products/74d7175f",
+        "screenPageViews": 10
+      },
+      {
+        "pagePath": "/products/a9ad72cb",
+        "screenPageViews": 10
+      },
+      {
+        "pagePath": "/products/d1973a22",
+        "screenPageViews": 10
+      },
+      {
+        "pagePath": "/products/41692535",
+        "screenPageViews": 7
+      },
+      {
+        "pagePath": "/products/9d34c98d",
+        "screenPageViews": 7
+      },
+      {
+        "pagePath": "/products/0d9d9563",
+        "screenPageViews": 6
+      },
+      {
+        "pagePath": "/products/5af4e64c",
+        "screenPageViews": 6
+      },
+      {
+        "pagePath": "/products/7bdafb21",
+        "screenPageViews": 6
+      },
+      {
+        "pagePath": "/products/1d15bd1c",
+        "screenPageViews": 5
+      },
+      {
+        "pagePath": "/products/25832002",
+        "screenPageViews": 5
+      },
+      {
+        "pagePath": "/products/57060eae",
+        "screenPageViews": 5
+      },
+      {
+        "pagePath": "/products/6441239d",
+        "screenPageViews": 5
+      },
+      {
+        "pagePath": "/products/9acaefa5",
+        "screenPageViews": 5
+      },
+      {
+        "pagePath": "/products/c70679ed",
+        "screenPageViews": 5
+      },
+      {
+        "pagePath": "/products/cec7a684",
+        "screenPageViews": 5
+      },
+      {
+        "pagePath": "/products/052cf788",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/28a88cb6",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/32706fbc",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/42177160",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/49361c26",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/4b4bf6ae",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/625de1db",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/9d02291c",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/9e51fdd9",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/af5a13a9",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/b78a7bd0",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/d2cc1737",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/f272c525",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/fab5452a",
+        "screenPageViews": 4
+      },
+      {
+        "pagePath": "/products/0c496327",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/283de571",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/2c639c9c",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/309aa470",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/391720c2",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/548a3292",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/5761f720",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/590d76ab",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/5983b6e8",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/5dc9bba8",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/6025d840",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/6d4b4a9a",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/734d3125",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/7a0ce72b",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/7b29acc2",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/8111dc6b",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/8ddf7cee",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/92f9fd6e",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/940ee3fe",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/985af052",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/a4d06e39",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/ab83d921",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/b30db29b",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/ccd34b9c",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/cd706a21",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/d2b33570",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/d4a16731",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/de2c1d08",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/e1d7f51e",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/e66ab308",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/eb50e94f",
+        "screenPageViews": 3
+      },
+      {
+        "pagePath": "/products/01f7e2da",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/04cf81ae",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/05d2b955",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/0a2ab6b1",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/0ce1ed09",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/0dd9fea3",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/0e80d883",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/110a5ce0",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/11eb9638",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/1346bd47",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/181508ff",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/1a4a7b88-4f7b-4fee-afa1-03b006f0da00",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/1e2ee200",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/23541b8f",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/265c40fc",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/29afa416",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/2aeca057",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/2cd35066",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/2d22fe4e",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/3ca9b6cb",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/3cdd2d85",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/4776f26f",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/4dd2d68d",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/4e04c950",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/508880c2",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/51708214",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/534dafa0",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/543981e9",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/55d29bfe",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/5a636983",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/5ae5f994",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/5cda4f76",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/610fd47c",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/7308c697",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/76b7c7e2",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/78a6ea54",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/7c251c0b",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/827764dc",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/84413a2f",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/85be951d",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/861412bb",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/8614402a",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/87dd6d3c",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/88d295dc",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/8a718b2e",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/8b2d9898",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/8d64e93f",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/8f3d72ed",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/9060a7c1",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/91963bad",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/9606bb93",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/994af23e",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/9bd46150",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/9e897680",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/a1666ad9",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/a83d96d3",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/ac0f2019",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/afaa4736",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/b54300e0",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/b95925f6",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/bf96e64d",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/c3b214fe",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/c4850be1",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/cf792b58",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/cf97ae08",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/d012f744",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/d1da2c41",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/d4f7db1f",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/d5ce336e",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/d956b0c4",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/dbc74c8a",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/e1c50f8b",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/e5e6ce27",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/e617bfff",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/e9f877f8",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/ef463660",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/f6f9e0e7",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/f94fd151",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/fdf8e141",
+        "screenPageViews": 2
+      },
+      {
+        "pagePath": "/products/039a1b87",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/06a251a3",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/0c0d3cca",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/0c13ce55",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/17919389",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/1a4a7b88",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/1d7284ed",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/24960f0d",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/27deeec1",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/27fb318d",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/29f5ebaa",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/33e2e4a4",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/35c8cfea",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/394b3444",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/4976d475",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/4c2bc673",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/50aedc23",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/5349080e",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/5b7856b5",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/5ee64b4f",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/60426efa",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/6286e237",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/67444f92",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/69fb7ba4",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/71f12f93",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/7a02836f",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/88d9266b",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/973e5bba",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/994766f2",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/9a77a931",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/9caa5ec5",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/9e78083a",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/add348c6",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/ae2f5d97",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/ba114a97",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/bc8cdd2f",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/c476eebb",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/c92a110e",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/cdcce00f",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/d32f96fe",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/d3edaf09",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/e4ad9b80",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/e698dadb",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/e7cebbe6",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/e941b235",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/eb80f33d",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/f2db538e",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/f91a7986",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/f93855ae",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/fa367929",
+        "screenPageViews": 1
+      },
+      {
+        "pagePath": "/products/fcf11eb9",
+        "screenPageViews": 1
+      }
+    ],
+    "channels": [
+      {
+        "sessionDefaultChannelGroup": "Direct",
+        "sessions": 99,
+        "activeUsers": 83
+      },
+      {
+        "sessionDefaultChannelGroup": "Referral",
+        "sessions": 45,
+        "activeUsers": 19
+      },
+      {
+        "sessionDefaultChannelGroup": "Organic Search",
+        "sessions": 19,
+        "activeUsers": 4
+      },
+      {
+        "sessionDefaultChannelGroup": "Organic Shopping",
+        "sessions": 16,
+        "activeUsers": 2
+      },
+      {
+        "sessionDefaultChannelGroup": "Organic Social",
+        "sessions": 6,
+        "activeUsers": 6
+      },
+      {
+        "sessionDefaultChannelGroup": "AI Assistant",
+        "sessions": 1,
+        "activeUsers": 1
+      }
+    ],
+    "note": "Purchase counts reflect recorded GA events, not verified Stripe orders. GA dates use property time zone; GSC uses Pacific time."
   }
 ]
