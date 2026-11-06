@@ -2554,5 +2554,49 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-11-12T00:15:44.662Z"
+  },
+  {
+    "keyword": "座布団カバー 55×59 ファスナー",
+    "targetPath": "/products/7bdafb21",
+    "actions": [
+      {
+        "keyword": "座布団カバー 55×59 ファスナー",
+        "targetPath": "/products/7bdafb21",
+        "runId": "2026-11-06",
+        "needs": "約55×59cmのファスナー式座布団カバーを探す人が、寸法と開閉仕様を把握し、手持ちの座布団に合うか比較したい。",
+        "gap": "対象の現行公開商品本文で約55×59cmとファスナー付きの仕様を確認。Web検索上位表示のクルームフィールズ販売元ページと西川メーカー公式は寸法・開閉仕様を明示。検索順は概算でGoogle実測順位ではない。対象の検索用説明文は挨拶と購入案内から始まるため、確認済み寸法・仕様を先頭に整理する余地がある。ページ全体3表示・平均8位はこの語の順位や需要ではない。高優先登録後、編集前28日（10/6〜11/2）・完全一致7日（10/27〜11/2）GSC取得成功。いずれも0表示・順位不明で、未インデックスとは判断しない。",
+        "done": "対象商品UUIDの完全一致でmeta descriptionと同じ値を使うProduct説明文を整理。約55×59cm・ファスナー付きと、商品写真・手持ち座布団の寸法確認、既存コメント欄でのサイズ・色・枚数相談を案内。他社の素材・ロングファスナー・洗濯可否・ブランド正規性を追加していない。ビルド・SEOテスト12件・git diff --check成功。履歴追記性を検証。本番HTTP200と新説明文、タイトル・canonical・robots・説明以外のProduct JSON-LD不変、既存観察中11ページのメタ情報不変を確認。",
+        "method": "product-specific-55x59-zipper-zabuton-search-description",
+        "sources": [
+          "https://www.felikko.com/products/7bdafb21",
+          "https://www.curoomfeelds.jp/iframe/item/cover_sheets/order_cover/_com/zabuton/if_zabu_orderdtl_01.html",
+          "https://www.nishikawa1566.com/shop/g/gPG02083093800/"
+        ],
+        "deployedAt": "2026-11-06T00:15:21.096Z",
+        "deploymentEvidence": "Commit 172e2ac03195506efb407b9074223ea10a161c18 pushed to origin/main. GitHub Actions https://github.com/arturirey3-glitch/free-market/actions/runs/42135345083 completed success. Production https://www.felikko.com/products/7bdafb21 returned HTTP200 with exact new meta description and matching Product description. Title, canonical, robots and all other Product JSON-LD values unchanged; all 11 observing pages retained their metadata. deployedAt is successful production verification time, conservatively starting seven-day cooldown.",
+        "date": "2026-11-06",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "座布団カバー 55×59 ファスナー",
+          "targetPath": "/products/7bdafb21",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-10-27",
+          "endDate": "2026-11-02"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-11-13T00:15:21.096Z"
   }
 ]
