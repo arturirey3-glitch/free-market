@@ -2664,5 +2664,49 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-11-13T00:15:21.096Z"
+  },
+  {
+    "keyword": "トイレマット フタカバー セット ベージュ",
+    "targetPath": "/products/285c935d",
+    "actions": [
+      {
+        "keyword": "トイレマット フタカバー セット ベージュ",
+        "targetPath": "/products/285c935d",
+        "runId": "2026-11-07",
+        "needs": "ベージュのトイレマットとフタカバーのセットを探す人が、セット内容と各寸法を把握し、設置場所や手持ちのトイレに合うか確認したい。",
+        "gap": "現行公開商品タイトル・本文でベージュ、マット40×50cm・フタカバー35×44cmのセットを確認。Web検索上位表示のオカメーカー直営・ニトリ公式はセット内容・色・寸法や対応仕様を明示し、比較意図と推定。検索順は概算でGoogle実測順位ではない。対象の検索用説明文は挨拶・購入案内から始まり末尾で途切れるため、確認済みの内容・色・寸法を冒頭に整理する余地がある。保存済みページ全体6表示・0クリック・平均2.67位は語句の需要・順位ではない。高優先登録後、編集前28日（10/7〜11/3）・完全一致7日（10/28〜11/3）GSC取得成功。いずれも0表示・順位不明で未インデックスとは判断しない。",
+        "done": "対象商品UUIDの完全一致でmeta descriptionと同じ値を使うProduct説明文を変更。ベージュのセット、マット40×50cm・フタカバー35×44cmを先頭に整理し、商品写真・寸法確認と既存コメント欄での取り付け相談を案内。ブランド正規性・他社の素材や洗濯可否・機種適合を追加していない。ビルド・SEOテスト12件・git diff --check成功。履歴追記性を検証。本番HTTP200と新説明文、タイトル・canonical・robots・説明以外のProduct JSON-LD不変、既存観察中12ページのメタ情報不変を確認。",
+        "method": "product-specific-beige-toilet-set-search-description",
+        "sources": [
+          "https://www.felikko.com/products/285c935d",
+          "https://shop.oka-kk.co.jp/view/item/000000000994",
+          "https://www.nitori-net.jp/ec/product/7702693-7702692b/"
+        ],
+        "deployedAt": "2026-11-07T00:15:32.054Z",
+        "deploymentEvidence": "Commit 0e3f1a0ff9f28d2912f0cddef018967f45af50d1 pushed to origin/main. GitHub Actions https://github.com/arturirey3-glitch/free-market/actions/runs/42316968433 completed success. Production https://www.felikko.com/products/285c935d returned HTTP200 with exact new meta description and matching Product description. Title, canonical, robots and all other Product JSON-LD values unchanged; all 12 observing pages retained their metadata. deployedAt is successful production verification time, conservatively starting seven-day cooldown.",
+        "date": "2026-11-07",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "トイレマット フタカバー セット ベージュ",
+          "targetPath": "/products/285c935d",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-10-28",
+          "endDate": "2026-11-03"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-11-14T00:15:32.054Z"
   }
 ]
