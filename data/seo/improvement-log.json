@@ -2774,5 +2774,49 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-11-14T00:15:32.054Z"
+  },
+  {
+    "keyword": "トイレマット フタカバー セット ピンク",
+    "targetPath": "/products/734ac705",
+    "actions": [
+      {
+        "keyword": "トイレマット フタカバー セット ピンク",
+        "targetPath": "/products/734ac705",
+        "needs": "ピンクのトイレマットとフタカバーをセットで探す人が、色・セット内容・両寸法を確認して選びたい。需要やクエリ順位は未確認。",
+        "gap": "検索上位表示のメーカー公式2ページは色・セット内容・寸法を明示。対象は挨拶から始まる検索用説明文に色がなく、末尾が「裏面には を使用」で途切れていた。検索順は概算でGoogleの実測順位ではない。",
+        "done": "確認済みのピンク色、トイレマットとフタカバーのセット、マット40×50cm・フタカバー35×44cmを検索用説明文の冒頭に整理。既存の説明文連動によりOG/TwitterとProduct JSON-LDのdescriptionも一致。対象商品UUID限定の3行追加。タイトル・本文・canonical・robots・URL構造は維持。登録後に28日と完全一致7日のGSCを編集前取得。",
+        "method": "product-specific-meta-description",
+        "sources": [
+          "https://www.felikko.com/products/734ac705",
+          "https://shop.oka-kk.co.jp/view/item/000000000994",
+          "https://shop.oka-kk.co.jp/view/item/000000000992"
+        ],
+        "deployedAt": "2026-11-08T00:16:03.681Z",
+        "deploymentEvidence": "Commit fca010fec28f8cb311ba8fe0cba1eb272f29608b pushed to origin/main; workflow https://github.com/arturirey3-glitch/free-market/actions/runs/42428866230 completed success. Production https://www.felikko.com/products/734ac705 returned HTTP 200 and the exact new meta/OG/Twitter/Product JSON-LD description. Title, canonical, robots and all other JSON-LD verified unchanged. Homepage and all 12 previously observing product metadata verified unchanged. deployedAt is first successful production verification (conservative cooldown start).",
+        "runId": "2026-11-08",
+        "date": "2026-11-08",
+        "rankAtAction": null,
+        "baseline": {
+          "keyword": "トイレマット フタカバー セット ピンク",
+          "targetPath": "/products/734ac705",
+          "rank": null,
+          "impressions": 0,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-10-29",
+          "endDate": "2026-11-04"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-11-15T00:16:03.681Z"
   }
 ]
