@@ -632,6 +632,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -1183,6 +1194,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -1723,6 +1745,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -2175,6 +2208,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -2604,6 +2648,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -2792,6 +2847,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -2892,6 +2958,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -2981,6 +3058,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -3059,6 +3147,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -3126,6 +3225,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -3182,6 +3292,17 @@
         "rank": null,
         "impressions": 0,
         "clicks": 0
+      },
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
       }
     ],
     "status": "observing",
@@ -3227,7 +3348,19 @@
         }
       }
     ],
-    "reviews": [],
+    "reviews": [
+      {
+        "reviewedAt": "2026-11-14T00:10:24.402Z",
+        "outcome": "insufficient_data",
+        "window": {
+          "startDate": "2026-11-04",
+          "endDate": "2026-11-10"
+        },
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0
+      }
+    ],
     "status": "observing",
     "nextReviewDate": "2026-11-13T00:15:21.096Z"
   },
