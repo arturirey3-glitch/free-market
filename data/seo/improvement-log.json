@@ -3750,5 +3750,49 @@
     ],
     "status": "observing",
     "nextReviewDate": "2026-11-15T00:16:03.681Z"
+  },
+  {
+    "keyword": "トイレマット マリメッコ",
+    "targetPath": "/products/8a718b2e",
+    "actions": [
+      {
+        "keyword": "トイレマット マリメッコ",
+        "targetPath": "/products/8a718b2e",
+        "runId": "2026-11-16",
+        "needs": "トイレマットを探す人が色・寸法・単品かセットかを確認し、敷く場所に合うか比較したい。ブランド正規性は未確認であり新規訴求しない。",
+        "gap": "現行公開商品でグリーン/ブルー、40×50cm、マット単品を確認。検索上位に表示された販売元の商品ページとマリメッコ公式は用途・寸法を明示。対象の検索説明文は挨拶・発送案内から始まり、色がなく単品情報が後方にあった。検索順は概算でGoogle実測順位ではない。本日保存済みの登録後28日・完全一致7日GSCはともに1表示・0クリック・平均19位。7日窓は11/6～11/12。ページ全体順位と混同しない。",
+        "done": "対象UUID限定で検索説明文を整理し、グリーン／ブルー、40×50cm、マット単品、フタカバー非付属を先頭に明示。商品写真・設置寸法の確認と既存コメント欄への色・枚数相談を案内。連動するOG/Twitter/Product descriptionも一致。ブランド正規性・素材・レビュー・配送保証は追加していない。ビルド・差分検証成功。本番HTTP200と説明文一致、title/canonical/robots/説明以外のJSON-LD不変、ホームと既存観察13商品メタデータ不変を検証。",
+        "method": "product-specific-green-blue-toilet-mat-search-description",
+        "sources": [
+          "https://www.felikko.com/products/8a718b2e",
+          "https://store.shopping.yahoo.co.jp/carpet-ishibashi/y-fleur-5560.html",
+          "https://www.marimekko.jp/shop/marimekko/item/view/shop_product_id/21929"
+        ],
+        "deployedAt": "2026-11-16T00:14:42.648Z",
+        "deploymentEvidence": "Commit c82ac52903abb3af691be6761a0d1cad3e1fbbb1 pushed to origin/main; https://github.com/arturirey3-glitch/free-market/actions/runs/43779040596 completed success. Production https://www.felikko.com/products/8a718b2e returned HTTP200 with exact new meta/OG/Twitter/Product descriptions. Title, canonical, robots and all other JSON-LD unchanged; homepage and 13 observing product metadata unchanged. deployedAt is successful production verification time.",
+        "date": "2026-11-16",
+        "rankAtAction": 19,
+        "baseline": {
+          "keyword": "トイレマット マリメッコ",
+          "targetPath": "/products/8a718b2e",
+          "rank": 19,
+          "impressions": 1,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-11-06",
+          "endDate": "2026-11-12"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-11-23T00:14:42.648Z"
   }
 ]
