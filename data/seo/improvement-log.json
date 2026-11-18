@@ -4102,5 +4102,49 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-11-23T00:14:42.648Z"
+  },
+  {
+    "keyword": "くりまんじゅう クッションカバー",
+    "targetPath": "/products/4dd2d68d",
+    "actions": [
+      {
+        "keyword": "くりまんじゅう クッションカバー",
+        "targetPath": "/products/4dd2d68d",
+        "needs": "くりまんじゅう柄のクッションカバーを探し、柄・色・寸法・開閉仕様を確認して手持ちのクッションに合うか判断したい。GSC実測は28日1表示・8位であり大きな需要は推定しない。",
+        "gap": "検索上位に表示された公式ショップの商品詳細と寝具一覧は柄や寸法を提示。対象出品はタイトルでブラック・45×45cmを明示するが検索用説明文が挨拶や発送案内から始まり、ファスナー仕様と寸法が後方にある。確認済みの商品情報を先頭に整理する余地がある。検索順は概算でGSC順位ではない。",
+        "done": "対象商品UUID限定でmeta descriptionと連動するOG/Twitter/Product descriptionを整理。COFFEE柄・ブラック・約45×45cm・ファスナー付きを先頭に示し、手持ちクッションの寸法確認と既存コメント欄での色・枚数相談を案内。公式別商品の素材・正規性・中身付属有無・レビュー・配送保証は追加していない。ビルド・SEOテスト12件・差分検証成功。GSC履歴の過去部分不変と完全一致7日1件追記を検証。本番HTTP200、説明文一致、title/canonical/robots/説明以外のJSON-LD不変と既存観察中15ページのメタ情報不変を確認。",
+        "method": "target-specific-meta-description",
+        "sources": [
+          "https://www.felikko.com/products/4dd2d68d",
+          "https://chiikawamarket.jp/collections/information/products/4548598445675",
+          "https://chiikawamarket.jp/collections/bedding"
+        ],
+        "deployedAt": "2026-11-18T00:15:22.209Z",
+        "deploymentEvidence": "Commit ad8913b pushed to origin/main via existing Git deploy workflow. First confirmed live at 2026-11-18T00:15:22.209Z; https://www.felikko.com/products/4dd2d68d HTTP 200, exact new description and Product JSON-LD verified. Target protected metadata and all 15 observing pages metadata unchanged. deployedAt is conservative first live verification time.",
+        "runId": "2026-11-18",
+        "date": "2026-11-18",
+        "rankAtAction": 8,
+        "baseline": {
+          "keyword": "くりまんじゅう クッションカバー",
+          "targetPath": "/products/4dd2d68d",
+          "rank": 8,
+          "impressions": 1,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-11-08",
+          "endDate": "2026-11-14"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-11-25T00:15:22.209Z"
   }
 ]
