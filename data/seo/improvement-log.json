@@ -2162,6 +2162,41 @@
           "startDate": "2026-09-20",
           "endDate": "2026-09-26"
         }
+      },
+      {
+        "keyword": "マリメッコ トイレマット",
+        "targetPath": "/products/5af4e64c",
+        "runId": "2026-11-27",
+        "needs": "柄のあるトイレマットを探す人が、色・寸法・単品かセットかを確認して購入判断したい。GSC28日・7日は各1表示・0クリック・平均16位で、需要の大きさは推定しない。",
+        "gap": "現行公開商品と販売元の商品詳細・メーカー公式を調査。比較先は寸法と用途を明示する一方、対象の検索用説明は挨拶から始まり末尾が途中で切れ、フタカバーと混同しやすい。確認済みのブラック・40×50cm・単品を検索用説明の冒頭にまとめる余地がある。Web検索順は概略でありGSC実測順位ではない。公式別商品の素材・寸法やブランド正規性は転用しない。",
+        "done": "対象UUID限定でmeta descriptionと連動するOG/Twitter/Product descriptionを整理。ブラック・40×50cm・マット単品・フタカバーなしを先頭に明示し、敷く場所の寸法確認と既存コメント欄への相談を案内。前回の本文追記とは異なる方法。ビルド、SEO管理12テスト、差分検証成功。本番HTTP200・新説明一致・title/canonical/robots/説明以外のJSON-LD不変と、観測中16ページのメタ情報不変を確認。",
+        "method": "target-specific-meta-description",
+        "sources": [
+          "https://www.felikko.com/products/5af4e64c",
+          "https://store.shopping.yahoo.co.jp/carpet-ishibashi/y-fleur-5560.html",
+          "https://www.marimekko.jp/shop/marimekko/item/view/shop_product_id/21929"
+        ],
+        "deployedAt": "2026-11-27T03:14:16.606Z",
+        "deploymentEvidence": "Commit f145bea9c29553b66b2ba9d6688ae46bcf230395 pushed to origin/main through existing Git workflow. Production https://www.felikko.com/products/5af4e64c HTTP200 and exact description verified at 2026-11-27T03:14:16.606Z. Protected metadata and 16 observing pages verified unchanged. Workflow https://github.com/arturirey3-glitch/free-market/actions/runs/45932899711 . deployedAt is conservative first successful live verification.",
+        "date": "2026-11-27",
+        "rankAtAction": 16,
+        "baseline": {
+          "keyword": "マリメッコ トイレマット",
+          "targetPath": "/products/5af4e64c",
+          "rank": 16,
+          "impressions": 1,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-11-17",
+          "endDate": "2026-11-23"
+        }
       }
     ],
     "reviews": [
@@ -2705,8 +2740,8 @@
         "clicks": 0
       }
     ],
-    "status": "active",
-    "nextReviewDate": "2026-10-07T00:15:30.755Z"
+    "status": "observing",
+    "nextReviewDate": "2026-12-04T03:14:16.606Z"
   },
   {
     "keyword": "スタバクルミッ子トートバッグ",
