@@ -5514,5 +5514,49 @@
     "reviews": [],
     "status": "observing",
     "nextReviewDate": "2026-12-01T00:16:22.564Z"
+  },
+  {
+    "keyword": "40×120 マット",
+    "targetPath": "/products/8aef1fee",
+    "actions": [
+      {
+        "keyword": "40×120 マット",
+        "targetPath": "/products/8aef1fee",
+        "runId": "2026-11-28",
+        "needs": "40×120cmのマットを探す人が、用途・色・寸法を確認して設置場所に合うか判断したい。保存済みGSC28日と登録後の完全一致7日基準値はともに1表示・0クリック・平均18位で、需要量を推定しない。",
+        "gap": "現行出品の一次情報でブラック・40×120cm・キッチン/玄関用途を確認。検索「40×120 マット」の上位表示から販売元の商品ページを調べ、公式ページ検索も実施。販売元ショップバースとニトリは用途と寸法を明示。ニトリ現行詳細は40×180の選択肢であることも確認し、他商品仕様は転用しない。Web検索表示順は概算でGSC実測順位ではない。対象の検索用説明は挨拶・発送案内で始まり末尾が裏面説明の途中で切れるため、確認済みの寸法・色・用途を冒頭に整理する有用な余地あり。",
+        "done": "対象商品UUIDだけのmeta descriptionと連動するOG/Twitter/Product descriptionを変更。40×120cm・ブラック・キッチン/玄関用途を冒頭に明示し、写真と設置寸法の確認、既存コメント欄での色・枚数相談を案内。ブランド正規性・素材・洗濯可否・床暖房適合・レビュー・配送保証は追加していない。ビルド、SEO管理12テスト、差分検証、履歴の既存部分不変と完全一致7日基準値1件追記を検証。本番HTTP200・新説明とProduct JSON-LD一致、title/canonical/robots/説明以外のJSON-LD不変、観察中17ページのメタ情報不変を確認。",
+        "method": "target-specific-meta-description",
+        "sources": [
+          "https://www.felikko.com/products/8aef1fee",
+          "https://store.shopping.yahoo.co.jp/shop-birth/p2102377179bb.html",
+          "https://www.nitori-net.jp/ec/product/5677107s/"
+        ],
+        "deployedAt": "2026-11-28T00:15:22.286Z",
+        "deploymentEvidence": "Commit 8ac465dd0a28a1bcb7fa2e813b0be3ba93a6630c pushed to origin/main through existing Git workflow. Workflow https://github.com/arturirey3-glitch/free-market/actions/runs/46086814722 . Production https://www.felikko.com/products/8aef1fee HTTP200 and exact new description/Product JSON-LD verified at 2026-11-28T00:15:22.286Z. Protected metadata and 17 observing pages metadata unchanged. deployedAt is conservative first verified live time.",
+        "date": "2026-11-28",
+        "rankAtAction": 18,
+        "baseline": {
+          "keyword": "40×120 マット",
+          "targetPath": "/products/8aef1fee",
+          "rank": 18,
+          "impressions": 1,
+          "clicks": 0,
+          "ctr": 0,
+          "scope": {
+            "siteUrl": "sc-domain:felikko.com",
+            "targetOrigin": "https://www.felikko.com",
+            "country": null,
+            "device": null,
+            "type": "web"
+          },
+          "startDate": "2026-11-18",
+          "endDate": "2026-11-24"
+        }
+      }
+    ],
+    "reviews": [],
+    "status": "observing",
+    "nextReviewDate": "2026-12-05T00:15:22.286Z"
   }
 ]
