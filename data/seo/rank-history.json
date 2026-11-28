@@ -41427,5 +41427,541 @@
         "ctr": 0
       }
     ]
+  },
+  {
+    "measuredAt": "2026-11-28T00:12:55.133Z",
+    "source": "gsc",
+    "days": 7,
+    "startDate": "2026-11-18",
+    "endDate": "2026-11-24",
+    "scope": {
+      "siteUrl": "sc-domain:felikko.com",
+      "targetOrigin": "https://www.felikko.com",
+      "country": null,
+      "device": null,
+      "type": "web"
+    },
+    "finalized": true,
+    "availableDates": [
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22",
+      "2026-11-23",
+      "2026-11-24"
+    ],
+    "totals": {
+      "keyword": null,
+      "targetPath": null,
+      "rank": 11.654545454545454,
+      "impressions": 55,
+      "clicks": 4,
+      "ctr": 0.07272727272727272
+    },
+    "discoveryCapped": false,
+    "discoveryIsExhaustive": false,
+    "observations": [
+      {
+        "keyword": "トイレマット マリメッコ",
+        "targetPath": "/products/8a718b2e",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "スマホリング ブラック",
+        "targetPath": "/products/84123212",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "玄関マット 40×60",
+        "targetPath": "/products/2e94330a",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット フタカバー セット",
+        "targetPath": "/products/86ffd483",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "マリメッコ トイレマット",
+        "targetPath": "/products/5af4e64c",
+        "rank": 16,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "スタバクルミッ子トートバッグ",
+        "targetPath": "/",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット グリーン",
+        "targetPath": "/products/5761f720",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット フタカバー セット ブラック",
+        "targetPath": "/products/a1e0a45b",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "キッチンマット ブラック 60×240",
+        "targetPath": "/products/3bbc20c9",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "玄関マット ブラック 40×60",
+        "targetPath": "/products/514797cd",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "キッチンマット ブラック 40×120",
+        "targetPath": "/products/985af052",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "座布団カバー ブルー 55×59",
+        "targetPath": "/products/daa3c3ee",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "座布団カバー 55×59 ファスナー",
+        "targetPath": "/products/7bdafb21",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット フタカバー セット ベージュ",
+        "targetPath": "/products/285c935d",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "トイレマット フタカバー セット ピンク",
+        "targetPath": "/products/734ac705",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "くりまんじゅう クッションカバー",
+        "targetPath": "/products/4dd2d68d",
+        "rank": null,
+        "impressions": 0,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "ちいかわ トイレカバー",
+        "targetPath": "/products/b54300e0",
+        "rank": 14,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "40×120 マット",
+        "targetPath": "/products/8aef1fee",
+        "rank": 18,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      }
+    ],
+    "discovery": [
+      {
+        "keyword": "40×120 マット",
+        "targetPath": "/products/8aef1fee",
+        "rank": 18,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "ちいかわ トイレカバー",
+        "targetPath": "/products/b54300e0",
+        "rank": 14,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "スタバ クッション",
+        "targetPath": "/products/2ba87b5d",
+        "rank": 11,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "スタバ マリメッコ",
+        "targetPath": "/",
+        "rank": 4.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "スタバ ランチョンマット",
+        "targetPath": "/products/1d15bd1c",
+        "rank": 16,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "スタバ ランチョンマット",
+        "targetPath": "/products/88d9266b",
+        "rank": 23,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "マット レッド",
+        "targetPath": "/products/30c76638",
+        "rank": 41,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "マリメッコ",
+        "targetPath": "/products/ba5c4dfb",
+        "rank": 67.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "マリメッコ トイレマット",
+        "targetPath": "/products/5af4e64c",
+        "rank": 16,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": "マリメッコ トイレマット",
+        "targetPath": "/products/8a718b2e",
+        "rank": 21,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      }
+    ],
+    "pageObservations": [
+      {
+        "keyword": null,
+        "targetPath": "/products/49361c26",
+        "rank": 9,
+        "impressions": 2,
+        "clicks": 2,
+        "ctr": 1
+      },
+      {
+        "keyword": null,
+        "targetPath": "/",
+        "rank": 6.2,
+        "impressions": 5,
+        "clicks": 1,
+        "ctr": 0.2
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/9e897680",
+        "rank": 6.666666666666667,
+        "impressions": 3,
+        "clicks": 1,
+        "ctr": 0.3333333333333333
+      },
+      {
+        "keyword": null,
+        "targetPath": "/about/",
+        "rank": 1,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/contact",
+        "rank": 2,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/custom-order",
+        "rank": 6.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/privacy/",
+        "rank": 1,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products",
+        "rank": 2,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/12c02375",
+        "rank": 13,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/1d15bd1c",
+        "rank": 11,
+        "impressions": 5,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/239562e1",
+        "rank": 7,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/2ba87b5d",
+        "rank": 11,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/30c76638",
+        "rank": 41,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/3cffd653",
+        "rank": 33,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/5af4e64c",
+        "rank": 8.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/5ee64b4f",
+        "rank": 8,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/74d7175f",
+        "rank": 1,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/809fa8fd",
+        "rank": 11,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/84123212",
+        "rank": 5,
+        "impressions": 3,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/86ffd483",
+        "rank": 1,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/88d9266b",
+        "rank": 16,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/8a718b2e",
+        "rank": 21,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/8aef1fee",
+        "rank": 18,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/9299a034",
+        "rank": 4,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/9d34c98d",
+        "rank": 6,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/a9ad72cb",
+        "rank": 12,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/abb43bd3",
+        "rank": 20,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/ac807707",
+        "rank": 21,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/b54300e0",
+        "rank": 8.666666666666668,
+        "impressions": 3,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/ba09bcd5",
+        "rank": 3,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/ba5c4dfb",
+        "rank": 67.5,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/bc8cdd2f",
+        "rank": 10,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/cdcce00f",
+        "rank": 6,
+        "impressions": 2,
+        "clicks": 0,
+        "ctr": 0
+      },
+      {
+        "keyword": null,
+        "targetPath": "/products/e698dadb",
+        "rank": 12,
+        "impressions": 1,
+        "clicks": 0,
+        "ctr": 0
+      }
+    ]
   }
 ]
